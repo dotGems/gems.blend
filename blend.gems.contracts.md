@@ -24,3 +24,21 @@ title: refund
 summary: Refund account
 icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
 ---
+
+<h1 class="contract">blendlog</h1>
+
+---
+spec_version: "0.2.0"
+title: blendlog
+summary: Blend logging
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---
+
+<h1 class="contract">reset</h1>
+
+---
+spec_version: "0.2.0"
+title: reset
+summary: Reset table
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---

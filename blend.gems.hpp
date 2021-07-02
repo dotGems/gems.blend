@@ -59,8 +59,8 @@ public:
     struct [[eosio::table("recipes")]] recipes_row {
         name                recipe_id;
         name                collection_name;
-        vector<int32_t>     template_ids;
-        vector<int32_t>     blend_template_id;
+        vector<int32_t>     in_template_ids;
+        vector<int32_t>     out_template_ids;
         asset               backed_token;
         time_point_sec      start_time;
         time_point_sec      last_updated;
@@ -76,7 +76,7 @@ public:
     > recipes_table;
 
     /**
-     * ## TABLE `templateids`
+     * ## TABLE `templates`
      *
      * ### multi-indexes
      *
@@ -119,19 +119,21 @@ public:
     > templates_table;
 
     /**
-     * ## TABLE `blenders`
+     * ## TABLE `ontransfer`
      *
      * ### multi-indexes
      *
      * | `param`        | `index_position` | `key_type` |
      * |--------------- |------------------|------------|
      * | `bycollection` | 2                | i64        |
-     * | `byupdated`    | 3                | i64        |
+     * | `byrecipe`     | 3                | i64        |
+     * | `byupdated`    | 4                | i64        |
      *
      * ### params
      *
-     * - `{name} account` - (primary key) account name
+     * - `{name} owner` - (primary key) account name
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
+     * - `{name} recipe_id` - recipe ID (ex: `myrecipe`)
      * - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
      * - `{vector<int32_t>} template_ids` - received AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
@@ -140,8 +142,9 @@ public:
      *
      * ```json
      * {
-     *     "account": "myaccount",
+     *     "owner": "myaccount",
      *     "collection_name": "mycollection",
+     *     "recipe_id": "myrecipe",
      *     "asset_ids": [1099512167124, 1099512167125],
      *     "template_ids": [21881, 21882],
      *     "last_updated": "2021-07-01T00:00:00"
@@ -149,16 +152,21 @@ public:
      * ```
      */
     struct [[eosio::table("ontransfer")]] ontransfer_row {
-        name                account;
+        name                owner;
         name                collection_name;
+        name                recipe_id;
         vector<uint64_t>    asset_ids;
         vector<int32_t>     template_ids;
         time_point_sec      last_updated;
 
-        uint64_t primary_key() const { return account.value; }
+        uint64_t primary_key() const { return owner.value; }
+        uint64_t by_collection() const { return collection_name.value; }
+        uint64_t by_recipe() const { return recipe_id.value; }
+        uint64_t by_updated() const { return last_updated.sec_since_epoch(); }
     };
     typedef eosio::multi_index< "ontransfer"_n, ontransfer_row,
         indexed_by<"bycollection"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_collection>>,
+        indexed_by<"byrecipe"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_recipe>>,
         indexed_by<"byupdated"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_updated>>
     > ontransfer_table;
 
@@ -236,7 +244,7 @@ public:
      *
      * ### params
      *
-     * - `{name} account` - account name to refund
+     * - `{name} owner` - account name to refund
      *
      * ### Example
      *
@@ -245,14 +253,17 @@ public:
      * ```
      */
     [[eosio::action]]
-    void refund( const name account );
+    void refund( const name owner );
+
+    [[eosio::action]]
+    void reset( const name table );
 
     [[eosio::action]]
     void blendlog( const name owner,
                    const name collection_name,
                    const name recipe_id,
-                   const vector<uint64_t> in_asset_ids
-                   const vector<uint64_t> out_asset_ids
+                   const vector<uint64_t> in_asset_ids,
+                   const vector<uint64_t> out_asset_ids,
                    const vector<int32_t> in_template_ids,
                    const vector<int32_t> out_template_id );
 
@@ -262,34 +273,33 @@ public:
     [[eosio::on_notify("atomicassets::transfer")]]
     void on_nft_transfer( const name from, const name to, const vector<uint64_t> asset_ids, const std::string memo );
 
-    [[eosio::on_notify("push.sx::mine")]]
-    void on_push( const name executor, const uint64_t nonce );
-
-    [[eosio::on_notify("atomicassets::logmint")]]
-    void on_logmint( uint64_t asset_id,
-                     name authorized_minter,
-                     name collection_name,
-                     name schema_name,
-                     int32_t template_id,
-                     name new_asset_owner,
-                     ATTRIBUTE_MAP immutable_data,
-                     ATTRIBUTE_MAP mutable_data,
-                     vector <asset> backed_tokens,
-                     ATTRIBUTE_MAP immutable_template_data );
+    // [[eosio::on_notify("atomicassets::logmint")]]
+    // void on_logmint( uint64_t asset_id,
+    //                  name authorized_minter,
+    //                  name collection_name,
+    //                  name schema_name,
+    //                  int32_t template_id,
+    //                  name new_asset_owner,
+    //                  ATTRIBUTE_MAP immutable_data,
+    //                  ATTRIBUTE_MAP mutable_data,
+    //                  vector <asset> backed_tokens,
+    //                  ATTRIBUTE_MAP immutable_template_data );
 
     // static actions
-    using setpack_action = eosio::action_wrapper<"setpack"_n, &gems::blend::setpack>;
-    using claimall_action = eosio::action_wrapper<"claimall"_n, &gems::blend::claimall>;
-    using erasepack_action = eosio::action_wrapper<"erasepack"_n, &gems::blend::erasepack>;
+    using setrecipe_action = eosio::action_wrapper<"setrecipe"_n, &gems::blend::setrecipe>;
+    using delrecipe_action = eosio::action_wrapper<"delrecipe"_n, &gems::blend::delrecipe>;
+    using refund_action = eosio::action_wrapper<"refund"_n, &gems::blend::refund>;
     using reset_action = eosio::action_wrapper<"reset"_n, &gems::blend::reset>;
     using blendlog_action = eosio::action_wrapper<"blendlog"_n, &gems::blend::blendlog>;
-    using setpool_action = eosio::action_wrapper<"setpool"_n, &gems::blend::setpool>;
-    using prepare_action = eosio::action_wrapper<"prepare"_n, &gems::blend::prepare>;
-    using claim_action = eosio::action_wrapper<"claim"_n, &gems::blend::claim>;
 
 private:
     // eosio.token helper
     void transfer( const name from, const name to, const extended_asset quantity, const string memo );
+
+    // blend
+    void validate_template_ids( const name collection_name, const vector<int32_t> template_ids, const bool burnable );
+    void add_transfer( const name owner, const uint64_t asset_id );
+    void attempt_to_blend( const name owner );
 
     // AtomicAssets action helper
     void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo );
@@ -301,23 +311,8 @@ private:
     atomicassets::templates_s get_template( const name collection_name, const int32_t template_id );
     atomicassets::assets_s get_assets( const name owner, const uint64_t asset_id );
 
-    // utils
-    name parse_name(const string& str);
-
-    // blend gems
-    uint64_t pseudo_random( const uint64_t nonce, const uint64_t modulo );
-    void load_pool( const name from, const name pool_id, const uint64_t asset_id );
-    void blend_pack( const name owner, const uint64_t asset_id );
-    pair<uint64_t, uint64_t> remove_random_asset_id_from_pool( const name pool_id, const uint64_t limit, const uint64_t last_asset_id, const vector<uint64_t> asset_ids, const uint64_t asset_ids_size, const set<uint64_t> unique_asset_ids );
-    void claim_by_id( const uint64_t id );
-    bool is_contract( const name account );
-    uint64_t get_next_blend_by_prepare();
-
     // maintenance
     template <typename T>
     void clear_table( T& table );
-
-    // template <typename T>
-    // void remove(std::vector<T>& vec, size_t pos);
 };
 }

@@ -16,7 +16,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 ## Table of Content
 
 - [TABLE `recipes`](#table-recipes)
-- [TABLE `templateids`](#table-templateids)
+- [TABLE `templates`](#table-templates)
 - [TABLE `ontransfer`](#table-ontransfer)
 - [ACTION `setrecipe`](#action-setrecipe)
 - [ACTION `delrecipe`](#action-delrecipe)
@@ -94,7 +94,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ### params
 
-- `{name} account` - (primary key) account name
+- `{name} owner` - (primary key) account name
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
 - `{set<int32_t>} template_ids` - received AtomicHub NFT template ID (ex: [`21881`, `21882`])
@@ -104,7 +104,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ```json
 {
-    "account": "myaccount",
+    "owner": "myaccount",
     "collection_name": "mycollection",
     "asset_ids": [1099512167124, 1099512167125],
     "template_ids": [21881, 21882],
@@ -171,7 +171,7 @@ Refund user
 
 ### params
 
-- `{name} account` - account name to refund
+- `{name} owner` - account name to refund
 
 ### Example
 
