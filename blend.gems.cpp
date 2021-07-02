@@ -179,12 +179,14 @@ void blend::delblend( const name blend_id )
 [[eosio::action]]
 void blend::refund( const name owner )
 {
-    require_auth( get_self() );
+    if ( !has_auth( get_self() )) require_auth( owner );
 
     blend::ontransfer_table _ontransfer( get_self(), get_self().value );
-    auto &itr = _ontransfer.get( owner.value, "blend::refund: `owner` does not exist" );
+    auto &itr = _ontransfer.get( owner.value, "blend::refund: `owner` does not have any refundable NFT assets" );
 
-    check( false, "to-do");
+    transfer_nft( get_self(), owner, itr.asset_ids, "blend::refund" );
+
+    _ontransfer.erase( itr );
 }
 
 }

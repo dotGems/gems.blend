@@ -24,3 +24,6 @@ cleos push action blend.gems setblend '["myblend", "mycollection", [1, 2, 3], [4
 
 # user send NFT's to be blended (memo optional)
 cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778], "blend"]' -p myaccount -p mycollection
+
+# refund
+cleos push action blend.gems refund '["myaccount"]' -p myaccount
