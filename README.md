@@ -2,12 +2,12 @@
 
 ## Quickstart
 
-1. Admin setup NFT blend recipe (ex: "myrecipe").
+1. Admin setup NFT blend recipe (ex: "myblend").
 1. User sends AtomicAssets NFT assets to `blend.gems`.
 
 ```bash
 # setup NFT blend recipe
-$ cleos push action blend.gems setrecipe '["myrecipe", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 
 # user send NFT's to be blended (memo optional)
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "blend"]' -p myaccount
@@ -15,14 +15,14 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ## Table of Content
 
-- [TABLE `recipes`](#table-recipes)
+- [TABLE `blends`](#table-blends)
 - [TABLE `templates`](#table-templates)
 - [TABLE `ontransfer`](#table-ontransfer)
-- [ACTION `setrecipe`](#action-setrecipe)
-- [ACTION `delrecipe`](#action-delrecipe)
+- [ACTION `setblend`](#action-setblend)
+- [ACTION `delblend`](#action-delblend)
 - [ACTION `refund`](#action-refund)
 
-## TABLE `recipes`
+## TABLE `blends`
 
 ### multi-indexes
 
@@ -33,7 +33,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ### params
 
-- `{name} recipe_id` - (primary key) recipe ID (ex: `myrecipe`)
+- `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21883`])
 - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
@@ -46,7 +46,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ```json
 {
-    "recipe_id": "myrecipe",
+    "blend_id": "myblend",
     "collection_name": "mycollection",
     "in_template_ids": [21881, 21882],
     "out_template_ids": [21883],
@@ -70,7 +70,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 - `{int32_t} template_id` - (primary key) AtomicHub NFT template ID (ex: `21881`)
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
 - `{name} schema_name` - AtomicHub Schema Name (ex: `myschema`)
-- `{name} recipe_id` - recipe ID (ex: `myrecipe`)
+- `{name} blend_id` - blend ID (ex: `myblend`)
 
 ### example
 
@@ -79,7 +79,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
     "template_id": 21881,
     "collection_name": "mycollection",
     "schema_name": "myschema",
-    "recipe_id": "myrecipe"
+    "blend_id": "myblend"
 }
 ```
 
@@ -126,7 +126,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 }
 ```
 
-## ACTION `setrecipe`
+## ACTION `setblend`
 
 Set NFT blend recipe
 
@@ -134,7 +134,7 @@ Set NFT blend recipe
 
 ### params
 
-- `{name} recipe_id` - blend recipe ID (ex: `myrecipe`)
+- `{name} blend_id` - blend blend ID (ex: `myblend`)
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
 - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
@@ -144,10 +144,10 @@ Set NFT blend recipe
 ### Example
 
 ```bash
-$ cleos push action blend.gems setrecipe '["myrecipe", "mycollection", [123, 456], 789, "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], 789, "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 ```
 
-## ACTION `delrecipe`
+## ACTION `delblend`
 
 Delete NFT blend recipe
 
@@ -155,12 +155,12 @@ Delete NFT blend recipe
 
 ### params
 
-- `{name} recipe_id` - blend recipe ID (ex: `myrecipe`)
+- `{name} blend_id` - blend blend ID (ex: `myblend`)
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems delrecipe '["myrecipe"]' -p blend.gems
+$ cleos push action blend.gems delblend '["myblend"]' -p blend.gems
 ```
 
 ## ACTION `refund`

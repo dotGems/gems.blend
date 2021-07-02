@@ -21,7 +21,7 @@ public:
     using contract::contract;
 
     /**
-     * ## TABLE `recipes`
+     * ## TABLE `blends`
      *
      * ### multi-indexes
      *
@@ -32,7 +32,7 @@ public:
      *
      * ### params
      *
-     * - `{name} recipe_id` - (primary key) recipe ID (ex: `myrecipe`)
+     * - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
      * - `{set<int32_t>} template_ids` - AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{int32_t} blend_template_id` - AtomicHub NFT template ID (ex: `21883`)
@@ -45,7 +45,7 @@ public:
      *
      * ```json
      * {
-     *     "recipe_id": "myrecipe",
+     *     "blend_id": "myblend",
      *     "collection_name": "mycollection",
      *     "in_template_ids": [21881, 21882],
      *     "out_template_ids": [21883],
@@ -56,8 +56,8 @@ public:
      * }
      * ```
      */
-    struct [[eosio::table("recipes")]] recipes_row {
-        name                recipe_id;
+    struct [[eosio::table("blends")]] blends_row {
+        name                blend_id;
         name                collection_name;
         vector<int32_t>     in_template_ids;
         vector<int32_t>     out_template_ids;
@@ -66,14 +66,14 @@ public:
         time_point_sec      last_updated;
         uint64_t            counter_blend;
 
-        uint64_t primary_key() const { return recipe_id.value; }
+        uint64_t primary_key() const { return blend_id.value; }
         uint64_t by_collection() const { return collection_name.value; }
         uint64_t by_updated() const { return last_updated.sec_since_epoch(); }
     };
-    typedef eosio::multi_index< "recipes"_n, recipes_row,
-        indexed_by<"bycollection"_n, const_mem_fun<recipes_row, uint64_t, &recipes_row::by_collection>>,
-        indexed_by<"byupdated"_n, const_mem_fun<recipes_row, uint64_t, &recipes_row::by_updated>>
-    > recipes_table;
+    typedef eosio::multi_index< "blends"_n, blends_row,
+        indexed_by<"bycollection"_n, const_mem_fun<blends_row, uint64_t, &blends_row::by_collection>>,
+        indexed_by<"byupdated"_n, const_mem_fun<blends_row, uint64_t, &blends_row::by_updated>>
+    > blends_table;
 
     /**
      * ## TABLE `templates`
@@ -83,14 +83,14 @@ public:
      * | `param`        | `index_position` | `key_type` |
      * |--------------- |------------------|------------|
      * | `bycollection` | 2                | i64        |
-     * | `byrecipe`     | 2                | i64        |
+     * | `byblend`     | 2                | i64        |
      *
      * ### params
      *
      * - `{int32_t} template_id` - (primary key) AtomicHub NFT template ID (ex: `21881`)
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
      * - `{name} schema_name` - AtomicHub Schema Name (ex: `myschema`)
-     * - `{name} recipe_id` - recipe ID (ex: `myrecipe`)
+     * - `{name} blend_id` - blend ID (ex: `myblend`)
      *
      * ### example
      *
@@ -99,7 +99,7 @@ public:
      *     "template_id": 21881,
      *     "collection_name": "mycollection",
      *     "schema_name": "myschema",
-     *     "recipe_id": "myrecipe"
+     *     "blend_id": "myblend"
      * }
      * ```
      */
@@ -107,15 +107,15 @@ public:
         int32_t             template_id;
         name                collection_name;
         name                schema_name;
-        name                recipe_id;
+        name                blend_id;
 
         uint64_t primary_key() const { return template_id; }
         uint64_t by_collection() const { return collection_name.value; }
-        uint64_t by_recipe_id() const { return recipe_id.value; }
+        uint64_t by_blend_id() const { return blend_id.value; }
     };
     typedef eosio::multi_index< "templates"_n, templates_row,
         indexed_by<"bycollection"_n, const_mem_fun<templates_row, uint64_t, &templates_row::by_collection>>,
-        indexed_by<"byrecipe"_n, const_mem_fun<templates_row, uint64_t, &templates_row::by_recipe_id>>
+        indexed_by<"byblend"_n, const_mem_fun<templates_row, uint64_t, &templates_row::by_blend_id>>
     > templates_table;
 
     /**
@@ -126,14 +126,14 @@ public:
      * | `param`        | `index_position` | `key_type` |
      * |--------------- |------------------|------------|
      * | `bycollection` | 2                | i64        |
-     * | `byrecipe`     | 3                | i64        |
+     * | `byblend`     | 3                | i64        |
      * | `byupdated`    | 4                | i64        |
      *
      * ### params
      *
      * - `{name} owner` - (primary key) account name
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
-     * - `{name} recipe_id` - recipe ID (ex: `myrecipe`)
+     * - `{name} blend_id` - blend ID (ex: `myblend`)
      * - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
      * - `{vector<int32_t>} template_ids` - received AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
@@ -144,7 +144,7 @@ public:
      * {
      *     "owner": "myaccount",
      *     "collection_name": "mycollection",
-     *     "recipe_id": "myrecipe",
+     *     "blend_id": "myblend",
      *     "asset_ids": [1099512167124, 1099512167125],
      *     "template_ids": [21881, 21882],
      *     "last_updated": "2021-07-01T00:00:00"
@@ -154,19 +154,19 @@ public:
     struct [[eosio::table("ontransfer")]] ontransfer_row {
         name                owner;
         name                collection_name;
-        name                recipe_id;
+        name                blend_id;
         vector<uint64_t>    asset_ids;
         vector<int32_t>     template_ids;
         time_point_sec      last_updated;
 
         uint64_t primary_key() const { return owner.value; }
         uint64_t by_collection() const { return collection_name.value; }
-        uint64_t by_recipe() const { return recipe_id.value; }
+        uint64_t by_blend() const { return blend_id.value; }
         uint64_t by_updated() const { return last_updated.sec_since_epoch(); }
     };
     typedef eosio::multi_index< "ontransfer"_n, ontransfer_row,
         indexed_by<"bycollection"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_collection>>,
-        indexed_by<"byrecipe"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_recipe>>,
+        indexed_by<"byblend"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_blend>>,
         indexed_by<"byupdated"_n, const_mem_fun<ontransfer_row, uint64_t, &ontransfer_row::by_updated>>
     > ontransfer_table;
 
@@ -191,15 +191,15 @@ public:
     typedef eosio::singleton< "global"_n, global_row> global_table;
 
     /**
-     * ## ACTION `setrecipe`
+     * ## ACTION `setblend`
      *
-     * Set NFT blend recipe
+     * Set NFT blend
      *
      * - **authority**: `get_self()`
      *
      * ### params
      *
-     * - `{name} recipe_id` - blend recipe ID (ex: `myrecipe`)
+     * - `{name} blend_id` - blend blend ID (ex: `myblend`)
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
@@ -209,31 +209,31 @@ public:
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setrecipe '["myrecipe", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+     * $ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void setrecipe( const name recipe_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const time_point_sec start_time );
+    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const time_point_sec start_time );
 
     /**
-     * ## ACTION `delrecipe`
+     * ## ACTION `delblend`
      *
-     * Delete NFT blend recipe
+     * Delete NFT blend
      *
      * - **authority**: `get_self()`
      *
      * ### params
      *
-     * - `{name} recipe_id` - blend recipe ID (ex: `myrecipe`)
+     * - `{name} blend_id` - blend blend ID (ex: `myblend`)
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems delrecipe '["myrecipe"]' -p blend.gems
+     * $ cleos push action blend.gems delblend '["myblend"]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void delrecipe( const name recipe_id );
+    void delblend( const name blend_id );
 
     /**
      * ## ACTION `refund`
@@ -261,7 +261,7 @@ public:
     [[eosio::action]]
     void blendlog( const name owner,
                    const name collection_name,
-                   const name recipe_id,
+                   const name blend_id,
                    const vector<uint64_t> in_asset_ids,
                    const vector<uint64_t> out_asset_ids,
                    const vector<int32_t> in_template_ids,
@@ -286,8 +286,8 @@ public:
     //                  ATTRIBUTE_MAP immutable_template_data );
 
     // static actions
-    using setrecipe_action = eosio::action_wrapper<"setrecipe"_n, &gems::blend::setrecipe>;
-    using delrecipe_action = eosio::action_wrapper<"delrecipe"_n, &gems::blend::delrecipe>;
+    using setblend_action = eosio::action_wrapper<"setblend"_n, &gems::blend::setblend>;
+    using delblend_action = eosio::action_wrapper<"delblend"_n, &gems::blend::delblend>;
     using refund_action = eosio::action_wrapper<"refund"_n, &gems::blend::refund>;
     using reset_action = eosio::action_wrapper<"reset"_n, &gems::blend::reset>;
     using blendlog_action = eosio::action_wrapper<"blendlog"_n, &gems::blend::blendlog>;
@@ -300,7 +300,7 @@ private:
     void validate_template_ids( const name collection_name, const vector<int32_t> template_ids, const bool burnable );
     void add_transfer( const name owner, const uint64_t asset_id );
     void attempt_to_blend( const name owner );
-    void add_template( const name collection_name, const int32_t template_id, const name recipe_id );
+    void add_template( const name collection_name, const int32_t template_id, const name blend_id );
 
     // AtomicAssets action helper
     void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo );
