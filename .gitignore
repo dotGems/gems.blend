@@ -1,0 +1,7 @@
+*.abi
+*.wasm
+stderr
+nodeos
+.vscode
+!include/**/*.wasm
+!include/**/*.abi
