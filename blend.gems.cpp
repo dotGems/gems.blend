@@ -20,8 +20,8 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     // iterate over each NFT received
     for ( const uint64_t asset_id : asset_ids ) {
         add_transfer( from, asset_id );
-        attempt_to_blend( from );
     }
+    attempt_to_blend( from );
 }
 
 void blend::add_transfer( const name owner, const uint64_t asset_id )
@@ -30,7 +30,7 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
     blend::templates_table _templates( get_self(), get_self().value );
 
     auto itr = _ontransfer.find( owner.value );
-    auto my_asset = get_assets( owner, asset_id );
+    auto my_asset = get_assets( get_self(), asset_id );
     const name collection_name = my_asset.collection_name;
     const int32_t template_id = my_asset.template_id;
     const name recipe_id = _templates.get( template_id, "blend::add_transfer: `template_id` does not belong to any blend recipes").recipe_id;
@@ -43,6 +43,7 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
 
     // insert data
     auto insert = [&]( auto & row ) {
+        row.owner = owner;
         row.collection_name = collection_name;
         row.recipe_id = recipe_id;
         row.asset_ids.push_back( asset_id );
@@ -57,7 +58,8 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
 
 void blend::attempt_to_blend( const name owner )
 {
-    check( false, "to-do");
+    // check( false, "to-do");
+    print("blending");
 }
 
 [[eosio::action]]
@@ -105,6 +107,7 @@ void blend::setrecipe( const name recipe_id, const name collection_name, const v
     require_auth( get_self() );
 
     blend::recipes_table _recipes( get_self(), get_self().value );
+    blend::templates_table templates( get_self(), get_self().value );
 
     // validate
     validate_template_ids( collection_name, in_template_ids, true );
@@ -121,10 +124,39 @@ void blend::setrecipe( const name recipe_id, const name collection_name, const v
         row.last_updated = current_time_point();
     };
 
+    // add input template
+    for ( const int32_t template_id : in_template_ids ) {
+        add_template( collection_name, template_id, recipe_id );
+    }
+
     // create/modify asset
     auto itr = _recipes.find( recipe_id.value );
     if ( itr == _recipes.end() ) _recipes.emplace( get_self(), insert );
     else _recipes.modify( itr, get_self(), insert );
+
+    // TO-DO erase any existing `template_id`
+    // check( false, "NOT IMPLEMENTED: to modify first call `delrecipe` ACTION");
+}
+
+void blend::add_template( const name collection_name, const int32_t template_id, const name recipe_id )
+{
+    blend::templates_table _templates( get_self(), get_self().value );
+
+    // template id matches existing recipe
+    auto itr = _templates.find( template_id );
+    // check( itr == _templates.end(), "blend::add_template: `template_id` already exists for another recipe, must call `delrecipe` ACTION");
+
+    // insert data
+    auto insert = [&]( auto & row ) {
+        row.template_id = template_id;
+        row.collection_name = collection_name;
+        row.schema_name = get_template( collection_name, template_id ).schema_name;
+        row.recipe_id = recipe_id;
+    };
+
+    // create/modify row
+    if ( itr == _templates.end() ) _templates.emplace( get_self(), insert );
+    else _templates.modify( itr, get_self(), insert );
 }
 
 [[eosio::action]]

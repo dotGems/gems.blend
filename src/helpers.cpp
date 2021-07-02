@@ -41,19 +41,19 @@ void blend::mintasset( const name authorized_minter, const name collection_name,
 atomicassets::collections_s blend::get_collection( const name collection_name )
 {
     atomicassets::collections_t _collections( "atomicassets"_n, "atomicassets"_n.value );
-    return _collections.get( collection_name.value, "`collection_name` does not exist" );
+    return _collections.get( collection_name.value, "blend::get_collection: `collection_name` does not exist" );
 }
 
 atomicassets::templates_s blend::get_template( const name collection_name, const int32_t template_id )
 {
     atomicassets::templates_t _templates( "atomicassets"_n, collection_name.value );
-    return _templates.get( template_id, "`template_id` does not exist from `collection_name`" );
+    return _templates.get( template_id, "blend::get_template: `template_id` does not exist from `collection_name`" );
 }
 
 atomicassets::assets_s blend::get_assets( const name owner, const uint64_t asset_id )
 {
     atomicassets::assets_t _assets( "atomicassets"_n, owner.value );
-    return _assets.get( asset_id, "`asset_id` does not exist from `owner`" );
+    return _assets.get( asset_id, "blend::get_assets: `asset_id` does not exist from `owner`" );
 }
 
 }

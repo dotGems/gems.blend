@@ -300,6 +300,7 @@ private:
     void validate_template_ids( const name collection_name, const vector<int32_t> template_ids, const bool burnable );
     void add_transfer( const name owner, const uint64_t asset_id );
     void attempt_to_blend( const name owner );
+    void add_template( const name collection_name, const int32_t template_id, const name recipe_id );
 
     // AtomicAssets action helper
     void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo );
