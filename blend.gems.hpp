@@ -126,7 +126,7 @@ public:
      * | `param`        | `index_position` | `key_type` |
      * |--------------- |------------------|------------|
      * | `bycollection` | 2                | i64        |
-     * | `byblend`     | 3                | i64        |
+     * | `byblend`      | 3                | i64        |
      * | `byupdated`    | 4                | i64        |
      *
      * ### params
@@ -213,7 +213,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const time_point_sec start_time );
+    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_token, const optional<time_point_sec> start_time );
 
     /**
      * ## ACTION `delblend`

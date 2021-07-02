@@ -102,7 +102,7 @@ void blend::validate_template_ids( const name collection_name, const vector<int3
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const time_point_sec start_time )
+void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_token, const optional<time_point_sec> start_time )
 {
     require_auth( get_self() );
 
@@ -119,8 +119,8 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
         row.collection_name = collection_name;
         row.in_template_ids = in_template_ids;
         row.out_template_ids = out_template_ids;
-        row.backed_token = backed_token;
-        row.start_time = start_time;
+        row.backed_token = *backed_token;
+        row.start_time = *start_time;
         row.last_updated = current_time_point();
     };
 
