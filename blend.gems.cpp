@@ -37,8 +37,8 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
 
     // if owner has already started recipe
     if ( itr != _ontransfer.end() ) {
-        check( collection_name == itr->collection_name, "blend::add_transfer: owner has already started blend, must send same collection or call `refund` ACTION");
-        check( blend_id == itr->blend_id, "blend::add_transfer: owner has already started blend, must send same `blend_id` or call `refund` ACTION");
+        check( collection_name == itr->collection_name, "blend::add_transfer: owner has already started blend, must send from same `collection_name` or call `refund` ACTION");
+        check( blend_id == itr->blend_id, "blend::add_transfer: owner has already started blend, must send from same `blend_id` or call `refund` ACTION");
     }
 
     // insert data
@@ -64,6 +64,13 @@ void blend::attempt_to_blend( const name owner )
 
     const auto & ontransfer = _ontransfer.get( owner.value, "blend::attempt_to_blend: `owner` does not exists");
     const auto & blends = _blends.get( ontransfer.blend_id.value, "blend::attempt_to_blend: `blend_id` does not exists");
+
+    // enforce start time if available
+    const int64_t remaining = (blends.start_time - current_time_point()).to_seconds();
+    const int64_t hours = remaining / 60 / 60;
+    const int64_t minutes = (remaining - hours * 60 * 60) / 60;
+    const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
+    check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + " hours " + to_string(minutes) + " min " + to_string(seconds) + " seconds");
 
     // containers to blend
     vector<uint64_t> refund_asset_ids = ontransfer.asset_ids;
