@@ -36,7 +36,7 @@ public:
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{vector<int32_t>} out_template_id` - output AtomicHub NFT template ID (ex: [`21883`])
-     * - `{asset} [backed_tokens=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
+     * - `{asset} backed_tokens` - backed token (ex: `"1.00000000 WAX"`)
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
      * - `{uint64_t} counter_blend` - total counter blend
@@ -223,7 +223,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_tokens, const optional<time_point_sec> start_time );
+    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_tokens, const optional<time_point_sec> start_time );
 
     /**
      * ## ACTION `delblend`
