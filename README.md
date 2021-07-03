@@ -35,12 +35,14 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
-- `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21883`])
-- `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
-- `{asset} [backed_token=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
+- `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+- `{vector<int32_t>} out_template_id` - output AtomicHub NFT template ID (ex: [`21883`])
+- `{asset} [backed_tokens=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
-- `{uint64_t} counter_blend` - total counter blend
+- `{uint64_t} total_mint` - total mint
+- `{uint64_t} total_burn` - total burn
+- `{asset} total_backed_tokens` - total backed token
 
 ### example
 
@@ -50,10 +52,12 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
     "collection_name": "mycollection",
     "in_template_ids": [21881, 21882],
     "out_template_ids": [21883],
-    "backed_token": "1.00000000 WAX",
+    "backed_tokens": "1.00000000 WAX",
     "start_time": "2021-07-01T00:00:00",
     "last_updated": "2021-07-01T00:00:00",
-    "counter_blend": 0
+    "total_mint": 0,
+    "total_burn": 0,
+    "total_backed_tokens": "0.00000000 WAX"
 }
 ```
 
@@ -116,13 +120,17 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ### params
 
-- `{uint64_t} counter_blend` - counter blend
+- `{uint64_t} total_mint` - total mint
+- `{uint64_t} total_burn` - total burn
+- `{asset} total_backed_tokens` - total backed token
 
 ### example
 
 ```json
 {
-    "counter_blend": 1
+    "total_mint": 0,
+    "total_burn": 0,
+    "total_backed_tokens": "0.00000000 WAX"
 }
 ```
 
@@ -138,13 +146,13 @@ Set NFT blend recipe
 - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
 - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
-- `{asset} [backed_token=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
+- `{vector<asset>} [backed_tokens=null]` - (optional) tokens to back (ex: `"1.00000000 WAX"`)
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], 789, "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 ```
 
 ## ACTION `delblend`

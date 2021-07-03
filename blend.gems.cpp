@@ -58,8 +58,45 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
 
 void blend::attempt_to_blend( const name owner )
 {
-    // check( false, "to-do");
-    print("blending");
+    blend::ontransfer_table _ontransfer( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), get_self().value );
+
+    const auto & ontransfer = _ontransfer.get( owner.value, "blend::attempt_to_blend: `owner` does not exists");
+    const auto & blends = _blends.get( ontransfer.blend_id.value, "blend::attempt_to_blend: `blend_id` does not exists");
+
+    // containers to blend
+    vector<uint64_t> asset_ids = ontransfer.asset_ids;
+    vector<int32_t> in_template_ids = blends.in_template_ids;
+
+    // iterate owner incoming NFT transfers
+    for ( const uint64_t asset_id : ontransfer.asset_ids ) {
+        auto my_asset = get_assets( get_self(), asset_id );
+        const int32_t template_id = my_asset.template_id;
+        const int i = get_index( in_template_ids, template_id );
+        check( i >= 0, "blend::attempt_to_blend: missing `template_id` from `blends::in_template_ids`");
+
+        // erase from previous containers
+        burnasset( get_self(), asset_id );
+        asset_ids.erase( asset_ids.begin() + get_index( asset_ids, asset_id ));
+        in_template_ids.erase( in_template_ids.begin() + get_index( in_template_ids, template_id ));
+        print( to_string(template_id) + "\n");
+    }
+    // error if remaining template ids not blended
+    check( in_template_ids.size() == 0, "blend::attempt_to_blend: not providing enough `template_id` for `blends::in_template_ids`");
+
+    // mint blended NFT asset to owner
+    for ( const int32_t out_template_id : blends.out_template_ids ) {
+        const name collection_name = blends.collection_name;
+        const name schema = get_template( collection_name, out_template_id ).schema_name;
+        const asset backed_tokens = blends.backed_tokens;
+        const vector<asset> tokens_to_back = backed_tokens.amount ? vector<asset>{ backed_tokens } : vector<asset>{};
+        if ( backed_tokens.amount ) transfer( get_self(), "atomicassets"_n, { backed_tokens, "eosio.token"_n }, "deposit");
+        mintasset( get_self(), collection_name, schema, out_template_id, owner, {}, {}, tokens_to_back );
+    }
+
+    // return & erase any excess asset_ids
+    if ( asset_ids.size() ) transfer_nft( get_self(), owner, asset_ids, "blend refund" );
+    _ontransfer.erase( ontransfer );
 }
 
 [[eosio::action]]
@@ -102,7 +139,7 @@ void blend::validate_template_ids( const name collection_name, const vector<int3
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_token, const optional<time_point_sec> start_time )
+void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_tokens, const optional<time_point_sec> start_time )
 {
     require_auth( get_self() );
 
@@ -113,13 +150,16 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
     validate_template_ids( collection_name, in_template_ids, true );
     validate_template_ids( collection_name, out_template_ids, false );
 
+    // enforce tokens to back
+    if ( backed_tokens ) check( backed_tokens->symbol == EOS || backed_tokens->symbol == WAX, "blend::setblend: `backed_tokens` symbol must match 8,WAX or 4,EOS");
+
     // recipe content
     auto insert = [&]( auto & row ) {
         row.blend_id = blend_id;
         row.collection_name = collection_name;
         row.in_template_ids = in_template_ids;
         row.out_template_ids = out_template_ids;
-        row.backed_token = *backed_token;
+        row.backed_tokens = *backed_tokens;
         row.start_time = *start_time;
         row.last_updated = current_time_point();
     };
@@ -187,6 +227,30 @@ void blend::refund( const name owner )
     transfer_nft( get_self(), owner, itr.asset_ids, "blend::refund" );
 
     _ontransfer.erase( itr );
+}
+
+int blend::get_index( const vector<name> vec, const name value )
+{
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
+}
+
+int blend::get_index( const vector<int32_t> vec, const int32_t value )
+{
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
+}
+
+int blend::get_index( const vector<uint64_t> vec, const uint64_t value )
+{
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
 }
 
 }

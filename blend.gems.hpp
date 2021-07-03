@@ -11,7 +11,7 @@ using namespace eosio;
 using namespace std;
 
 static constexpr symbol WAX{"WAX", 8};
-static constexpr symbol EOS{"EOS", 8};
+static constexpr symbol EOS{"EOS", 4};
 static constexpr uint32_t DAY = 86400;
 
 namespace gems {
@@ -34,9 +34,9 @@ public:
      *
      * - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
-     * - `{set<int32_t>} template_ids` - AtomicHub NFT template ID (ex: [`21881`, `21882`])
-     * - `{int32_t} blend_template_id` - AtomicHub NFT template ID (ex: `21883`)
-     * - `{asset} [backed_token=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
+     * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+     * - `{vector<int32_t>} out_template_id` - output AtomicHub NFT template ID (ex: [`21883`])
+     * - `{asset} [backed_tokens=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
      * - `{uint64_t} counter_blend` - total counter blend
@@ -49,10 +49,12 @@ public:
      *     "collection_name": "mycollection",
      *     "in_template_ids": [21881, 21882],
      *     "out_template_ids": [21883],
-     *     "backed_token": "1.00000000 WAX",
+     *     "backed_tokens": "1.00000000 WAX",
      *     "start_time": "2021-07-01T00:00:00",
      *     "last_updated": "2021-07-01T00:00:00",
-     *     "counter_blend": 0
+     *     "total_mint": 0,
+     *     "total_burn": 0,
+     *     "total_backed_tokens": "0.00000000 WAX"
      * }
      * ```
      */
@@ -61,10 +63,12 @@ public:
         name                collection_name;
         vector<int32_t>     in_template_ids;
         vector<int32_t>     out_template_ids;
-        asset               backed_token;
+        asset               backed_tokens;
         time_point_sec      start_time;
         time_point_sec      last_updated;
-        uint64_t            counter_blend;
+        uint64_t            total_mint;
+        uint64_t            total_burn;
+        asset               total_backed_tokens;
 
         uint64_t primary_key() const { return blend_id.value; }
         uint64_t by_collection() const { return collection_name.value; }
@@ -175,18 +179,24 @@ public:
      *
      * ### params
      *
-     * - `{uint64_t} counter_blends` - counter blends
+     * - `{uint64_t} total_mint` - total mint
+     * - `{uint64_t} total_burn` - total burn
+     * - `{asset} total_backed_tokens` - total backed token
      *
      * ### example
      *
      * ```json
      * {
-     *     "counter_blend": 1
+     *     "total_mint": 0,
+     *     "total_burn": 0,
+     *     "total_backed_tokens": "0.00000000 WAX"
      * }
      * ```
      */
     struct [[eosio::table("global")]] global_row {
-        uint64_t                    counter_blend;
+        uint64_t            total_mint;
+        uint64_t            total_burn;
+        asset               total_backed_tokens;
     };
     typedef eosio::singleton< "global"_n, global_row> global_table;
 
@@ -203,17 +213,17 @@ public:
      * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
-     * - `{asset} [backed_token=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
+     * - `{asset} [backed_tokens=null]` - (optional) tokens to back (ex: `"1.00000000 WAX"`)
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+     * $ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], ["1.00000000 WAX"], "2021-07-02T00:00:00"]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_token, const optional<time_point_sec> start_time );
+    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const optional<asset> backed_tokens, const optional<time_point_sec> start_time );
 
     /**
      * ## ACTION `delblend`
@@ -305,7 +315,12 @@ private:
     // AtomicAssets action helper
     void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo );
     void burnasset( const name asset_owner, const uint64_t asset_id );
-    void mintasset( const name authorized_minter, const name collection_name, const name schema_name, const int32_t template_id, const name new_asset_owner, const ATTRIBUTE_MAP immutable_data, const ATTRIBUTE_MAP mutable_data, const vector <asset> tokens_to_back );
+    void mintasset( const name authorized_minter, const name collection_name, const name schema_name, const int32_t template_id, const name new_asset_owner, const ATTRIBUTE_MAP immutable_data, const ATTRIBUTE_MAP mutable_data, const vector <asset> backed_token );
+
+    // utils
+    int get_index(const vector<name> vec, const name value);
+    int get_index(const vector<int32_t> vec, const int32_t value);
+    int get_index(const vector<uint64_t> vec, const uint64_t value);
 
     // AtomicAssets lookup helpers
     atomicassets::collections_s get_collection( const name collection_name );
