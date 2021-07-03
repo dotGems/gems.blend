@@ -24,6 +24,7 @@ cleos push action atomicassets mintasset '["mycollection", "mycollection", "myit
 
 # setup NFT blend recipe
 cleos push action blend.gems setblend '["myblend", "mycollection", [1, 2, 3], [4], "1.00000000 WAX", null]' -p blend.gems
+cleos push action blend.gems delblend '["myblend"]' -p blend.gems
 
 # user send NFT's to be blended (memo optional)
 cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779], "blend"]' -p myaccount -p mycollection

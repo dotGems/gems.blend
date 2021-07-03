@@ -208,18 +208,31 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
         row.total_backed_tokens.symbol = backed_tokens.symbol;
     };
 
+    // create/modify row
+    auto itr = _blends.find( blend_id.value );
+    if ( itr == _blends.end() ) _blends.emplace( get_self(), insert );
+    else {
+        // modify previous data
+        check_templates_already_exists( blend_id, in_template_ids );
+        erase_blend_templates( blend_id );
+        _blends.modify( itr, get_self(), insert );
+    }
+
     // add input template
     for ( const int32_t template_id : in_template_ids ) {
         add_template( collection_name, template_id, blend_id );
     }
+}
 
-    // create/modify asset
-    auto itr = _blends.find( blend_id.value );
-    if ( itr == _blends.end() ) _blends.emplace( get_self(), insert );
-    else _blends.modify( itr, get_self(), insert );
+void blend::check_templates_already_exists( const name blend_id, const vector<int32_t> template_ids )
+{
+    blend::templates_table _templates( get_self(), get_self().value );
 
-    // TO-DO erase any existing `template_id`
-    // check( false, "NOT IMPLEMENTED: to modify first call `delblend` ACTION");
+    for ( const int32_t template_id : template_ids ) {
+        auto itr = _templates.find( template_id );
+        if ( itr == _templates.end() ) continue;
+        if ( itr->blend_id != blend_id ) check( itr == _templates.end(), "blend::check_templates_already_exists: `template_id` already exists for another blend, must first call `delblend` ACTION");
+    }
 }
 
 void blend::add_template( const name collection_name, const int32_t template_id, const name blend_id )
@@ -228,7 +241,6 @@ void blend::add_template( const name collection_name, const int32_t template_id,
 
     // template id matches existing recipe
     auto itr = _templates.find( template_id );
-    // check( itr == _templates.end(), "blend::add_template: `template_id` already exists for another recipe, must call `delblend` ACTION");
 
     // insert data
     auto insert = [&]( auto & row ) {
@@ -249,15 +261,21 @@ void blend::delblend( const name blend_id )
     require_auth( get_self() );
 
     blend::blends_table _blends( get_self(), get_self().value );
-    blend::templates_table _templates( get_self(), get_self().value );
     auto & blends = _blends.get( blend_id.value, "blend::delblend: `blend_id` does not exist" );
-
-    // erase any linked template id to recipe
-    for ( const int32_t template_id : blends.in_template_ids ) {
-        auto & row = _templates.get( template_id, "blend::delblend: `template_id` does not exist" );
-        _templates.erase( row );
-    }
+    erase_blend_templates( blend_id );
     _blends.erase( blends );
+}
+
+void blend::erase_blend_templates( const name blend_id )
+{
+    blend::blends_table _blends( get_self(), get_self().value );
+    blend::templates_table _templates( get_self(), get_self().value );
+    auto & blends = _blends.get( blend_id.value, "blend::erase_blend_templates: `blend_id` does not exist" );
+
+    for ( const int32_t template_id : blends.in_template_ids ) {
+        auto itr = _templates.find( template_id );
+        if ( itr != _templates.end() ) _templates.erase( itr );
+    }
 }
 
 [[eosio::action]]
