@@ -70,7 +70,7 @@ void blend::attempt_to_blend( const name owner )
     const int64_t hours = remaining / 60 / 60;
     const int64_t minutes = (remaining - hours * 60 * 60) / 60;
     const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
-    check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + " hours " + to_string(minutes) + " min " + to_string(seconds) + " seconds");
+    check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
 
     // containers to blend
     vector<uint64_t> refund_asset_ids = ontransfer.asset_ids;
