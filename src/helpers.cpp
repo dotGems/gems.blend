@@ -26,6 +26,12 @@ void blend::transfer_nft( const name from, const name to, const vector<uint64_t>
     transfer.send( from, to, asset_ids, memo );
 }
 
+void blend::announce_deposit( const name owner, const symbol symbol_to_announce )
+{
+    atomicassets::announcedepo_action announcedepo( "atomicassets"_n, { owner, "active"_n });
+    announcedepo.send( owner, symbol_to_announce );
+}
+
 void blend::burnasset( const name asset_owner, const uint64_t asset_id )
 {
     atomicassets::burnasset_action burnasset( "atomicassets"_n, { asset_owner, "active"_n });

@@ -102,6 +102,7 @@ void blend::attempt_to_blend( const name owner )
         const asset backed_tokens = blends.backed_tokens;
         const vector<asset> tokens_to_back = backed_tokens.amount ? vector<asset>{ backed_tokens } : vector<asset>{};
         if ( backed_tokens.amount ) {
+            announce_deposit( get_self(), backed_tokens.symbol );
             transfer( get_self(), "atomicassets"_n, { backed_tokens, "eosio.token"_n }, "deposit");
             total_backed_tokens += backed_tokens;
         }

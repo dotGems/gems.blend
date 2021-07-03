@@ -318,6 +318,7 @@ private:
     void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo );
     void burnasset( const name asset_owner, const uint64_t asset_id );
     void mintasset( const name authorized_minter, const name collection_name, const name schema_name, const int32_t template_id, const name new_asset_owner, const ATTRIBUTE_MAP immutable_data, const ATTRIBUTE_MAP mutable_data, const vector <asset> backed_token );
+    void announce_deposit( const name owner, const symbol symbol_to_announce );
 
     // utils
     int get_index(const vector<name> vec, const name value);
