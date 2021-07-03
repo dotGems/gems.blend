@@ -272,10 +272,12 @@ public:
     void blendlog( const name owner,
                    const name collection_name,
                    const name blend_id,
+                   const uint64_t total_mint,
+                   const uint64_t total_burn,
+                   const asset total_backed_tokens,
                    const vector<uint64_t> in_asset_ids,
-                   const vector<uint64_t> out_asset_ids,
-                   const vector<int32_t> in_template_ids,
-                   const vector<int32_t> out_template_id );
+                   const vector<int32_t> blend_template_ids,
+                   const vector<uint64_t> refund_asset_ids );
 
     /**
      * Notify contract when AtomicAssets NFT token transfer notifiers relay contract

@@ -66,8 +66,10 @@ void blend::attempt_to_blend( const name owner )
     const auto & blends = _blends.get( ontransfer.blend_id.value, "blend::attempt_to_blend: `blend_id` does not exists");
 
     // containers to blend
-    vector<uint64_t> asset_ids = ontransfer.asset_ids;
+    vector<uint64_t> refund_asset_ids = ontransfer.asset_ids;
     vector<int32_t> in_template_ids = blends.in_template_ids;
+    vector<uint64_t> asset_ids;
+    asset_ids.assign(ontransfer.asset_ids.begin(), ontransfer.asset_ids.end());
 
     // counters
     uint64_t total_mint = 0;
@@ -76,6 +78,8 @@ void blend::attempt_to_blend( const name owner )
 
     // iterate owner incoming NFT transfers
     for ( const uint64_t asset_id : ontransfer.asset_ids ) {
+        // if completed, stop and refund any excess asset ids
+        if ( in_template_ids.size() == 0 ) break;
         auto my_asset = get_assets( get_self(), asset_id );
         const int32_t template_id = my_asset.template_id;
         const int i = get_index( in_template_ids, template_id );
@@ -84,9 +88,10 @@ void blend::attempt_to_blend( const name owner )
         // erase from previous containers
         burnasset( get_self(), asset_id );
         total_burn += 1;
-        asset_ids.erase( asset_ids.begin() + get_index( asset_ids, asset_id ));
+        refund_asset_ids.erase( refund_asset_ids.begin() + get_index( refund_asset_ids, asset_id ));
         in_template_ids.erase( in_template_ids.begin() + get_index( in_template_ids, template_id ));
     }
+
     // error if remaining template ids not blended
     check( in_template_ids.size() == 0, "blend::attempt_to_blend: not providing enough `template_id` for `blends::in_template_ids`");
 
@@ -118,18 +123,32 @@ void blend::attempt_to_blend( const name owner )
     _global.set( global, get_self() );
 
     // return & erase any excess asset_ids
-    if ( asset_ids.size() ) transfer_nft( get_self(), owner, asset_ids, "blend refund" );
+    if ( refund_asset_ids.size() ) transfer_nft( get_self(), owner, refund_asset_ids, "blend refund" );
     _ontransfer.erase( ontransfer );
+
+    // logging
+    blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
+    blendlog.send( owner,
+                   blends.collection_name,
+                   blends.blend_id,
+                   total_mint,
+                   total_burn,
+                   total_backed_tokens,
+                   asset_ids,
+                   blends.out_template_ids,
+                   refund_asset_ids );
 }
 
 [[eosio::action]]
 void blend::blendlog( const name owner,
                       const name collection_name,
                       const name blend_id,
+                      const uint64_t total_mint,
+                      const uint64_t total_burn,
+                      const asset total_backed_tokens,
                       const vector<uint64_t> in_asset_ids,
-                      const vector<uint64_t> out_asset_ids,
-                      const vector<int32_t> in_template_ids,
-                      const vector<int32_t> out_template_id )
+                      const vector<int32_t> blend_template_ids,
+                      const vector<uint64_t> refund_asset_ids )
 {
     require_auth( get_self() );
     require_recipient( owner );
