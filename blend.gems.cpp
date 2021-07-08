@@ -81,7 +81,7 @@ void blend::attempt_to_blend( const name owner )
     // counters
     uint64_t total_mint = 0;
     uint64_t total_burn = 0;
-    asset total_backed_tokens = { 0, blends.backed_tokens.symbol };
+    asset total_backed_token = { 0, blends.backed_token.symbol };
 
     // iterate owner incoming NFT transfers
     for ( const uint64_t asset_id : ontransfer.asset_ids ) {
@@ -106,12 +106,12 @@ void blend::attempt_to_blend( const name owner )
     for ( const int32_t out_template_id : blends.out_template_ids ) {
         const name collection_name = blends.collection_name;
         const name schema = get_template( collection_name, out_template_id ).schema_name;
-        const asset backed_tokens = blends.backed_tokens;
-        const vector<asset> tokens_to_back = backed_tokens.amount ? vector<asset>{ backed_tokens } : vector<asset>{};
-        if ( backed_tokens.amount ) {
-            announce_deposit( get_self(), backed_tokens.symbol );
-            transfer( get_self(), "atomicassets"_n, { backed_tokens, "eosio.token"_n }, "deposit");
-            total_backed_tokens += backed_tokens;
+        const asset backed_token = blends.backed_token;
+        const vector<asset> tokens_to_back = backed_token.amount ? vector<asset>{ backed_token } : vector<asset>{};
+        if ( backed_token.amount ) {
+            announce_deposit( get_self(), backed_token.symbol );
+            transfer( get_self(), "atomicassets"_n, { backed_token, "eosio.token"_n }, "deposit");
+            total_backed_token += backed_token;
         }
         mintasset( get_self(), collection_name, schema, out_template_id, owner, {}, {}, tokens_to_back );
         total_mint += 1;
@@ -120,14 +120,14 @@ void blend::attempt_to_blend( const name owner )
     _blends.modify( blends, get_self(), [&]( auto & row ) {
         row.total_mint += total_mint;
         row.total_burn += total_burn;
-        row.total_backed_tokens += total_backed_tokens;
+        row.total_backed_token += total_backed_token;
         row.last_updated = current_time_point();
     });
     auto global = _global.get_or_default();
     global.total_mint += total_mint;
     global.total_burn += total_burn;
-    global.total_backed_tokens.symbol = total_backed_tokens.symbol;
-    global.total_backed_tokens += total_backed_tokens;
+    global.total_backed_token.symbol = total_backed_token.symbol;
+    global.total_backed_token += total_backed_token;
     _global.set( global, get_self() );
 
     // return & erase any excess asset_ids
@@ -141,7 +141,7 @@ void blend::attempt_to_blend( const name owner )
                    blends.blend_id,
                    total_mint,
                    total_burn,
-                   total_backed_tokens,
+                   total_backed_token,
                    asset_ids,
                    blends.out_template_ids,
                    refund_asset_ids );
@@ -153,7 +153,7 @@ void blend::blendlog( const name owner,
                       const name blend_id,
                       const uint64_t total_mint,
                       const uint64_t total_burn,
-                      const asset total_backed_tokens,
+                      const asset total_backed_token,
                       const vector<uint64_t> in_asset_ids,
                       const vector<int32_t> blend_template_ids,
                       const vector<uint64_t> refund_asset_ids )
@@ -189,7 +189,7 @@ void blend::validate_template_ids( const name collection_name, const vector<int3
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_tokens, const optional<time_point_sec> start_time )
+void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const optional<time_point_sec> start_time )
 {
     require_auth( get_self() );
 
@@ -201,7 +201,7 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
     validate_template_ids( collection_name, out_template_ids, false );
 
     // enforce tokens to back
-    check( backed_tokens.symbol == EOS || backed_tokens.symbol == WAX, "blend::setblend: `backed_tokens` symbol must match 8,WAX or 4,EOS");
+    check( backed_token.symbol == EOS || backed_token.symbol == WAX, "blend::setblend: `backed_token` symbol must match 8,WAX or 4,EOS");
 
     // recipe content
     auto insert = [&]( auto & row ) {
@@ -209,10 +209,10 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
         row.collection_name = collection_name;
         row.in_template_ids = in_template_ids;
         row.out_template_ids = out_template_ids;
-        row.backed_tokens = backed_tokens;
+        row.backed_token = backed_token;
         row.start_time = *start_time;
         row.last_updated = current_time_point();
-        row.total_backed_tokens.symbol = backed_tokens.symbol;
+        row.total_backed_token.symbol = backed_token.symbol;
     };
 
     // create/modify row
