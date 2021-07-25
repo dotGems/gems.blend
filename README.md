@@ -7,7 +7,7 @@
 
 ```bash
 # setup NFT blend recipe
-$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], "mycollection", [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 
 # user send NFT's to be blended (memo optional)
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "blend"]' -p myaccount
@@ -34,8 +34,9 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 ### params
 
 - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
-- `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
+- `{name} in_collection_name` - input AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+- `{name} out_collection_name` - output AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} out_template_id` - output AtomicHub NFT template ID (ex: [`21883`])
 - `{asset} [backed_tokens=null]` - (optional) backed token (ex: `"1.00000000 WAX"`)
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
@@ -49,8 +50,9 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 ```json
 {
     "blend_id": "myblend",
-    "collection_name": "mycollection",
+    "in_collection_name": "mycollection",
     "in_template_ids": [21881, 21882],
+    "out_collection_name": "mycollection",
     "out_template_ids": [21883],
     "backed_tokens": "1.00000000 WAX",
     "start_time": "2021-07-01T00:00:00",
@@ -143,8 +145,9 @@ Set NFT blend recipe
 ### params
 
 - `{name} blend_id` - blend blend ID (ex: `myblend`)
-- `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
+- `{name} in_collection_name` - input AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+- `{name} out_collection_name` - output AtomicHub Collection Name (ex: `mycollection`)
 - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
 - `{vector<asset>} [backed_tokens=null]` - (optional) tokens to back (ex: `"1.00000000 WAX"`)
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
@@ -152,7 +155,7 @@ Set NFT blend recipe
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", "mycollection", [123, 456], "mycollection", [789], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 ```
 
 ## ACTION `delblend`

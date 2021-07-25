@@ -104,8 +104,7 @@ void blend::attempt_to_blend( const name owner )
 
     // mint blended NFT asset to owner
     for ( const int32_t out_template_id : blends.out_template_ids ) {
-        const name collection_name = blends.collection_name;
-        const name schema = get_template( collection_name, out_template_id ).schema_name;
+        const name schema = get_template( blends.in_collection_name, out_template_id ).schema_name;
         const asset backed_token = blends.backed_token;
         const vector<asset> tokens_to_back = backed_token.amount ? vector<asset>{ backed_token } : vector<asset>{};
         if ( backed_token.amount ) {
@@ -113,7 +112,7 @@ void blend::attempt_to_blend( const name owner )
             transfer( get_self(), "atomicassets"_n, { backed_token, "eosio.token"_n }, "deposit");
             total_backed_token += backed_token;
         }
-        mintasset( get_self(), collection_name, schema, out_template_id, owner, {}, {}, tokens_to_back );
+        mintasset( get_self(), blends.out_collection_name, schema, out_template_id, owner, {}, {}, tokens_to_back );
         total_mint += 1;
     }
     // update mints & burn statistics counters
@@ -137,7 +136,8 @@ void blend::attempt_to_blend( const name owner )
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
-                   blends.collection_name,
+                   blends.in_collection_name,
+                   blends.out_collection_name,
                    blends.blend_id,
                    total_mint,
                    total_burn,
@@ -149,7 +149,8 @@ void blend::attempt_to_blend( const name owner )
 
 [[eosio::action]]
 void blend::blendlog( const name owner,
-                      const name collection_name,
+                      const name in_collection_name,
+                      const name out_collection_name,
                       const name blend_id,
                       const uint64_t total_mint,
                       const uint64_t total_burn,
@@ -189,7 +190,7 @@ void blend::validate_template_ids( const name collection_name, const vector<int3
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const optional<time_point_sec> start_time )
+void blend::setblend( const name blend_id, const name in_collection_name, const vector<int32_t> in_template_ids, const name out_collection_name, const vector<int32_t> out_template_ids, const asset backed_token, const optional<time_point_sec> start_time )
 {
     require_auth( get_self() );
 
@@ -197,8 +198,8 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
     blend::templates_table templates( get_self(), get_self().value );
 
     // validate
-    validate_template_ids( collection_name, in_template_ids, true );
-    validate_template_ids( collection_name, out_template_ids, false );
+    validate_template_ids( in_collection_name, in_template_ids, true );
+    validate_template_ids( out_collection_name, out_template_ids, false );
 
     // enforce tokens to back
     check( backed_token.symbol == EOS || backed_token.symbol == WAX, "blend::setblend: `backed_token` symbol must match 8,WAX or 4,EOS");
@@ -206,8 +207,9 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
     // recipe content
     auto insert = [&]( auto & row ) {
         row.blend_id = blend_id;
-        row.collection_name = collection_name;
+        row.in_collection_name = in_collection_name;
         row.in_template_ids = in_template_ids;
+        row.out_collection_name = out_collection_name;
         row.out_template_ids = out_template_ids;
         row.backed_token = backed_token;
         row.start_time = *start_time;
@@ -227,7 +229,7 @@ void blend::setblend( const name blend_id, const name collection_name, const vec
 
     // add input template
     for ( const int32_t template_id : in_template_ids ) {
-        add_template( collection_name, template_id, blend_id );
+        add_template( in_collection_name, template_id, blend_id );
     }
 }
 

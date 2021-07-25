@@ -33,8 +33,9 @@ public:
      * ### params
      *
      * - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
-     * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
+     * - `{name} in_collection_name` - input AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+     * - `{name} out_collection_name` - output AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} out_template_id` - output AtomicHub NFT template ID (ex: [`21883`])
      * - `{asset} backed_token` - backed token (ex: `"1.00000000 WAX"`)
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
@@ -46,8 +47,9 @@ public:
      * ```json
      * {
      *     "blend_id": "myblend",
-     *     "collection_name": "mycollection",
+     *     "in_collection_name": "mycollection",
      *     "in_template_ids": [21881, 21882],
+     *     "out_collection_name": "mycollection",
      *     "out_template_ids": [21883],
      *     "backed_token": "1.00000000 WAX",
      *     "start_time": "2021-07-01T00:00:00",
@@ -60,8 +62,9 @@ public:
      */
     struct [[eosio::table("blends")]] blends_row {
         name                blend_id;
-        name                collection_name;
+        name                in_collection_name;
         vector<int32_t>     in_template_ids;
+        name                out_collection_name;
         vector<int32_t>     out_template_ids;
         asset               backed_token;
         time_point_sec      start_time;
@@ -71,7 +74,7 @@ public:
         asset               total_backed_token;
 
         uint64_t primary_key() const { return blend_id.value; }
-        uint64_t by_collection() const { return collection_name.value; }
+        uint64_t by_collection() const { return in_collection_name.value; }
         uint64_t by_updated() const { return last_updated.sec_since_epoch(); }
     };
     typedef eosio::multi_index< "blends"_n, blends_row,
@@ -210,8 +213,9 @@ public:
      * ### params
      *
      * - `{name} blend_id` - blend blend ID (ex: `myblend`)
-     * - `{name} collection_name` - AtomicHub Collection Name (ex: `mycollection`)
+     * - `{name} in_collection_name` - input AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} in_template_ids` - input AtomicHub NFT template ID (ex: [`21881`, `21882`])
+     * - `{name} out_collection_name` - output AtomicHub Collection Name (ex: `mycollection`)
      * - `{vector<int32_t>} out_template_ids` - output AtomicHub NFT template ID (ex: [`21883`])
      * - `{vector<int32_t>} [hold_template_ids=[]]` - (optional) account holding AtomicHub NFT template ID (ex: [`21881`, `21882`])
      * - `{asset} [backed_token=null]` - (optional) tokens to back (ex: `"1.00000000 WAX"`)
@@ -224,7 +228,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const name blend_id, const name collection_name, const vector<int32_t> in_template_ids, const vector<int32_t> out_template_ids, const asset backed_token, const optional<time_point_sec> start_time );
+    void setblend( const name blend_id, const name in_collection_name, const vector<int32_t> in_template_ids, const name out_collection_name, const vector<int32_t> out_template_ids, const asset backed_token, const optional<time_point_sec> start_time );
 
     /**
      * ## ACTION `delblend`
@@ -271,7 +275,8 @@ public:
 
     [[eosio::action]]
     void blendlog( const name owner,
-                   const name collection_name,
+                   const name in_collection_name,
+                   const name out_collection_name,
                    const name blend_id,
                    const uint64_t total_mint,
                    const uint64_t total_burn,
