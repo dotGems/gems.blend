@@ -1,4 +1,3 @@
-#include <string>
 
 namespace gems {
 
@@ -17,49 +16,44 @@ void blend::transfer( const name from, const name to, const extended_asset value
     transfer.send( from, to, value.quantity, memo );
 }
 
-void blend::transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo )
+int blend::get_index( const vector<name> vec, const name value )
 {
-    vector<permission_level> permission = {{ from, "active"_n }};
-    if (!is_account("eosio.ram"_n)) permission.push_back( { "mycollection"_n, "active"_n } );
-
-    atomicassets::transfer_action transfer( "atomicassets"_n, permission );
-    transfer.send( from, to, asset_ids, memo );
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
 }
 
-void blend::announce_deposit( const name owner, const symbol symbol_to_announce )
+int blend::get_index( const vector<int32_t> vec, const int32_t value )
 {
-    atomicassets::announcedepo_action announcedepo( "atomicassets"_n, { owner, "active"_n });
-    announcedepo.send( owner, symbol_to_announce );
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
 }
 
-void blend::burnasset( const name asset_owner, const uint64_t asset_id )
+int blend::get_index( const vector<uint64_t> vec, const uint64_t value )
 {
-    atomicassets::burnasset_action burnasset( "atomicassets"_n, { asset_owner, "active"_n });
-    burnasset.send( asset_owner, asset_id );
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i] == value ) return i;
+    }
+    return -1;
 }
 
-void blend::mintasset( const name authorized_minter, const name collection_name, const name schema_name, const int32_t template_id, const name new_asset_owner, const ATTRIBUTE_MAP immutable_data, const ATTRIBUTE_MAP mutable_data, const vector<asset> tokens_to_back )
+int blend::get_index(const vector<atomic::nft> vec, const atomic::nft value)
 {
-    atomicassets::mintasset_action mintasset( "atomicassets"_n, { authorized_minter, "active"_n });
-    mintasset.send( authorized_minter, collection_name, schema_name, template_id, new_asset_owner, immutable_data, mutable_data, tokens_to_back );
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i].collection_name == value.collection_name && vec[i].template_id == value.template_id ) return i;
+    }
+    return -1;
 }
 
-atomicassets::collections_s blend::get_collection( const name collection_name )
+int blend::get_index(const vector<asset> vec, const symbol sym)
 {
-    atomicassets::collections_t _collections( "atomicassets"_n, "atomicassets"_n.value );
-    return _collections.get( collection_name.value, "blend::get_collection: `collection_name` does not exist" );
-}
-
-atomicassets::templates_s blend::get_template( const name collection_name, const int32_t template_id )
-{
-    atomicassets::templates_t _templates( "atomicassets"_n, collection_name.value );
-    return _templates.get( template_id, "blend::get_template: `template_id` does not exist from `collection_name`" );
-}
-
-atomicassets::assets_s blend::get_assets( const name owner, const uint64_t asset_id )
-{
-    atomicassets::assets_t _assets( "atomicassets"_n, owner.value );
-    return _assets.get( asset_id, "blend::get_assets: `asset_id` does not exist from `owner`" );
+    for (int i = 0; i < vec.size(); i++) {
+        if (vec[i].symbol == sym ) return i;
+    }
+    return -1;
 }
 
 }
