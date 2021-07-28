@@ -73,10 +73,9 @@ void blend::attempt_to_blend( const name owner )
     check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
 
     // containers to blend
+    vector<uint64_t> asset_ids = ontransfer.asset_ids;
     vector<uint64_t> refund_asset_ids = ontransfer.asset_ids;
     vector<int32_t> in_template_ids = blends.in_template_ids;
-    vector<uint64_t> asset_ids;
-    asset_ids.assign(ontransfer.asset_ids.begin(), ontransfer.asset_ids.end());
 
     // counters
     uint64_t total_mint = 0;
@@ -84,7 +83,7 @@ void blend::attempt_to_blend( const name owner )
     asset total_backed_token = { 0, blends.backed_token.symbol };
 
     // iterate owner incoming NFT transfers
-    for ( const uint64_t asset_id : ontransfer.asset_ids ) {
+    for ( const uint64_t asset_id : asset_ids ) {
         // if completed, stop and refund any excess asset ids
         if ( in_template_ids.size() == 0 ) break;
         auto my_asset = get_assets( get_self(), asset_id );
