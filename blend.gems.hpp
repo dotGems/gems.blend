@@ -161,7 +161,7 @@ public:
      * - `{name} blend_id` - blend blend ID (ex: `myblend`)
      * - `{vector<atomic::nft>} in_templates` - input AtomicHub NFT template IDs (ex: [{mycol1, `21881`}, {mycol2, `21882`}])
      * - `{vector<atomic::nft>} out_templates` - output AtomicHub NFT template IDs (ex: [{mycol1, `21883`}])
-     * - `{vector<asset>} [backed_tokens=null]` - (optional) tokens to back (ex: `{"1.00000000 WAX"}`)
+     * - `{vector<asset>} backed_tokens` - tokens to back (ex: `{"1.00000000 WAX"}`)
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      *
      * ### Example
