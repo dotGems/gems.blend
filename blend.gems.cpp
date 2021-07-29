@@ -213,7 +213,7 @@ void blend::setblend( const name blend_id, const vector<atomic::nft> in_template
         row.in_templates = in_templates;
         row.out_templates = out_templates;
         row.backed_tokens = backed_tokens;
-        row.start_time = *start_time;
+        row.start_time = start_time ? *start_time : current_time_point();
         row.last_updated = current_time_point();
         row.total_backed_tokens = total_backed_tokens;
     };
