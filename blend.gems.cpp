@@ -31,21 +31,16 @@ void blend::add_transfer( const name owner, const name blend_id, const uint64_t 
 {
     blend::ontransfer_table _ontransfer( get_self(), get_self().value );
 
-    auto my_asset = atomic::get_assets( get_self(), asset_id );
+    const auto my_asset = atomic::get_assets( get_self(), asset_id );
     const atomic::nft templ { my_asset.collection_name, my_asset.template_id };
     auto itr = _ontransfer.find( owner.value );
-
-    // if owner has already started recipe
-    if ( itr != _ontransfer.end() ) {
-        check( blend_id == itr->blend_id, "blend::add_transfer: owner has already started blend, must send from same `blend_id` or call `refund` ACTION");
-    }
+    check( itr == _ontransfer.end() || blend_id == itr->blend_id, "blend::add_transfer: owner has already started another blend");
 
     // insert data
     auto insert = [&]( auto & row ) {
         row.owner = owner;
         row.blend_id = blend_id;
         row.asset_ids.push_back( asset_id );
-        row.templates.push_back( templ );
         row.last_updated = current_time_point();
     };
 
@@ -60,8 +55,8 @@ void blend::attempt_to_blend( const name owner )
     blend::blends_table _blends( get_self(), get_self().value );
     blend::global_table _global( get_self(), get_self().value );
 
-    const auto & ontransfer = _ontransfer.get( owner.value, "blend::attempt_to_blend: `owner` does not exists");
-    const auto & blend = _blends.get( ontransfer.blend_id.value, "blend::attempt_to_blend: `blend_id` does not exists");
+    const auto & ontransfer = _ontransfer.get( owner.value, "blend::attempt_to_blend: `owner` did not sent any NFTs");
+    const auto & blend = _blends.get( ontransfer.blend_id.value, "blend::attempt_to_blend: `blend_id` in the memo does not exists");
 
     // enforce start time if available
     const int64_t remaining = (blend.start_time - current_time_point()).to_seconds();
@@ -86,8 +81,7 @@ void blend::attempt_to_blend( const name owner )
         if ( in_templates.size() == 0 ) break;
         auto my_asset = atomic::get_assets( get_self(), asset_id );
         const atomic::nft templ = { my_asset.collection_name, my_asset.template_id };
-        const int i = get_index( in_templates, templ );
-        check( i >= 0, "blend::attempt_to_blend: `template` is not part of this `blend_id`");
+        if( get_index( in_templates, templ ) == -1 ) continue;   //if asset can't be used for recipe - go to the next one
 
         // erase from previous containers
         atomic::burnasset( get_self(), asset_id );
@@ -97,20 +91,19 @@ void blend::attempt_to_blend( const name owner )
     }
 
     // error if remaining template ids not blended
-    check( in_templates.size() == 0, "blend::attempt_to_blend: not providing enough `asset_ids` for this `blend_id`");
+    check( in_templates.size() == 0, "blend::attempt_to_blend: not enough NFTs for this recipe");
 
     // mint blended NFT asset to owner
     for ( const auto& out_template : blend.out_templates ) {
         const name schema = atomic::get_template( out_template.collection_name, out_template.template_id ).schema_name;
-        const auto& backed_tokens = blend.backed_tokens;
-        for( const auto& backed_token: backed_tokens ){
+        for( const auto& backed_token: blend.backed_tokens ){
             atomic::announce_deposit( get_self(), backed_token.symbol );
             transfer( get_self(), "atomicassets"_n, { backed_token, "eosio.token"_n }, "deposit");
             auto index = get_index(total_backed_tokens, backed_token.symbol);
             if(index == -1) total_backed_tokens.push_back(backed_token);
             else total_backed_tokens[index] += backed_token;
         }
-        atomic::mintasset( get_self(), out_template.collection_name, schema, out_template.template_id, owner, {}, {}, backed_tokens );
+        atomic::mintasset( get_self(), out_template.collection_name, schema, out_template.template_id, owner, {}, {}, blend.backed_tokens );
         total_mint += 1;
     }
     // update mints & burn statistics counters
@@ -118,7 +111,7 @@ void blend::attempt_to_blend( const name owner )
         row.total_mint += total_mint;
         row.total_burn += total_burn;
         for( const auto& backed_token: total_backed_tokens ){
-            auto index = get_index(row.total_backed_tokens, backed_token.symbol);
+            auto index = get_index( row.total_backed_tokens, backed_token.symbol );
             if(index == -1) row.total_backed_tokens.push_back(backed_token);
             else row.total_backed_tokens[index] += backed_token;
         }
@@ -146,6 +139,7 @@ void blend::attempt_to_blend( const name owner )
                    total_burn,
                    total_backed_tokens,
                    asset_ids,
+                   blend.in_templates,
                    blend.out_templates,
                    refund_asset_ids );
 }
@@ -157,7 +151,8 @@ void blend::blendlog( const name owner,
                       const uint64_t total_burn,
                       const vector<asset> total_backed_tokens,
                       const vector<uint64_t> in_asset_ids,
-                      const vector<atomic::nft> blend_templates,
+                      const vector<atomic::nft> burned_nfts,
+                      const vector<atomic::nft> minted_nfts,
                       const vector<uint64_t> refund_asset_ids )
 {
     require_auth( get_self() );
@@ -197,6 +192,7 @@ void blend::setblend( const name blend_id, const vector<atomic::nft> in_template
     vector<asset> total_backed_tokens;
 
     // validate
+    check( in_templates.size() && out_templates.size(), "blend::setblend: blend recipe should have `in` and `out` templates");
     validate_templates( in_templates, true );
     validate_templates( out_templates, false );
 
@@ -213,12 +209,12 @@ void blend::setblend( const name blend_id, const vector<atomic::nft> in_template
         row.in_templates = in_templates;
         row.out_templates = out_templates;
         row.backed_tokens = backed_tokens;
-        row.start_time = start_time ? *start_time : current_time_point();
+        row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.last_updated = current_time_point();
         row.total_backed_tokens = total_backed_tokens;
     };
 
-    // create/modify row
+    // create/modify blend
     auto itr = _blends.find( blend_id.value );
     if ( itr == _blends.end() ) _blends.emplace( get_self(), insert );
     else  _blends.modify( itr, get_self(), insert );
@@ -231,21 +227,8 @@ void blend::delblend( const name blend_id )
     require_auth( get_self() );
 
     blend::blends_table _blends( get_self(), get_self().value );
-    auto & blends = _blends.get( blend_id.value, "blend::delblend: `blend_id` does not exist" );
-    _blends.erase( blends );
-}
-
-[[eosio::action]]
-void blend::refund( const name owner )
-{
-    if ( !has_auth( get_self() )) require_auth( owner );
-
-    blend::ontransfer_table _ontransfer( get_self(), get_self().value );
-    auto &itr = _ontransfer.get( owner.value, "blend::refund: `owner` does not have any refundable NFT assets" );
-
-    atomic::transfer_nft( get_self(), owner, itr.asset_ids, "blend::refund" );
-
-    _ontransfer.erase( itr );
+    auto & blend = _blends.get( blend_id.value, "blend::delblend: `blend_id` does not exist" );
+    _blends.erase( blend );
 }
 
 }

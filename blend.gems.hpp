@@ -92,7 +92,6 @@ public:
      * - `{name} owner` - (primary key) account name
      * - `{name} blend_id` - blend ID (ex: `myblend`)
      * - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
-     * - `{vector<atomic::nft>} templates` - received AtomicHub NFT template ID (ex: [{mycol1, `21881`}, {mycol2, `21882`}])
      * - `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
      *
      * ### example
@@ -102,7 +101,6 @@ public:
      *     "owner": "myaccount",
      *     "blend_id": "myblend",
      *     "asset_ids": [{ "collection_name": "mycol1", "template_id": 1099512167124 }, {"collection_name": "mycol1", "template_id": 1099512167125}],
-     *     "template_ids": [21881, 21882],
      *     "last_updated": "2021-07-01T00:00:00"
      * }
      * ```
@@ -111,7 +109,6 @@ public:
         name                owner;
         name                blend_id;
         vector<uint64_t>    asset_ids;
-        vector<atomic::nft> templates;
         time_point_sec      last_updated;
 
         uint64_t primary_key() const { return owner.value; }
@@ -152,7 +149,7 @@ public:
     /**
      * ## ACTION `setblend`
      *
-     * Set NFT blend
+     * Set NFT blend recipe
      *
      * - **authority**: `get_self()`
      *
@@ -194,37 +191,36 @@ public:
     void delblend( const name blend_id );
 
     /**
-     * ## ACTION `refund`
+     * ## ACTION `reset`
      *
-     * Refund account
+     * Reset table
      *
      * - **authority**: `get_self()`
      *
      * ### params
      *
-     * - `{name} owner` - account name to refund
+     * - `{name} table` - table to clear
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems refund '["myaccount"]' -p blend.gems
+     * $ cleos push action blend.gems reset '["blends"]' -p blend.gems
      * ```
      */
-    [[eosio::action]]
-    void refund( const name owner );
 
     [[eosio::action]]
     void reset( const name table );
 
     [[eosio::action]]
-    void blendlog( const name owner,
-                   const name blend_id,
-                   const uint64_t total_mint,
-                   const uint64_t total_burn,
-                   const vector<asset> total_backed_tokens,
-                   const vector<uint64_t> in_asset_ids,
-                   const vector<atomic::nft> blend_templates,
-                   const vector<uint64_t> refund_asset_ids );
+    void blendlog(  const name owner,
+                    const name blend_id,
+                    const uint64_t total_mint,
+                    const uint64_t total_burn,
+                    const vector<asset> total_backed_tokens,
+                    const vector<uint64_t> in_asset_ids,
+                    const vector<atomic::nft> burned_nfts,
+                    const vector<atomic::nft> minted_nfts,
+                    const vector<uint64_t> refund_asset_ids );
 
     /**
      * Notify contract when AtomicAssets NFT token transfer notifiers relay contract
@@ -235,7 +231,6 @@ public:
     // static actions
     using setblend_action = eosio::action_wrapper<"setblend"_n, &gems::blend::setblend>;
     using delblend_action = eosio::action_wrapper<"delblend"_n, &gems::blend::delblend>;
-    using refund_action = eosio::action_wrapper<"refund"_n, &gems::blend::refund>;
     using reset_action = eosio::action_wrapper<"reset"_n, &gems::blend::reset>;
     using blendlog_action = eosio::action_wrapper<"blendlog"_n, &gems::blend::blendlog>;
 
