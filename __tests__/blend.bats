@@ -47,11 +47,11 @@
 
 @test "invalid set blends" {
 
-  run cleos push action blend.gems setblend '["badblend", [["mycollectio1", 1], ["mycollectio1", 2]], [["mycollectio1", 4]], ["1.00000000 XXX"], "2021-07-05T00:00:00"]' -p blend.gems
+  run cleos push action blend.gems setblend '["badblend", [["mycollectio1", 1], ["mycollectio1", 2]], [["mycollectio1", 4]], "1.00000000 XXX", "2021-07-05T00:00:00"]' -p blend.gems
   [ $status -eq 1 ]
   [[ "$output" =~ "`backed_token` symbol must match" ]]
 
-  run cleos push action blend.gems setblend '["badtemplate", [["mycollectio1", 1], ["mycollectio1", 200]], [["mycollectio1", 4]], ["1.00000000 WAX"], "2021-07-05T00:00:00"]' -p blend.gems
+  run cleos push action blend.gems setblend '["badtemplate", [["mycollectio1", 1], ["mycollectio1", 200]], [["mycollectio1", 4]], "1.00000000 WAX", "2021-07-05T00:00:00"]' -p blend.gems
   [ $status -eq 1 ]
   [[ "$output" =~ "`template_id` does not exist" ]]
 
@@ -59,14 +59,14 @@
 
 @test "valid set blend" {
 
-  run cleos push action blend.gems setblend '["myblend1", [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]], [["mycollectio1", 4]], ["1.00000000 WAX", "0.5000 EOS"], "2021-07-05T00:00:00"]' -p blend.gems
+  run cleos push action blend.gems setblend '["myblend1", [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]], [["mycollectio1", 4]], "1.00000000 WAX", "2021-07-05T00:00:00"]' -p blend.gems
   [ $status -eq 0 ]
 
 }
 
 @test "override set blend" {
 
-  run cleos push action blend.gems setblend '["myblend1", [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3]], [["mycollectio1", 4]], ["1.00000000 WAX", "0.5000 EOS"], "2021-07-05T00:00:00"]' -p blend.gems
+  run cleos push action blend.gems setblend '["myblend1", [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3]], [["mycollectio1", 4]], "1.00000000 WAX", "2021-07-05T00:00:00"]' -p blend.gems
   [ $status -eq 0 ]
 
 }
@@ -76,8 +76,8 @@
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779], "myblend1"]' -p myaccount -p mycollection
   [ $status -eq 0 ]
 
-  result=$(cleos get table atomicassets myaccount assets | jq -r '.rows[0].asset_id + " " + .rows[1].asset_id + " " + .rows[1].backed_tokens[0] + " " + .rows[1].backed_tokens[1]')
-  [ "$result" = "1099511627779 1099511627780 1.00000000 WAX 0.5000 EOS" ]
+  result=$(cleos get table atomicassets myaccount assets | jq -r '.rows[0].asset_id + " " + .rows[1].asset_id + " " + .rows[1].backed_tokens[0]')
+  [ "$result" = "1099511627779 1099511627780 1.00000000 WAX" ]
 
 }
 

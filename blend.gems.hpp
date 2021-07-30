@@ -158,8 +158,8 @@ public:
      * - `{name} blend_id` - blend blend ID (ex: `myblend`)
      * - `{vector<atomic::nft>} in_templates` - input AtomicHub NFT template IDs (ex: [{mycol1, `21881`}, {mycol2, `21882`}])
      * - `{vector<atomic::nft>} out_templates` - output AtomicHub NFT template IDs (ex: [{mycol1, `21883`}])
-     * - `{vector<asset>} backed_tokens` - tokens to back (ex: `{"1.00000000 WAX"}`)
-     * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
+     * - `{asset} [backed_token=null]` - (optional) token to back (ex: `"1.00000000 WAX"`)
+     * - `{optional<time_point_sec>} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      *
      * ### Example
      *
@@ -168,7 +168,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const name blend_id, const vector<atomic::nft> in_templates, const vector<atomic::nft> out_templates, const vector<asset> backed_tokens, const optional<time_point_sec> start_time );
+    void setblend( const name blend_id, const vector<atomic::nft> in_templates, const vector<atomic::nft> out_templates, const optional<asset> backed_token, const optional<time_point_sec> start_time );
 
     /**
      * ## ACTION `delblend`

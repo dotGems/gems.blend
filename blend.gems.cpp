@@ -184,23 +184,29 @@ void blend::validate_templates( const vector<atomic::nft> templates, const bool 
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const vector<atomic::nft> in_templates, const vector<atomic::nft> out_templates, const vector<asset> backed_tokens, const optional<time_point_sec> start_time )
+void blend::setblend( const name blend_id, const vector<atomic::nft> in_templates, const vector<atomic::nft> out_templates, const optional<asset> backed_token, const optional<time_point_sec> start_time )
 {
     require_auth( get_self() );
 
     blend::blends_table _blends( get_self(), get_self().value );
     vector<asset> total_backed_tokens;
+    vector<asset> backed_tokens;
 
     // validate
+    check(blend_id.length() <= 12, "blend::setblend: invalid `blend_id`, name must be 12 characters or less");
+    check(blend_id.length() >= 1, "blend::setblend: invalid `blend_id`, cannot be empty");
+    check(name{blend_id.value}.value, "blend::setblend: invalid `blend_id`");
+    check(sx::utils::parse_name(blend_id.to_string()) == blend_id, "blend::setblend: invalid `blend_id` not matching");
     check( in_templates.size() && out_templates.size(), "blend::setblend: blend recipe should have `in` and `out` templates");
     validate_templates( in_templates, true );
     validate_templates( out_templates, false );
 
     // enforce tokens to back
-    for(const auto backed_token: backed_tokens){
-        check( backed_token.symbol == EOS || backed_token.symbol == WAX, "blend::setblend: `backed_token` symbol must match 8,WAX or 4,EOS");
-        check( backed_token.amount, "blend::setblend: `backed_token` should have value");
-        total_backed_tokens.push_back({ 0, backed_token.symbol });
+    if ( backed_token ) {
+        check( backed_token->symbol == EOS || backed_token->symbol == WAX, "blend::setblend: `backed_token` symbol must match 8,WAX or 4,EOS");
+        check( backed_token->amount, "blend::setblend: `backed_token` should have value");
+        total_backed_tokens.push_back({ 0, backed_token->symbol });
+        backed_tokens.push_back(*backed_token);
     }
 
     // recipe content

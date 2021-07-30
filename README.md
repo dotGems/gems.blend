@@ -112,13 +112,13 @@ Create/update NFT blend recipe
 - `{name} blend_id` - proposed blend ID (ex: `myblend`)
 - `{vector<atomic::nft>} in_templates` - input AtomicHub NFT template IDs (ex: [{mycollection, 21881}, {mycollection, 21882}])
 - `{vector<atomic::nft>} out_templates` - output AtomicHub NFT template IDs (ex: [{mycollection, 21883}])
-- `{vector<asset>} backed_tokens` - tokens to back each minted NFT (ex: `["1.00000000 WAX"]`)
+- `{asset} [backed_token=null]` - (optional) token to back (ex: `"1.00000000 WAX"`)
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '["myblend", [["mycollection", 123], ["mycollection", 456]], [["mycollection", 789]], ["1.00000000 WAX"], "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", [["mycollection", 123], ["mycollection", 456]], [["mycollection", 789]], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
 ```
 
 ## ACTION `delblend`
