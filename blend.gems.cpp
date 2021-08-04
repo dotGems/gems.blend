@@ -97,8 +97,6 @@ void blend::attempt_to_blend( const name owner )
     for ( const auto& out_template : blend.out_templates ) {
         const name schema = atomic::get_template( out_template.collection_name, out_template.template_id ).schema_name;
         for( const auto& backed_token: blend.backed_tokens ){
-            atomic::announce_deposit( get_self(), backed_token.symbol );
-            transfer( get_self(), "atomicassets"_n, { backed_token, "eosio.token"_n }, "deposit");
             auto index = get_index(total_backed_tokens, backed_token.symbol);
             if(index == -1) total_backed_tokens.push_back(backed_token);
             else total_backed_tokens[index] += backed_token;
