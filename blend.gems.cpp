@@ -31,7 +31,7 @@ void blend::add_transfer( const name owner, const name blend_id, const uint64_t 
 {
     blend::ontransfer_table _ontransfer( get_self(), get_self().value );
 
-    const auto my_asset = atomic::get_assets( get_self(), asset_id );
+    const auto my_asset = atomic::get_asset( get_self(), asset_id );
     const atomic::nft templ { my_asset.collection_name, my_asset.template_id };
     auto itr = _ontransfer.find( owner.value );
     check( itr == _ontransfer.end() || blend_id == itr->blend_id, "blend::add_transfer: owner has already started another blend");
@@ -79,7 +79,7 @@ void blend::attempt_to_blend( const name owner )
     for ( const uint64_t asset_id : asset_ids ) {
         // if completed, stop and refund any excess asset ids
         if ( in_templates.size() == 0 ) break;
-        auto my_asset = atomic::get_assets( get_self(), asset_id );
+        auto my_asset = atomic::get_asset( get_self(), asset_id );
         const atomic::nft templ = { my_asset.collection_name, my_asset.template_id };
         if( get_index( in_templates, templ ) == -1 ) continue;   //if asset can't be used for recipe - go to the next one
 

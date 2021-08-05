@@ -1,3 +1,4 @@
+#define assert(condition) ((void)0)
 #include <string>
 #include <atomicassets/atomicassets.hpp>
 #include <eosio.token/eosio.token.hpp>
@@ -55,10 +56,10 @@ atomicassets::templates_s get_template( const name collection_name, const int32_
     return _templates.get( template_id, "get_template: `template_id` does not exist in `collection_name`" );
 }
 
-atomicassets::assets_s get_assets( const name owner, const uint64_t asset_id )
+atomicassets::assets_s get_asset( const name owner, const uint64_t asset_id )
 {
     atomicassets::assets_t _assets( ATOMIC_ASSETS_CONTRACT, owner.value );
-    return _assets.get( asset_id, "get_assets: `asset_id` does not belong to `owner`" );
+    return _assets.get( asset_id, "get_asset: `asset_id` does not belong to `owner`" );
 }
 
 uint64_t get_next_asset_id( )
