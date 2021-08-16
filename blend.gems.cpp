@@ -15,7 +15,7 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     blend::ontransfer_table _ontransfer( get_self(), get_self().value );
 
     // ignore transfers
-    if ( is_account( "notify.gems"_n )) require_recipient( "notifiy.gems"_n );
+    if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
     if ( from == get_self() || memo == get_self().to_string() ) return;
 
     const auto blend_id = sx::utils::parse_name(memo);
@@ -156,7 +156,7 @@ void blend::blendlog( const name owner,
 {
     require_auth( get_self() );
     require_recipient( owner );
-    if ( is_account( "notify.gems"_n )) require_recipient( "notifiy.gems"_n );
+    if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
 }
 
 [[eosio::action]]
