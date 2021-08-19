@@ -22,6 +22,27 @@ public:
     using contract::contract;
 
     /**
+     * ## TABLE `status`
+     *
+     * - `vector<uint32_t>` counters;   // 0 - total recipes blended
+     * - `time_point_sec` last_updated;
+     *
+     * ### example
+     *
+     * ```json
+     * {
+     *   "counters": [1234, 12],
+     *   "last_updated": "2021-04-12T12:23:42"
+     * }
+     * ```
+     */
+    struct [[eosio::table("status")]] status_row {
+        vector<uint32_t>        counters;
+        time_point_sec          last_updated;
+    };
+    typedef eosio::singleton< "status"_n, status_row > status_table;
+
+    /**
      * ## TABLE `blends`
      *
      * ### multi-indexes
@@ -249,6 +270,9 @@ private:
     int get_index(const vector<uint64_t> vec, const uint64_t value);
     int get_index(const vector<atomic::nft> vec, const atomic::nft value);
     int get_index(const vector<asset> vec, const symbol sym);
+
+    // update counters in status singleton
+    void update_status( const uint32_t index, const uint32_t count );
 
     // maintenance
     template <typename T>

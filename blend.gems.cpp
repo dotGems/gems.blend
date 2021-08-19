@@ -26,6 +26,8 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
         add_transfer( from, blend_id, asset_id );
     }
     attempt_to_blend( from );
+
+    update_status(0, 1);
 }
 
 void blend::add_transfer( const name owner, const name blend_id, const uint64_t asset_id )
@@ -237,4 +239,14 @@ void blend::delblend( const name blend_id )
     _blends.erase( blend );
 }
 
+void blend::update_status( const uint32_t index, const uint32_t count )
+{
+    status_table _status( get_self(), get_self().value );
+    auto status = _status.get_or_default();
+
+    if( status.counters.size() <= index ) status.counters.resize( index + 1);
+    status.counters[index]++;
+    status.last_updated = current_time_point();
+    _status.set( status, get_self() );
+}
 }

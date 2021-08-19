@@ -81,6 +81,11 @@
 
 }
 
+@test "status check" {
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[0]')
+  [ "$result" = "1" ]
+}
+
 @test "delete blend" {
 
   run cleos push action blend.gems delblend '["myblend1"]' -p blend.gems
