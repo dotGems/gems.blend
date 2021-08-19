@@ -245,7 +245,7 @@ void blend::update_status( const uint32_t index, const uint32_t count )
     auto status = _status.get_or_default();
 
     if( status.counters.size() <= index ) status.counters.resize( index + 1);
-    status.counters[index]++;
+    status.counters[index] += count;
     status.last_updated = current_time_point();
     _status.set( status, get_self() );
 }
