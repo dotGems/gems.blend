@@ -77,8 +77,7 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
 
     // containers to blend
     vector<uint64_t> in_asset_ids = ontransfer.asset_ids;
-    vector<atomic::nft> required_templates = recipe.templates;
-    print( "size", in_asset_ids.size(), "\n");
+    vector<atomic::nft> recipe_templates = recipe.templates;
 
     // counters
     int total_burn = in_asset_ids.size();
@@ -87,12 +86,12 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
     // iterate owner incoming NFT transfers
     for ( const uint64_t asset_id : ontransfer.asset_ids ) {
         // if completed, stop and refund any excess asset ids
-        if ( required_templates.size() == 0 ) break;
+        if ( recipe_templates.size() == 0 ) break;
         const atomicassets::assets_s my_asset = atomic::get_asset( get_self(), asset_id );
 
         // asset must match recipe templates
         // check assertion should not trigger since recipe should already match incoming assets
-        const int template_index = get_index( required_templates, atomic::nft{ my_asset.collection_name, my_asset.template_id } );
+        const int template_index = get_index( recipe_templates, atomic::nft{ my_asset.collection_name, my_asset.template_id } );
         check( template_index != -1, "blend::attempt_to_blend: NFT template does not exists for this recipe");
 
         // burn incoming NFT asset
@@ -100,12 +99,12 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
 
         // erase from previous containers
         in_asset_ids.erase( in_asset_ids.begin() + get_index( in_asset_ids, asset_id ) );
-        required_templates.erase( required_templates.begin() + template_index );
+        recipe_templates.erase( recipe_templates.begin() + template_index );
     }
 
     // all incoming assets must be burned
     check( in_asset_ids.size() == 0, "blend::attempt_to_blend: [in_asset_ids] provided too many NFTs for this blend recipe");
-    check( required_templates.size() == 0, "blend::attempt_to_blend: [required_templates] provided too many NFTs for this blend recipe");
+    check( recipe_templates.size() == 0, "blend::attempt_to_blend: [recipe_templates] provided too many NFTs for this blend recipe");
     _ontransfer.erase( ontransfer );
 
     // mint blended NFT asset to owner
