@@ -247,7 +247,7 @@ void blend::delrecipe( const name recipe_id )
 {
     require_auth( get_self() );
 
-    blend::blends_table _recipes( get_self(), get_self().value );
+    blend::recipes_table _recipes( get_self(), get_self().value );
     auto & recipe = _recipes.get( recipe_id.value, "blend::delrecipe: [recipe_id] does not exist" );
     _recipes.erase( recipe );
 }
