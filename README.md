@@ -2,123 +2,136 @@
 
 ## Quickstart
 
-1. Admin setup NFT blend recipe (ex: "myblend").
+1. Admin setup NFT recipe & blend
 2. User sends AtomicAssets NFT assets to `blend.gems` with desired blend id in the memo.
 
 ```bash
-# setup NFT blend recipe
-$ cleos push action blend.gems setblend '["myblend", [["mycollection", 123], ["mycollection", 456]], [["mycollection", 789]], ["1.00000000 WAX"], "2021-07-02T00:00:00"]' -p blend.gems
+# setup NFT recipe
+$ cleos push action blend.gems setblend '["myrecipe", [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
 
-# user send NFT's to be blended (memo contains blend id)
+# setup NFT blend
+$ cleos push action blend.gems setblend '["myblend", ["myrecipe"], [["mycollection", 789]], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+
+# user send NFT's to be blended (memo contains Blend id)
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "myblend"]' -p myaccount
 ```
 
 ## Table of Content
 
 - [TABLE `blends`](#table-blends)
+- [TABLE `recipes`](#table-recipes)
 - [TABLE `ontransfer`](#table-ontransfer)
+- [TABLE `status`](#table-status)
 - [ACTION `setblend`](#action-setblend)
+- [ACTION `setrecipe`](#action-setrecipe)
 - [ACTION `delblend`](#action-delblend)
+- [ACTION `delrecipe`](#action-delrecipe)
 
 ## TABLE `blends`
-
-### multi-indexes
-
-| `param`        | `index_position` | `key_type` |
-|--------------- |------------------|------------|
-| `byupdated`    | 2                | i64        |
 
 ### params
 
 - `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
-- `{vector<atomic::nft>} in_templates` - input AtomicHub NFT template IDs (ex: [{mycol1, `21881`}, {mycol2, `21882`}])
-- `{name} out_collection_name` - output AtomicHub Collection Name (ex: `mycollection`)
-- `{vector<atomic::nft>} out_templates` - output AtomicHub NFT template IDs (ex: [{mycol1, `21883`}])
-- `{vector<asset>} backed_tokens` - backed token (ex: `["1.00000000 WAX"]`)
+- `{set<name>} in_recipe_ids` - one or many input recipes ID's
+- `{atomic::nft} out_template` - output AtomicAsset NFT template
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
-- `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
-- `{uint64_t} total_mint` - total minted
-- `{uint64_t} total_burn` - total burned
-- `{vector<asset>} total_backed_token` - total backed
+- `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
 ### example
 
 ```json
 {
     "blend_id": "myblend",
-    "in_template_ids": [{"collection_name": "mycollection", "template_id": 21881}, {"collection_name": "mycollection", "template_id": 21882}],
-    "out_template_ids": [{"collection_name": "mycollection","template_id": 21883}],
-    "backed_tokens": ["1.00000000 WAX"],
+    "in_recipe_ids": ["myrecipe1", "myrecipe2"],
+    "out_template": {"collection_name": "mycollection", "template_id": 21883},
     "start_time": "2021-07-01T00:00:00",
-    "last_updated": "2021-07-01T00:00:00",
-    "total_mint": 0,
-    "total_burn": 0,
-    "total_backed_tokens": ["0.00000000 WAX"]
-    }
+    "end_time": "2021-10-01T00:00:00"
+}
+```
+
+## TABLE `recipes`
+
+### params
+
+- `{name} recipe_id` - (primary key) recipe ID (ex: `myrecipe`)
+- `{vector<atomic::nft>} templates` - AtomicAsset NFT templates
+
+### example
+
+```json
+{
+    "recipe_id": "myrecipe",
+    "templates": [{"collection_name": "mycollection", "template_id": 21883}]
+}
 ```
 
 ## TABLE `ontransfer`
 
-### multi-indexes
-
-| `param`        | `index_position` | `key_type` |
-|--------------- |------------------|------------|
-| `byupdated`    | 2                | i64        |
+- scope: `{name} owner`
 
 ### params
 
 - `{name} owner` - (primary key) account name
-- `{name} blend_id` - blend ID (ex: `myblend`)
 - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
-- `{time_point_sec} last_updated` - last updated time (ex: "2021-07-01T00:00:00")
-*
+
 ### example
 
 ```json
 {
     "owner": "myaccount",
-    "blend_id": "myblend",
-    "asset_ids": [ 1099512167124, 1099512167125 ],
-    "last_updated": "2021-07-01T00:00:00"
+    "asset_ids": [1099511627776, 1099511627777, 1099511627778, 1099511627779]
 }
 ```
 
-## TABLE `global`
+## TABLE `status`
 
-### params
-
-- `{uint64_t} total_mint` - total mint
-- `{uint64_t} total_burn` - total burn
-- `{vector<asset>} total_backed_tokens` - total backed tokens
+- `vector<uint32_t>` counters;   // 0 - total recipes blended
+- `time_point_sec` last_updated;
 
 ### example
 
 ```json
 {
-    "total_mint": 1,
-    "total_burn": 3,
-    "total_backed_tokens": ["1.00000000 WAX", "0.5000 EOS"]
+    "counters": [1234, 12],
+    "last_updated": "2021-04-12T12:23:42"
 }
 ```
 
 ## ACTION `setblend`
 
-Create/update NFT blend recipe
+Set NFT blend
 
 - **authority**: `get_self()`
 
 ### params
 
-- `{name} blend_id` - proposed blend ID (ex: `myblend`)
-- `{vector<atomic::nft>} in_templates` - input AtomicHub NFT template IDs (ex: [{mycollection, 21881}, {mycollection, 21882}])
-- `{vector<atomic::nft>} out_templates` - output AtomicHub NFT template IDs (ex: [{mycollection, 21883}])
-- `{asset} [backed_token=null]` - (optional) token to back (ex: `"1.00000000 WAX"`)
+- `{name} blend_id` - (primary key) blend ID (ex: `myblend`)
+- `{set<name>} in_recipe_ids` - input recipes ID's
+- `{atomic::nft} out_template` - output AtomicAsset NFT template
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
+- `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '["myblend", [["mycollection", 123], ["mycollection", 456]], [["mycollection", 789]], "1.00000000 WAX", "2021-07-02T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '["myblend", ["myrecipe1", "myrecipe2"], ["mycollection", 789], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+```
+
+## ACTION `setrecipe`
+
+Set NFT recipe
+
+- **authority**: `get_self()`
+
+### params
+
+- `{name} blend_id` - blend blend ID (ex: `myblend`)
+- `{vector<atomic::nft>} templates` - AtomicHub NFT templates
+
+### Example
+
+```bash
+$ cleos push action blend.gems setrecipe '["myrecipe", [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
 ```
 
 ## ACTION `delblend`
@@ -135,4 +148,20 @@ Delete NFT blend recipe
 
 ```bash
 $ cleos push action blend.gems delblend '["myblend"]' -p blend.gems
+```
+
+## ACTION `delrecipe`
+
+Delete NFT recipe
+
+- **authority**: `get_self()`
+
+### params
+
+- `{name} recipe_id` - recipe ID (ex: `myrecipe`)
+
+### Example
+
+```bash
+$ cleos push action blend.gems delrecipe '["myrecipe"]' -p blend.gems
 ```

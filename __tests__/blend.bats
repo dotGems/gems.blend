@@ -4,10 +4,6 @@
   # AtomicAssets - init and config
   run cleos push action atomicassets init '[]' -p atomicassets
   [ $status -eq 0 ]
-  run cleos push action atomicassets addconftoken '["eosio.token", "8,WAX"]' -p atomicassets
-  [ $status -eq 0 ]
-  run cleos push action atomicassets addconftoken '["eosio.token", "4,EOS"]' -p atomicassets
-  [ $status -eq 0 ]
 
   # AtomicAssets - create collection & schema
   run cleos push action atomicassets createcol '["mycollection", "mycollectio1", true, ["blend.gems", "mycollection"], [], 0, []]' -p mycollection

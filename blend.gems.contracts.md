@@ -3,7 +3,16 @@
 ---
 spec_version: "0.2.0"
 title: setblend
-summary: Set NFT blend recipe
+summary: Set NFT blend
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---
+
+<h1 class="contract">setrecipe</h1>
+
+---
+spec_version: "0.2.0"
+title: setrecipe
+summary: Set NFT recipe
 icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
 ---
 
@@ -12,9 +21,19 @@ icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125
 ---
 spec_version: "0.2.0"
 title: delblend
-summary: Delete NFT blend recipe
+summary: Delete NFT blend
 icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
 ---
+
+<h1 class="contract">delrecipe</h1>
+
+---
+spec_version: "0.2.0"
+title: delrecipe
+summary: Delete NFT recipe
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---
+
 
 <h1 class="contract">refund</h1>
 
