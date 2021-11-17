@@ -58,6 +58,24 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::attempt_to_blend: has ended");
 }
 
+name blend::detect_recipe( const set<name> recipe_ids, const vector<atomic::nft> templates )
+{
+    blend::recipes_table _recipes( get_self(), get_self().value );
+
+    for ( const name recipe_id : recipe_ids ) {
+        const auto recipe = _recipes.get( recipe_id.value, "blend::detect_recipe: [recipe_id] does not exists");
+        vector<atomic::nft> recipe_templates = recipe.templates;
+
+        for ( const atomic::nft item : templates ) {
+            if ( recipe_templates.size() <= 0 ) continue; // skip if empty
+            recipe_templates.erase( recipe_templates.begin() + get_index( recipe_templates, item ) );
+        }
+        if ( recipe_templates.size() == 0 ) return recipe_id;
+    }
+    check( false, "blend::detect_recipe: could not detect any valid recipes");
+    return ""_n;
+}
+
 void blend::attempt_to_blend( const name owner, const name blend_id )
 {
     blend::ontransfer_table _ontransfer( get_self(), owner.value );
@@ -69,7 +87,7 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
 
     // TO-DO improve recipe logic
     // only works with single recipe for now
-    const name recipe_id = *blend.in_recipe_ids.begin();
+    const name recipe_id = detect_recipe( blend.in_recipe_ids, ontransfer.templates );
     const auto & recipe = _recipes.get( recipe_id.value, "blend::attempt_to_blend: [recipe_id] does not exists");
 
     // validate times

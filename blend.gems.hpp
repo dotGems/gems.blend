@@ -248,6 +248,7 @@ private:
     void add_transfer( const name owner, const uint64_t asset_id );
     void attempt_to_blend( const name owner, const name blend_id );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
+    name detect_recipe( const set<name> recipe_ids, const vector<atomic::nft> templates );
 
     // utils
     int get_index(const vector<name> vec, const name value);
