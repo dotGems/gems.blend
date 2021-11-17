@@ -54,8 +54,7 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     const int64_t minutes = (remaining - hours * 60 * 60) / 60;
     const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
     check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
-
-    // TO-DO validate [end_time]
+    if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::attempt_to_blend: has ended");
 }
 
 void blend::attempt_to_blend( const name owner, const name blend_id )
