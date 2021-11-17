@@ -33,12 +33,13 @@ void blend::add_transfer( const name owner, const uint64_t asset_id )
     blend::ontransfer_table _ontransfer( get_self(), owner.value );
 
     // confirm asset is in custody of smart contract
-    atomic::get_asset( get_self(), asset_id );
+    const atomicassets::assets_s my_asset = atomic::get_asset( get_self(), asset_id );
 
     // insert data
     auto insert = [&]( auto & row ) {
         row.owner = owner;
         row.asset_ids.push_back( asset_id );
+        row.templates.push_back( atomic::nft{ my_asset.collection_name, my_asset.template_id } );
     };
 
     // create/modify row
@@ -68,38 +69,44 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
 
     // TO-DO improve recipe logic
     // only works with single recipe for now
-    const auto & recipe = _recipes.get( blend.in_recipe_ids.begin()->value, "blend::attempt_to_blend: [recipe_id] does not exists");
+    const name recipe_id = *blend.in_recipe_ids.begin();
+    const auto & recipe = _recipes.get( recipe_id.value, "blend::attempt_to_blend: [recipe_id] does not exists");
 
     // validate times
     check_time( blend.start_time, blend.end_time );
 
     // containers to blend
-    const auto asset_ids = ontransfer.asset_ids;
-    auto refund_asset_ids = ontransfer.asset_ids;
-    auto in_templates = recipe.templates;
+    vector<uint64_t> in_asset_ids = ontransfer.asset_ids;
+    vector<atomic::nft> required_templates = recipe.templates;
+    print( "size", in_asset_ids.size(), "\n");
 
     // counters
-    uint64_t total_burn = 0;
+    int total_burn = in_asset_ids.size();
+    int total_mint = 1;
 
     // iterate owner incoming NFT transfers
-    for ( const uint64_t asset_id : asset_ids ) {
+    for ( const uint64_t asset_id : ontransfer.asset_ids ) {
         // if completed, stop and refund any excess asset ids
-        if ( in_templates.size() == 0 ) break;
-        auto my_asset = atomic::get_asset( get_self(), asset_id );
-        const atomic::nft templ = { my_asset.collection_name, my_asset.template_id };
+        if ( required_templates.size() == 0 ) break;
+        const atomicassets::assets_s my_asset = atomic::get_asset( get_self(), asset_id );
 
-        // TO-DO perhaps removing "refund" mechanics and just fail transaction if mismatch
-        if ( get_index( in_templates, templ ) == -1 ) continue; // if asset can't be used for recipe - go to the next one
+        // asset must match recipe templates
+        // check assertion should not trigger since recipe should already match incoming assets
+        const int template_index = get_index( required_templates, atomic::nft{ my_asset.collection_name, my_asset.template_id } );
+        check( template_index != -1, "blend::attempt_to_blend: NFT template does not exists for this recipe");
+
+        // burn incoming NFT asset
+        atomic::burnasset( get_self(), asset_id );
 
         // erase from previous containers
-        atomic::burnasset( get_self(), asset_id );
-        total_burn += 1;
-        refund_asset_ids.erase( refund_asset_ids.begin() + get_index( refund_asset_ids, asset_id ));
-        in_templates.erase( in_templates.begin() + get_index( in_templates, templ ));
+        in_asset_ids.erase( in_asset_ids.begin() + get_index( in_asset_ids, asset_id ) );
+        required_templates.erase( required_templates.begin() + template_index );
     }
 
-    // error if remaining template ids not blended
-    check( in_templates.size() == 0, "blend::attempt_to_blend: not enough NFTs for this recipe");
+    // all incoming assets must be burned
+    check( in_asset_ids.size() == 0, "blend::attempt_to_blend: [in_asset_ids] provided too many NFTs for this blend recipe");
+    check( required_templates.size() == 0, "blend::attempt_to_blend: [required_templates] provided too many NFTs for this blend recipe");
+    _ontransfer.erase( ontransfer );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
@@ -109,31 +116,27 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
     atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), {}, {}, {} );
     atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blended at .gems 💎" );
 
-    // return & erase any excess asset_ids
-    if ( refund_asset_ids.size() ) atomic::transfer_nft( get_self(), owner, refund_asset_ids, "blend refund" );
-    _ontransfer.erase( ontransfer );
-
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
                    blend.blend_id,
                    recipe.recipe_id,
-                   1,
+                   total_mint,
                    total_burn,
-                   asset_ids,
-                   next_asset_id,
-                   refund_asset_ids );
+                   ontransfer.asset_ids,
+                   ontransfer.templates,
+                   next_asset_id );
 }
 
 [[eosio::action]]
 void blend::blendlog(  const name owner,
                        const name blend_id,
                        const name recipe_id,
-                       const uint64_t total_mint,
-                       const uint64_t total_burn,
+                       const int total_mint,
+                       const int total_burn,
                        const vector<uint64_t> in_asset_ids,
-                       const uint64_t out_asset_id,
-                       const vector<uint64_t> refund_asset_ids )
+                       const vector<atomic::nft> in_templates,
+                       const uint64_t out_asset_id )
 {
     require_auth( get_self() );
     require_recipient( owner );

@@ -106,19 +106,22 @@ public:
      *
      * - `{name} owner` - (primary key) account name
      * - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
+     * - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
      *
      * ### example
      *
      * ```json
      * {
      *     "owner": "myaccount",
-     *     "asset_ids": [1099511627776, 1099511627777, 1099511627778, 1099511627779]
+     *     "asset_ids": [1099511627776, 1099511627777],
+     *     "templates": [{"collection_name": "mycollection", "template_id": 123}, {"collection_name": "mycollection", "template_id": 456}]
      * }
      * ```
      */
     struct [[eosio::table("ontransfer")]] ontransfer_row {
         name                    owner;
         vector<uint64_t>        asset_ids;
+        vector<atomic::nft>     templates;
 
         uint64_t primary_key() const { return owner.value; }
     };
@@ -216,11 +219,11 @@ public:
     void blendlog( const name owner,
                    const name blend_id,
                    const name recipe_id,
-                   const uint64_t total_mint,
-                   const uint64_t total_burn,
+                   const int total_mint,
+                   const int total_burn,
                    const vector<uint64_t> in_asset_ids,
-                   const uint64_t out_asset_id,
-                   const vector<uint64_t> refund_asset_ids );
+                   const vector<atomic::nft> in_templates,
+                   const uint64_t out_asset_id );
 
     /**
      * Notify contract when AtomicAssets NFT token transfer notifiers relay contract

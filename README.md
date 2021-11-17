@@ -73,13 +73,15 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 - `{name} owner` - (primary key) account name
 - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
+- `{vector<atomic::nft>} templates` - AtomicHub NFT templates
 
 ### example
 
 ```json
 {
     "owner": "myaccount",
-    "asset_ids": [1099511627776, 1099511627777, 1099511627778, 1099511627779]
+    "asset_ids": [1099511627776, 1099511627777],
+    "templates": [{"collection_name": "mycollection", "template_id": 123}, {"collection_name": "mycollection", "template_id": 456}]
 }
 ```
 
