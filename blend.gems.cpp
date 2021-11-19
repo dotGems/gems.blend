@@ -267,6 +267,16 @@ void blend::delrecipe( const name recipe_id )
 {
     require_auth( get_self() );
 
+    // erase recipe from existing blends
+    blend::blends_table _blends( get_self(), get_self().value );
+    for(const auto& blend: _blends){
+        if( blend.in_recipe_ids.count(recipe_id)){
+            _blends.modify( blend, get_self(), [&]( auto & row ) {
+                row.in_recipe_ids.erase( recipe_id);
+             });
+        }
+    }
+
     blend::recipes_table _recipes( get_self(), get_self().value );
     auto & recipe = _recipes.get( recipe_id.value, "blend::delrecipe: [recipe_id] does not exist" );
     _recipes.erase( recipe );
