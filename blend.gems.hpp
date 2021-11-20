@@ -98,36 +98,6 @@ public:
     typedef eosio::multi_index< "recipes"_n, recipes_row> recipes_table;
 
     /**
-     * ## TABLE `ontransfer`
-     *
-     * - scope: `{name} owner`
-     *
-     * ### params
-     *
-     * - `{name} owner` - (primary key) account name
-     * - `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
-     * - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
-     *
-     * ### example
-     *
-     * ```json
-     * {
-     *     "owner": "myaccount",
-     *     "asset_ids": [1099511627776, 1099511627777],
-     *     "templates": [{"collection_name": "mycollection", "template_id": 123}, {"collection_name": "mycollection", "template_id": 456}]
-     * }
-     * ```
-     */
-    struct [[eosio::table("ontransfer")]] ontransfer_row {
-        name                    owner;
-        vector<uint64_t>        asset_ids;
-        vector<atomic::nft>     templates;
-
-        uint64_t primary_key() const { return owner.value; }
-    };
-    typedef eosio::multi_index< "ontransfer"_n, ontransfer_row> ontransfer_table;
-
-    /**
      * ## ACTION `setblend`
      *
      * Set NFT blend
@@ -245,17 +215,9 @@ private:
 
     // blend
     void validate_templates( const vector<atomic::nft> templates, const bool burnable );
-    void add_transfer( const name owner, const uint64_t asset_id );
-    void attempt_to_blend( const name owner, const name blend_id );
+    void attempt_to_blend( const name owner, const name blend_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
-    name detect_recipe( const set<name> recipe_ids, const vector<atomic::nft> templates );
-
-    // utils
-    int get_index(const vector<name> vec, const name value);
-    int get_index(const vector<int32_t> vec, const int32_t value);
-    int get_index(const vector<uint64_t> vec, const uint64_t value);
-    int get_index(const vector<atomic::nft> vec, const atomic::nft value);
-    int get_index(const vector<asset> vec, const symbol sym);
+    name detect_recipe( const set<name> recipe_ids, vector<atomic::nft> received_templates );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );

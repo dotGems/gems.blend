@@ -83,8 +83,7 @@
   [ $status -eq 0 ]
 
   run cleos push action blend.gems setblend '["myblend1", ["myrecipe1", "myrecipe2"], ["mycollectio1", 4], "2021-07-05T00:00:00", null]' -p blend.gems
-  [ $status -eq 1 ]
-  [[ "$output" =~ "[in_recipe_ids] cannot exceed 1 item (not yet implemented)" ]]
+  [ $status -eq 0 ]
 
 }
 
@@ -92,7 +91,7 @@
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779, 1099511627780], "myblend1"]' -p myaccount -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "provided too many" ]]
+  [[ "$output" =~ "could not detect any valid recipes" ]]
 
 }
 
@@ -111,17 +110,16 @@
 
 }
 
-@test "blend recipe #2 that wasn't added to blend" {
+@test "blend recipe #2" {
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627781, 1099511627782], "myblend1"]' -p myaccount -p mycollection
-  [ $status -eq 1 ]
-  [[ "$output" =~ "could not detect any valid recipes" ]]
+  [ $status -eq 0 ]
 
 }
 
 @test "status check" {
   result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[0]')
-  [ "$result" = "1" ]
+  [ "$result" = "2" ]
 }
 
 
@@ -129,6 +127,9 @@
 
   run cleos push action blend.gems delrecipe '["myrecipe2"]' -p blend.gems
   [ $status -eq 0 ]
+
+  result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0].in_recipe_ids | length')
+  [ "$result" = "1" ]
 
   result=$(cleos get table blend.gems blend.gems recipes | jq -r '.rows | length')
   [ "$result" = "1" ]

@@ -1,6 +1,7 @@
 #define assert(condition) ((void)0)
 
 #include <string>
+#include <compare>
 #include <atomicassets/atomicassets.hpp>
 #include <eosio.token/eosio.token.hpp>
 
@@ -11,6 +12,7 @@ const name ATOMIC_ASSETS_CONTRACT = "atomicassets"_n;
 struct nft {
     name collection_name;
     int32_t template_id;
+    friend auto operator<=>(const nft&, const nft&) = default;
 };
 
 void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo )

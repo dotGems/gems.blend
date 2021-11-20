@@ -14,39 +14,24 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
     if ( from == get_self() || memo == get_self().to_string() ) return;
 
-    // deposit each NFT received
+    // build vector of received templates
+    vector<atomic::nft> received_nfts;
     for ( const uint64_t asset_id : asset_ids ) {
-        add_transfer( from, asset_id );
+        const auto my_asset = atomic::get_asset( get_self(), asset_id );
+        received_nfts.push_back( atomic::nft{ my_asset.collection_name, my_asset.template_id } );
     }
 
-    // attempt to blend
+    // parse blend id
     const auto blend_id = sx::utils::parse_name(memo);
     check(blend_id.value, "blend::on_nft_transfer: invalid [blend_id] in the memo");
-    attempt_to_blend( from, blend_id );
+
+    // attempt to blend
+    attempt_to_blend( from, blend_id, asset_ids, received_nfts);
 
     // stats
     update_status(0, 1);
 }
 
-void blend::add_transfer( const name owner, const uint64_t asset_id )
-{
-    blend::ontransfer_table _ontransfer( get_self(), owner.value );
-
-    // confirm asset is in custody of smart contract
-    const atomicassets::assets_s my_asset = atomic::get_asset( get_self(), asset_id );
-
-    // insert data
-    auto insert = [&]( auto & row ) {
-        row.owner = owner;
-        row.asset_ids.push_back( asset_id );
-        row.templates.push_back( atomic::nft{ my_asset.collection_name, my_asset.template_id } );
-    };
-
-    // create/modify row
-    auto itr = _ontransfer.find( owner.value );
-    if ( itr == _ontransfer.end() ) _ontransfer.emplace( get_self(), insert );
-    else _ontransfer.modify( itr, get_self(), insert );
-}
 
 void blend::check_time( const time_point_sec start_time, const time_point_sec end_time )
 {
@@ -54,76 +39,43 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     const int64_t hours = remaining / 60 / 60;
     const int64_t minutes = (remaining - hours * 60 * 60) / 60;
     const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
-    check( remaining <= 0, "blend::attempt_to_blend: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
-    if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::attempt_to_blend: has ended");
+    check( remaining <= 0, "blend::check_time: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
+    if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::check_time: has ended");
 }
 
-name blend::detect_recipe( const set<name> recipe_ids, const vector<atomic::nft> templates )
+name blend::detect_recipe( const set<name> recipe_ids, vector<atomic::nft> received_templates )
 {
     blend::recipes_table _recipes( get_self(), get_self().value );
+    sort( received_templates.begin(), received_templates.end());
 
     for ( const name recipe_id : recipe_ids ) {
         const auto recipe = _recipes.get( recipe_id.value, "blend::detect_recipe: [recipe_id] does not exists");
-        vector<atomic::nft> recipe_templates = recipe.templates;
+        if( recipe.templates.size() != received_templates.size()) continue;
 
-        for ( const atomic::nft item : templates ) {
-            if ( recipe_templates.size() <= 0 ) continue; // skip if empty
-            recipe_templates.erase( recipe_templates.begin() + get_index( recipe_templates, item ) );
-        }
-        if ( recipe_templates.size() == 0 ) return recipe_id;
+        // sort recipe ingredients and compare to sorted received vector
+        sort( recipe.templates.begin(), recipe.templates.end());
+        if( received_templates == recipe.templates) return recipe_id;
     }
     check( false, "blend::detect_recipe: could not detect any valid recipes");
     return ""_n;
 }
 
-void blend::attempt_to_blend( const name owner, const name blend_id )
+void blend::attempt_to_blend( const name owner, const name blend_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates )
 {
-    blend::ontransfer_table _ontransfer( get_self(), owner.value );
     blend::blends_table _blends( get_self(), get_self().value );
     blend::recipes_table _recipes( get_self(), get_self().value );
 
-    const auto & ontransfer = _ontransfer.get( owner.value, "blend::attempt_to_blend: [owner] did not sent any NFTs");
     const auto & blend = _blends.get( blend_id.value, "blend::attempt_to_blend: [blend_id] in the memo does not exists");
+    const name recipe_id = detect_recipe( blend.in_recipe_ids, received_templates );
 
-    // TO-DO improve recipe logic
-    // only works with single recipe for now
-    const name recipe_id = detect_recipe( blend.in_recipe_ids, ontransfer.templates );
     const auto & recipe = _recipes.get( recipe_id.value, "blend::attempt_to_blend: [recipe_id] does not exists");
-
-    // validate times
     check_time( blend.start_time, blend.end_time );
 
-    // containers to blend
-    vector<uint64_t> in_asset_ids = ontransfer.asset_ids;
+    // already picked our recipe, no need for extra checks
     vector<atomic::nft> recipe_templates = recipe.templates;
-
-    // counters
-    int total_burn = in_asset_ids.size();
-    int total_mint = 1;
-
-    // iterate owner incoming NFT transfers
-    for ( const uint64_t asset_id : ontransfer.asset_ids ) {
-        // if completed, stop and refund any excess asset ids
-        if ( recipe_templates.size() == 0 ) break;
-        const atomicassets::assets_s my_asset = atomic::get_asset( get_self(), asset_id );
-
-        // asset must match recipe templates
-        // check assertion should not trigger since recipe should already match incoming assets
-        const int template_index = get_index( recipe_templates, atomic::nft{ my_asset.collection_name, my_asset.template_id } );
-        check( template_index != -1, "blend::attempt_to_blend: NFT template does not exists for this recipe");
-
-        // burn incoming NFT asset
+    for ( const uint64_t asset_id : in_asset_ids ) {
         atomic::burnasset( get_self(), asset_id );
-
-        // erase from previous containers
-        in_asset_ids.erase( in_asset_ids.begin() + get_index( in_asset_ids, asset_id ) );
-        recipe_templates.erase( recipe_templates.begin() + template_index );
     }
-
-    // all incoming assets must be burned
-    check( in_asset_ids.size() == 0, "blend::attempt_to_blend: [in_asset_ids] provided too many NFTs for this blend recipe");
-    check( recipe_templates.size() == 0, "blend::attempt_to_blend: [recipe_templates] provided too many NFTs for this blend recipe");
-    _ontransfer.erase( ontransfer );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
@@ -138,10 +90,10 @@ void blend::attempt_to_blend( const name owner, const name blend_id )
     blendlog.send( owner,
                    blend.blend_id,
                    recipe.recipe_id,
-                   total_mint,
-                   total_burn,
-                   ontransfer.asset_ids,
-                   ontransfer.templates,
+                   1,
+                   in_asset_ids.size(),
+                   in_asset_ids,
+                   received_templates,
                    next_asset_id );
 }
 
@@ -167,11 +119,9 @@ void blend::reset( const name table, const optional<name> scope  )
 
     blend::blends_table _blends( get_self(), get_self().value );
     blend::recipes_table _recipes( get_self(), get_self().value );
-    blend::ontransfer_table _ontransfer( get_self(), scope ? scope->value : get_self().value );
 
     if ( table == "blends"_n ) clear_table( _blends );
     else if ( table == "recipes"_n ) clear_table( _recipes );
-    else if ( table == "ontransfer"_n ) clear_table( _ontransfer );
     else check( false, "invalid table name");
 }
 
@@ -228,9 +178,6 @@ void blend::setblend( const name blend_id, const set<name> in_recipe_ids, const 
     check( out_template.collection_name.value, "blend::setblend: [out_template.collection_name] is required");
     check( out_template.template_id, "blend::setblend: [out_template.template_id] is required");
     validate_templates( { out_template }, false );
-
-    // TO REMOVE - when multi recipe is implemented
-    check( in_recipe_ids.size() <= 1, "blend::setblend: [in_recipe_ids] cannot exceed 1 item (not yet implemented)");
 
     // validate recipes
     for ( const name recipe_id : in_recipe_ids ) {
