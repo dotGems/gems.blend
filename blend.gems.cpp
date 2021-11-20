@@ -49,7 +49,7 @@ name blend::detect_recipe( const set<name> recipe_ids, vector<atomic::nft> recei
     sort( received_templates.begin(), received_templates.end());
 
     for ( const name recipe_id : recipe_ids ) {
-        const auto recipe = _recipes.get( recipe_id.value, "blend::detect_recipe: [recipe_id] does not exists");
+        auto recipe = _recipes.get( recipe_id.value, "blend::detect_recipe: [recipe_id] does not exists");
         if( recipe.templates.size() != received_templates.size()) continue;
 
         // sort recipe ingredients and compare to sorted received vector
