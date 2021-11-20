@@ -22,14 +22,3 @@ cleos set account permission atomicassets active --add-code
 
 # used only for local testing
 cleos set account permission mycollection active blend.gems --add-code
-
-# create EOS & WAX token
-cleos push action eosio.token create '["eosio", "100000000.00000000 WAX"]' -p eosio.token
-cleos push action eosio.token issue '["eosio", "100000000.00000000 WAX", "init"]' -p eosio
-cleos transfer eosio mycollection "500.00000000 WAX" ""
-cleos transfer eosio blend.gems "500.00000000 WAX" ""
-
-cleos push action eosio.token create '["eosio", "100000000.0000 EOS"]' -p eosio.token
-cleos push action eosio.token issue '["eosio", "100000000.0000 EOS", "init"]' -p eosio
-cleos transfer eosio mycollection "500.0000 EOS" ""
-cleos transfer eosio blend.gems "500.0000 EOS" ""

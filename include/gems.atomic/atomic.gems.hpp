@@ -1,6 +1,7 @@
 #define assert(condition) ((void)0)
 
 #include <string>
+#include <compare>
 #include <atomicassets/atomicassets.hpp>
 #include <eosio.token/eosio.token.hpp>
 
@@ -11,6 +12,7 @@ const name ATOMIC_ASSETS_CONTRACT = "atomicassets"_n;
 struct nft {
     name collection_name;
     int32_t template_id;
+    friend auto operator<=>(const nft&, const nft&) = default;
 };
 
 void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo )
@@ -51,6 +53,12 @@ atomicassets::collections_s get_collection( const name collection_name )
     return _collections.get( collection_name.value, "get_collection: `collection_name` does not exist" );
 }
 
+atomicassets::schemas_s get_schema( const name collection_name, const name schema_name )
+{
+    atomicassets::schemas_t _schemas( ATOMIC_ASSETS_CONTRACT, collection_name.value );
+    return _schemas.get( schema_name.value, "get_schema: `schema_name` does not exist for `collection_name`" );
+}
+
 atomicassets::templates_s get_template( const name collection_name, const int32_t template_id )
 {
     atomicassets::templates_t _templates( ATOMIC_ASSETS_CONTRACT, collection_name.value );
@@ -61,6 +69,14 @@ atomicassets::assets_s get_asset( const name owner, const uint64_t asset_id )
 {
     atomicassets::assets_t _assets( ATOMIC_ASSETS_CONTRACT, owner.value );
     return _assets.get( asset_id, "get_asset: `asset_id` does not belong to `owner`" );
+}
+
+atomicdata::ATOMIC_ATTRIBUTE get_template_attribute( const name collection_name, const name schema_name, const int32_t template_id, const string key )
+{
+    vector<atomicdata::FORMAT> format = atomic::get_schema( collection_name, schema_name ).format;
+    vector<uint8_t> data = atomic::get_template( collection_name, template_id ).immutable_serialized_data;
+    ATTRIBUTE_MAP deserialized = atomicdata::deserialize( data, format );
+    return deserialized.at(key);
 }
 
 name get_collection_name( const name owner, const uint64_t asset_id )
