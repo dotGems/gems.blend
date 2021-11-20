@@ -7,13 +7,13 @@
 
 ```bash
 # setup NFT recipe
-$ cleos push action blend.gems setblend '["myrecipe", [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+$ cleos push action blend.gems initrecipe '[[["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
 
 # setup NFT blend
-$ cleos push action blend.gems setblend '["myblend", ["myrecipe"], [["mycollection", 789]], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '[["mycollection", 789], [1], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
 
-# user send NFT's to be blended (memo contains Blend id)
-$ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "myblend"]' -p myaccount
+# user send NFT's to contract (memo schema `<collection_name>:<template_id>`)
+$ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "mycollection:789"]' -p myaccount
 ```
 
 ## Table of Content

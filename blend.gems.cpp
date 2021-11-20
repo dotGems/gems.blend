@@ -17,8 +17,7 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     // build vector of received templates
     vector<atomic::nft> received_nfts;
     for ( const uint64_t asset_id : asset_ids ) {
-        const auto my_asset = atomic::get_asset( get_self(), asset_id );
-        received_nfts.push_back( atomic::nft{ my_asset.collection_name, my_asset.template_id } );
+        received_nfts.push_back( atomic::get_nft( get_self(), asset_id ) );
     }
 
     // parse blend id
@@ -88,24 +87,22 @@ void blend::attempt_to_blend( const name owner, const name blend_id, const vecto
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
-                   blend.blend_id,
-                   recipe.recipe_id,
-                   1,
-                   in_asset_ids.size(),
                    in_asset_ids,
+                   next_asset_id
                    received_templates,
-                   next_asset_id );
+                   blend.out_template,
+                   1,
+                   in_asset_ids.size() );
 }
 
 [[eosio::action]]
-void blend::blendlog(  const name owner,
-                       const name blend_id,
-                       const name recipe_id,
-                       const int total_mint,
-                       const int total_burn,
-                       const vector<uint64_t> in_asset_ids,
-                       const vector<atomic::nft> in_templates,
-                       const uint64_t out_asset_id )
+void blend::blendlog( const name owner,
+                      const vector<uint64_t> in_asset_ids,
+                      const uint64_t out_asset_id
+                      const vector<atomic::nft> in_templates,
+                      const atomic::nft out_template,
+                      const int total_mint,
+                      const int total_burn );
 {
     require_auth( get_self() );
     require_recipient( owner );
@@ -125,44 +122,45 @@ void blend::reset( const name table, const optional<name> scope  )
     else check( false, "invalid table name");
 }
 
+void blend::validate_template( const atomic::nft template, const bool burnable )
+{
+    check( template.collection_name.value, "blend::validate_template: [template.collection_name] is required");
+    check( template.template_id, "blend::validate_template: [template.template_id] is required");
+    const auto my_template = atomic::get_template( item.collection_name, item.template_id );
+    if ( burnable ) check( my_template.burnable, "blend::validate_templates: [template] must be `burnable`");
+    check( my_template.transferable, "blend::validate_templates: [template] must be `transferable`");
+
+    // TO-DO check if contract is authorized minter
+}
+
 void blend::validate_templates( const vector<atomic::nft> templates, const bool burnable )
 {
     for ( const atomic::nft item : templates ) {
-        const auto my_template = atomic::get_template( item.collection_name, item.template_id );
-        if ( burnable ) check( my_template.burnable, "blend::validate_templates: [template] must be `burnable`");
-        check( my_template.transferable, "blend::validate_templates: [template] must be `transferable`");
+        validate_template( item, burnable );
     }
 }
 
 [[eosio::action]]
-void blend::setrecipe( const name recipe_id, const vector<atomic::nft> templates )
+void blend::initrecipe( const vector<atomic::nft> templates )
 {
     require_auth( get_self() );
 
     blend::recipes_table _recipes( get_self(), get_self().value );
 
     // validate
-    check( recipe_id.length() <= 12, "blend::setrecipe: invalid [recipe_id] name must be 12 characters or less");
-    check( recipe_id.length() >= 1, "blend::setrecipe: invalid [recipe_id] cannot be empty");
-    check( name{recipe_id.value}.value, "blend::setrecipe: invalid [recipe_id]");
-    check( sx::utils::parse_name(recipe_id.to_string()) == recipe_id, "blend::setrecipe: invalid [recipe_id] not matching");
-    check( templates.size() >= 1, "blend::setrecipe: [templates] cannot be empty");
+    check( templates.size() >= 1, "blend::initrecipe: [templates] cannot be empty");
     validate_templates( templates, true );
 
     // recipe content
     auto insert = [&]( auto & row ) {
-        row.recipe_id = recipe_id;
+        row.recipe_id = _recipes.available_primary_key(); // TO-DO use auto-increment via `status` table
         row.templates = templates;
     };
-
-    // create/modify blend
-    auto itr = _recipes.find( recipe_id.value );
-    if ( itr == _recipes.end() ) _recipes.emplace( get_self(), insert );
-    else  _recipes.modify( itr, get_self(), insert );
+    _recipes.emplace( get_self(), insert );
 }
 
 [[eosio::action]]
-void blend::setblend( const name blend_id, const set<name> in_recipe_ids, const atomic::nft out_template, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const atomic::nft blend, const set<name> recipe_ids, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     require_auth( get_self() );
 
@@ -170,25 +168,20 @@ void blend::setblend( const name blend_id, const set<name> in_recipe_ids, const 
     blend::recipes_table _recipes( get_self(), get_self().value );
 
     // validate
-    check( blend_id.length() <= 12, "blend::setblend: invalid [blend_id], name must be 12 characters or less");
-    check( blend_id.length() >= 1, "blend::setblend: invalid [blend_id], cannot be empty");
-    check( name{blend_id.value}.value, "blend::setblend: invalid [blend_id]");
-    check( sx::utils::parse_name(blend_id.to_string()) == blend_id, "blend::setblend: invalid [blend_id] not matching");
-    check( in_recipe_ids.size(), "blend::setblend: [in_recipe_ids] must contain at least 1 item");
-    check( out_template.collection_name.value, "blend::setblend: [out_template.collection_name] is required");
-    check( out_template.template_id, "blend::setblend: [out_template.template_id] is required");
-    validate_templates( { out_template }, false );
+    check( recipe_ids.size(), "blend::setblend: [recipe_ids] must contain at least 1 item");
+    check( blend.collection_name.value, "blend::setblend: [blend.collection_name] is required");
+    check( blend.template_id, "blend::setblend: [blend.template_id] is required");
+    validate_template( blend, false );
 
     // validate recipes
-    for ( const name recipe_id : in_recipe_ids ) {
+    for ( const name recipe_id : recipe_ids ) {
         _recipes.get( recipe_id.value, "blend::setblend: [recipe_id] does not exists");
     }
 
     // recipe content
     auto insert = [&]( auto & row ) {
-        row.blend_id = blend_id;
-        row.in_recipe_ids = in_recipe_ids;
-        row.out_template = out_template;
+        row.blend = blend;
+        row.recipe_ids = recipe_ids;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = *end_time;
     };
