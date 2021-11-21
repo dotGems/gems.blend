@@ -20,11 +20,11 @@ public:
     /**
      * ## TABLE `status`
      *
-     * - `vector<uint32_t>` counters` - counters
-     * - `uint32_t` counters[0]` - recipes counter
-     * - `uint32_t` counters[1]` - total mint
-     * - `uint32_t` counters[2]` - total burn
-     * - `time_point_sec` last_updated;
+     * - `{vector<uint32_t>} counters` - counters
+     * - `{uint32_t} counters[0]` - recipes counter
+     * - `{uint32_t} counters[1]` - total mint
+     * - `{uint32_t} counters[2]` - total burn
+     * - `{time_point_sec} last_updated` - last updated
      *
      * ### example
      *
