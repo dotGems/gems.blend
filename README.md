@@ -37,6 +37,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 - `{atomic::nft} id` - output AtomicAsset NFT template
 - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
+- `{string} description` - blend description
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
@@ -46,6 +47,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 {
     "id": {"collection_name": "mycollection", "template_id": 21883},
     "recipe_ids": [1, 2],
+    "description": "My Blend",
     "start_time": "2021-07-01T00:00:00",
     "end_time": "2021-10-01T00:00:00"
 }
