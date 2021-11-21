@@ -47,7 +47,7 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} blend` - output AtomicAsset NFT template
+     * - `{atomic::nft} id` - output AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
@@ -56,7 +56,7 @@ public:
      *
      * ```json
      * {
-     *     "blend": {"collection_name": "mycollection", "template_id": 21883},
+     *     "id": {"collection_name": "mycollection", "template_id": 21883},
      *     "recipe_ids": [1, 2],
      *     "start_time": "2021-07-01T00:00:00",
      *     "end_time": "2021-10-01T00:00:00"
@@ -64,13 +64,13 @@ public:
      * ```
      */
     struct [[eosio::table("blends")]] blends_row {
-        atomic::nft         blend;
+        atomic::nft         id;
         set<uint64_t>       recipe_ids;
         time_point_sec      start_time;
         time_point_sec      end_time;
 
-        uint64_t primary_key() const { return blend.template_id; }
-        uint64_t by_collection() const { return blend.collection_name; }
+        uint64_t primary_key() const { return id.template_id; }
+        uint64_t by_collection() const { return id.collection_name.value; }
     };
     typedef eosio::multi_index< "blends"_n, blends_row,
         indexed_by<"bycollection"_n, const_mem_fun<blends_row, uint64_t, &blends_row::by_collection>>
@@ -81,23 +81,23 @@ public:
      *
      * ### params
      *
-     * - `{uint64_t} recipe_id` - (auto-incremental primary key) recipe ID
+     * - `{uint64_t} id` - (auto-incremental primary key) recipe ID
      * - `{vector<atomic::nft>} templates` - AtomicAsset NFT templates
      *
      * ### example
      *
      * ```json
      * {
-     *     "recipe_id": 1,
+     *     "id": 1,
      *     "templates": [{"collection_name": "mycollection", "template_id": 21883}]
      * }
      * ```
      */
     struct [[eosio::table("recipes")]] recipes_row {
-        uint64_t                recipe_id;
+        uint64_t                id;
         vector<atomic::nft>     templates;
 
-        uint64_t primary_key() const { return recipe_id; }
+        uint64_t primary_key() const { return id; }
     };
     typedef eosio::multi_index< "recipes"_n, recipes_row> recipes_table;
 
@@ -110,7 +110,7 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} blend` - blend AtomicAsset NFT template
+     * - `{atomic::nft} id` - AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - input recipes ID's
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
@@ -122,7 +122,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft blend, const set<uint64_t> recipe_ids, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
      * ## ACTION `initrecipe`
@@ -153,7 +153,7 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} blend` - blend AtomicAsset NFT
+     * - `{atomic::nft} id` - blend AtomicAsset NFT
      *
      * ### Example
      *
@@ -162,7 +162,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void delblend( const atomic::nft blend );
+    void delblend( const atomic::nft id );
 
     /**
      * ## ACTION `delrecipe`
@@ -190,7 +190,7 @@ public:
     [[eosio::action]]
     void blendlog( const name owner,
                    const vector<uint64_t> in_asset_ids,
-                   const uint64_t out_asset_id
+                   const uint64_t out_asset_id,
                    const vector<atomic::nft> in_templates,
                    const atomic::nft out_template,
                    const int total_mint,
@@ -215,11 +215,11 @@ private:
     void transfer( const name from, const name to, const extended_asset quantity, const string memo );
 
     // blend
-    void validate_template( const atomic::nft template, const bool burnable );
     void validate_templates( const vector<atomic::nft> templates, const bool burnable );
-    void attempt_to_blend( const name owner, const name blend_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
+    void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
-    name detect_recipe( const set<name> recipe_ids, vector<atomic::nft> received_templates );
+    uint64_t detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates );
+    std::pair<name, int32_t> parse_memo( const string memo );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );

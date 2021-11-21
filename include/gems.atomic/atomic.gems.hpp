@@ -74,7 +74,7 @@ atomicassets::assets_s get_asset( const name owner, const uint64_t asset_id )
 atomic::nft get_nft( const name owner, const uint64_t asset_id )
 {
     atomicassets::assets_s my_asset = get_asset( owner, asset_id );
-    return atomic::nft{ my_asset.collection_name, my_asset.template_id }
+    return atomic::nft{ my_asset.collection_name, my_asset.template_id };
 }
 
 atomicdata::ATOMIC_ATTRIBUTE get_template_attribute( const name collection_name, const name schema_name, const int32_t template_id, const string key )
