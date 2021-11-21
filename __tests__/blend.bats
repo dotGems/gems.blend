@@ -62,14 +62,14 @@
   run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]]]' -p blend.gems
   [ $status -eq 0 ]
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "2021-07-05T00:00:00", null]' -p blend.gems
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems
   [ $status -eq 0 ]
 
 }
 
 @test "override set recipe & blend" {
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "2021-07-05T00:00:00", null]' -p blend.gems -f
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems -f
   [ $status -eq 0 ]
 
 }
@@ -79,7 +79,7 @@
   run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2]]]' -p blend.gems
   [ $status -eq 0 ]
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0, 1], "2021-07-05T00:00:00", null]' -p blend.gems
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0, 1], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems
   [ $status -eq 0 ]
 
 }
