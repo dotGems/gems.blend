@@ -27,7 +27,8 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     attempt_to_blend( from, collection_name, template_id, asset_ids, received_nfts);
 
     // stats
-    update_status(0, 1);
+    update_status(1, 1); // mint
+    update_status(2, asset_ids.size()); // burn
 }
 
 std::pair<name, int32_t> blend::parse_memo( const string memo )
@@ -157,14 +158,24 @@ void blend::initrecipe( const vector<atomic::nft> templates )
 
     // recipe content
     auto insert = [&]( auto & row ) {
-        row.id = _recipes.available_primary_key(); // TO-DO use auto-increment via `status` table
+        row.id = get_next_recipe_id();
         row.templates = templates;
     };
     _recipes.emplace( get_self(), insert );
+
+    // stats
+    update_status(0, 1); // recipe counter
+}
+
+uint64_t blend::get_next_recipe_id()
+{
+    blend::status_table _status( get_self(), get_self().value );
+    if ( !_status.exists() ) return 0;
+    return _status.get().counters[0];
 }
 
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     require_auth( get_self() );
 
@@ -184,6 +195,7 @@ void blend::setblend( const atomic::nft id, const set<uint64_t> recipe_ids, cons
     auto insert = [&]( auto & row ) {
         row.id = id;
         row.recipe_ids = recipe_ids;
+        row.description = description;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = *end_time;
     };

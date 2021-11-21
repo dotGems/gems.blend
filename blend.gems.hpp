@@ -20,14 +20,17 @@ public:
     /**
      * ## TABLE `status`
      *
-     * - `vector<uint32_t>` counters;   // 0 - total recipes blended, 1 - total recipes
+     * - `vector<uint32_t>` counters` - counters
+     * - `uint32_t` counters[0]` - recipes counter
+     * - `uint32_t` counters[1]` - total mint
+     * - `uint32_t` counters[2]` - total burn
      * - `time_point_sec` last_updated;
      *
      * ### example
      *
      * ```json
      * {
-     *   "counters": [1234, 12],
+     *   "counters": [10, 1234, 300],
      *   "last_updated": "2021-04-12T12:23:42"
      * }
      * ```
@@ -49,6 +52,7 @@ public:
      *
      * - `{atomic::nft} id` - output AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
+     * - `{string} description` - blend description
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
      *
@@ -58,6 +62,7 @@ public:
      * {
      *     "id": {"collection_name": "mycollection", "template_id": 21883},
      *     "recipe_ids": [1, 2],
+     *     "description": "My Blend",
      *     "start_time": "2021-07-01T00:00:00",
      *     "end_time": "2021-10-01T00:00:00"
      * }
@@ -66,6 +71,7 @@ public:
     struct [[eosio::table("blends")]] blends_row {
         atomic::nft         id;
         set<uint64_t>       recipe_ids;
+        string              description;
         time_point_sec      start_time;
         time_point_sec      end_time;
 
@@ -112,17 +118,18 @@ public:
      *
      * - `{atomic::nft} id` - AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - input recipes ID's
+     * - `{string} description` - blend description
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], [1, 2], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+     * $ cleos push action blend.gems setblend '[["mycollection", 789], [1, 2], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
      * ## ACTION `initrecipe`
@@ -220,6 +227,7 @@ private:
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
     uint64_t detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates );
     std::pair<name, int32_t> parse_memo( const string memo );
+    uint64_t get_next_recipe_id();
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );
