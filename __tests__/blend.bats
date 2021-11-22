@@ -31,21 +31,23 @@
 
   # mint blendable
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 1, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627776
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 2, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627777
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 3, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627778
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 3, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627779
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 3, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627780
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 1, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627781
   run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 2, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
-  run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 3, "myaccount", [], [], []]' -p mycollection -f
-  [ $status -eq 0 ]
+  [ $status -eq 0 ] #1099511627782
+  run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 1, "myaccount", [], [], []]' -p mycollection -f
+  [ $status -eq 0 ] #1099511627783
+  run cleos push action atomicassets mintasset '["mycollection", "mycollectio1", "myitems1", 2, "myaccount", [], [], []]' -p mycollection -f
+  [ $status -eq 0 ] #1099511627784
 
 }
 
@@ -57,7 +59,7 @@
 
 }
 
-@test "valid set recipe & blend" {
+@test "valid set recipe #0 & blend" {
 
   run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]]]' -p blend.gems
   [ $status -eq 0 ]
@@ -74,7 +76,7 @@
 
 }
 
-@test "set recipe #2" {
+@test "set recipe #1" {
 
   run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2]]]' -p blend.gems
   [ $status -eq 0 ]
@@ -92,14 +94,14 @@
 
 }
 
-@test "blend exact" {
+@test "blend recipe #0" {
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 0 ]
 
 }
 
-@test "provided not enough" {
+@test "send wrong assets for blend" {
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627781, 1099511627782, 1099511627783], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 1 ]
@@ -107,7 +109,7 @@
 
 }
 
-@test "blend recipe #2" {
+@test "blend recipe #1" {
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627781, 1099511627782], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 0 ]
@@ -115,14 +117,21 @@
 }
 
 @test "status check" {
+
   result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[0]')
   [ "$result" = "2" ]
+
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[1]')
+  [ "$result" = "2" ]
+
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[2]')
+  [ "$result" = "6" ]
 }
 
 
-@test "delete recipe #2" {
+@test "delete recipe #0" {
 
-  run cleos push action blend.gems delrecipe '[1]' -p blend.gems
+  run cleos push action blend.gems delrecipe '[0]' -p blend.gems
   [ $status -eq 0 ]
 
   result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0].recipe_ids | length')
@@ -132,9 +141,31 @@
   [ "$result" = "1" ]
 }
 
+@test "blend recipe #1 again" {
+
+  run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627783, 1099511627784], "mycollectio1:4"]' -p myaccount -p mycollection
+  [ $status -eq 0 ]
+
+  result=$(cleos get table atomicassets myaccount assets | jq -r '.rows | length')
+  [ "$result" = "4" ]
+
+}
+
+@test "status check again" {
+
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[0]')
+  [ "$result" = "2" ]
+
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[1]')
+  [ "$result" = "3" ]
+
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[2]')
+  [ "$result" = "8" ]
+}
+
 @test "delete recipe #1" {
 
-  run cleos push action blend.gems delrecipe '[0]' -p blend.gems
+  run cleos push action blend.gems delrecipe '[1]' -p blend.gems
   [ $status -eq 0 ]
 
   result=$(cleos get table blend.gems blend.gems recipes | jq -r '.rows[0] | length')
@@ -145,6 +176,14 @@
 
 }
 
+@test "delete non-existing recipe" {
+
+  run cleos push action blend.gems delrecipe '[111]' -p blend.gems
+  [ $status -eq 1 ]
+  [[ "$output" =~ "[recipe_id] does not exist" ]]
+
+}
+
 @test "delete blend" {
 
   run cleos push action blend.gems delblend '[["mycollectio1", 4]]' -p blend.gems
@@ -152,4 +191,12 @@
 
   result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0] | length')
   [ "$result" = "0" ]
+}
+
+@test "delete non-existing blend" {
+
+  run cleos push action blend.gems delblend '[["mycollectio1", 5]]' -p blend.gems
+  [ $status -eq 1 ]
+  [[ "$output" =~ "[id.template_id] does not exist" ]]
+
 }
