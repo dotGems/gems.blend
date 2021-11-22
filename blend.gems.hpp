@@ -149,7 +149,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void initrecipe( const vector<atomic::nft> templates );
+    void initrecipe( vector<atomic::nft> templates );
 
     /**
      * ## ACTION `delblend`
@@ -226,6 +226,7 @@ private:
     void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
     uint64_t detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates );
+    bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );
     uint64_t get_next_recipe_id();
 

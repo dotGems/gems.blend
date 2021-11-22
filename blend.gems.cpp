@@ -60,14 +60,19 @@ uint64_t blend::detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nf
 
     for ( const uint64_t recipe_id : recipe_ids ) {
         auto recipe = _recipes.get( recipe_id, "blend::detect_recipe: [recipe_id] does not exists");
-        if ( recipe.templates.size() != received_templates.size()) continue;
-
-        // sort recipe ingredients and compare to sorted received vector
-        sort( recipe.templates.begin(), recipe.templates.end());
-        if ( received_templates == recipe.templates) return recipe_id;
+        if ( is_match( received_templates, recipe.templates )) return recipe_id;
     }
     check( false, "blend::detect_recipe: could not detect any valid recipes");
     return 0;
+}
+
+bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates )
+{
+    if( templates.size() != sorted_templates.size()) return false;
+
+    // sort recipe ingredients and compare to sorted received vector
+    sort( templates.begin(), templates.end());
+    return sorted_templates == templates;
 }
 
 void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates )
@@ -146,15 +151,23 @@ void blend::validate_templates( const vector<atomic::nft> templates, const bool 
 }
 
 [[eosio::action]]
-void blend::initrecipe( const vector<atomic::nft> templates )
+void blend::initrecipe( vector<atomic::nft> templates )
 {
     require_auth( get_self() );
-
-    blend::recipes_table _recipes( get_self(), get_self().value );
 
     // validate
     check( templates.size() >= 1, "blend::initrecipe: [templates] cannot be empty");
     validate_templates( templates, true );
+
+    // pre-sort ingredients for detect_recipe efficiency
+    sort( templates.begin(), templates.end() );
+
+    blend::recipes_table _recipes( get_self(), get_self().value );
+
+    // uncomment this loop to disallow duplicate recipes
+    // for( auto& recipe: _recipes )) {
+    //     check( !is_match( templates, recipe.templates ), "blend::initrecipe: recipe already exists" );
+    // }
 
     // recipe content
     auto insert = [&]( auto & row ) {
