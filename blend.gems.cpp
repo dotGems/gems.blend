@@ -261,4 +261,32 @@ void blend::update_status( const uint32_t index, const uint32_t count )
     _status.set( status, get_self() );
 }
 
+
+[[eosio::action]]
+void blend::cleanup( )
+{
+    require_auth( get_self() );
+
+    set<uint64_t> used_recipes;
+    blend::blends_table _blends( get_self(), get_self().value );
+    for (const auto& blend: _blends) {
+        for (const auto& recipe_id: blend.recipe_ids) {
+            used_recipes.insert(recipe_id);
+        }
+    }
+
+    blend::recipes_table _recipes( get_self(), get_self().value );
+    int erased = 0;
+    for( auto it = _recipes.begin(); it != _recipes.end(); ){
+        if( used_recipes.count( it->id ) == 0 ) {
+            it = _recipes.erase( it );
+            ++erased;
+        }
+        else {
+            ++it;
+        }
+    }
+    check( erased, "blend::cleanup: nothing to cleanup");
+}
+
 }

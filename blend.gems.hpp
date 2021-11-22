@@ -195,6 +195,9 @@ public:
     void reset( const name table, const optional<name> scope  );
 
     [[eosio::action]]
+    void cleanup( );
+
+    [[eosio::action]]
     void blendlog( const name owner,
                    const vector<uint64_t> in_asset_ids,
                    const uint64_t out_asset_id,
