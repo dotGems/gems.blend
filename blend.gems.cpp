@@ -164,10 +164,11 @@ void blend::initrecipe( vector<atomic::nft> templates )
 
     blend::recipes_table _recipes( get_self(), get_self().value );
 
-    // uncomment this loop to disallow duplicate recipes
-    // for( auto& recipe: _recipes )) {
-    //     check( !is_match( templates, recipe.templates ), "blend::initrecipe: recipe already exists" );
-    // }
+    // disallow duplicate recipes
+    // uncomment if action causes CPU issues due to large amounts of recipes in contract
+    for( auto& recipe: _recipes )) {
+        check( !is_match( templates, recipe.templates ), "blend::initrecipe: recipe already exists" );
+    }
 
     // recipe content
     auto insert = [&]( auto & row ) {
@@ -267,6 +268,7 @@ void blend::cleanup( )
 {
     require_auth( get_self() );
 
+    // collect all recipe ID's from blends
     set<uint64_t> used_recipes;
     blend::blends_table _blends( get_self(), get_self().value );
     for (const auto& blend: _blends) {
@@ -275,14 +277,14 @@ void blend::cleanup( )
         }
     }
 
+    // erase any recipes that no longer belong to blends
     blend::recipes_table _recipes( get_self(), get_self().value );
     int erased = 0;
     for( auto it = _recipes.begin(); it != _recipes.end(); ){
-        if( used_recipes.count( it->id ) == 0 ) {
+        if ( used_recipes.count( it->id ) == 0 ) {
             it = _recipes.erase( it );
             ++erased;
-        }
-        else {
+        } else {
             ++it;
         }
     }
