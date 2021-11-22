@@ -61,3 +61,13 @@ title: reset
 summary: Reset table
 icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
 ---
+
+<h1 class="contract">cleanup</h1>
+
+---
+spec_version: "0.2.0"
+title: cleanup
+summary: Cleanup orphan recipes
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---
+
