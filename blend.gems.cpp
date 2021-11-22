@@ -166,7 +166,7 @@ void blend::initrecipe( vector<atomic::nft> templates )
 
     // disallow duplicate recipes
     // uncomment if action causes CPU issues due to large amounts of recipes in contract
-    for( auto& recipe: _recipes )) {
+    for ( recipes_row recipe: _recipes ) {
         check( !is_match( templates, recipe.templates ), "blend::initrecipe: recipe already exists" );
     }
 
