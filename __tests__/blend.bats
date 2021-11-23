@@ -76,6 +76,26 @@
 
 }
 
+@test "create blend/recipe with no auth" {
+
+  run cleos push action blend.gems addrecipe '[["mycollectio1", 3], [["mycollectio1", 1], ["mycollectio1", 2]]]' -p myaccount
+  [ $status -eq 1 ]
+  [[ "$output" =~ "missing authority" ]]
+
+  run cleos push action blend.gems setblend '[["mycollectio1", 3], "My Blend Update", "2021-07-05T00:00:00", null]' -p myaccount
+  [ $status -eq 1 ]
+  [[ "$output" =~ "missing authority" ]]
+
+  run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 0]' -p myaccount
+  [ $status -eq 1 ]
+  [[ "$output" =~ "missing authority" ]]
+
+  run cleos push action blend.gems delblend '[["mycollectio1", 4]]' -p myaccount
+  [ $status -eq 1 ]
+  [[ "$output" =~ "missing authority" ]]
+
+}
+
 @test "add recipe #1" {
 
   run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 1], ["mycollectio1", 2]]]' -p mycollection
