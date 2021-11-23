@@ -110,7 +110,7 @@ Set NFT blend
 ### params
 
 - `{atomic::nft} id` - AtomicAsset NFT template
-- `{string} description` - blend description
+- `{string} [description=""]` - (optional) blend description
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 

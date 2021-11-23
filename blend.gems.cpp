@@ -201,7 +201,7 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 }
 
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const atomic::nft id, const optional<string> description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
 
@@ -215,7 +215,7 @@ void blend::setblend( const atomic::nft id, const string description, const opti
     // recipe content
     auto insert = [&]( auto & row ) {
         row.id = id;
-        row.description = description;
+        if ( description ) row.description = *description;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
     };

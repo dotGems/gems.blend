@@ -135,7 +135,7 @@ public:
      * ### params
      *
      * - `{atomic::nft} id` - AtomicAsset NFT template
-     * - `{string} description` - blend description
+     * - `{string} [description=""]` - (optional) blend description
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
      *
@@ -146,7 +146,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft id, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const atomic::nft id, const optional<string> description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
      * ## ACTION `addrecipe`
