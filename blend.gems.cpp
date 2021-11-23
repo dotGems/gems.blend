@@ -156,10 +156,16 @@ void blend::validate_templates( const vector<atomic::nft> templates, const bool 
     }
 }
 
+name blend::get_ram_payer( const atomic::nft id )
+{
+    if ( has_auth( get_self() ) ) return get_self();
+    return get_author( id );
+}
+
 [[eosio::action]]
 void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 {
-    require_auth( get_self() );
+    if ( has_auth( get_self() ) ) require_auth( get_author( id ) );
 
     // tables
     blend::recipes_table _recipes( get_self(), id.collection_name.value );
@@ -181,7 +187,8 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 
     // add recipe to blend
     const uint64_t recipe_id = _recipes.available_primary_key();
-    _blends.modify( blend, get_self(), [&]( auto & row ) {
+    const name ram_payer = get_ram_payer( id );
+    _blends.modify( blend, ram_payer, [&]( auto & row ) {
         row.recipe_ids.insert( recipe_id );
     });
 
@@ -190,13 +197,13 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
         row.id = recipe_id;
         row.templates = templates;
     };
-    _recipes.emplace( get_self(), insert );
+    _recipes.emplace( ram_payer, insert );
 }
 
 [[eosio::action]]
 void blend::setblend( const atomic::nft id, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
-    require_auth( get_self() );
+    if ( has_auth( get_self() ) ) require_auth( get_author( id ) );
 
     blend::blends_table _blends( get_self(), id.collection_name.value );
     blend::recipes_table _recipes( get_self(), id.collection_name.value );
@@ -214,9 +221,10 @@ void blend::setblend( const atomic::nft id, const string description, const opti
     };
 
     // create/modify blend
+    const name ram_payer = get_ram_payer( id );
     auto itr = _blends.find( id.template_id );
-    if ( itr == _blends.end() ) _blends.emplace( get_self(), insert );
-    else  _blends.modify( itr, get_self(), insert );
+    if ( itr == _blends.end() ) _blends.emplace( ram_payer, insert );
+    else  _blends.modify( itr, ram_payer, insert );
 
     // add scope
     auto collections = _collections.get_or_default();
@@ -227,7 +235,7 @@ void blend::setblend( const atomic::nft id, const string description, const opti
 [[eosio::action]]
 void blend::delblend( const atomic::nft id )
 {
-    require_auth( get_self() );
+    if ( has_auth( get_self() ) ) require_auth( get_author( id ) );
 
     blend::blends_table _blends( get_self(), id.collection_name.value );
     blend::recipes_table _recipes( get_self(), id.collection_name.value );
@@ -252,7 +260,7 @@ void blend::delblend( const atomic::nft id )
 [[eosio::action]]
 void blend::delrecipe( const atomic::nft id, const uint64_t recipe_id )
 {
-    require_auth( get_self() );
+    if ( has_auth( get_self() ) ) require_auth( get_author( id ) );
 
     // tables
     blend::blends_table _blends( get_self(), id.collection_name.value );
@@ -261,7 +269,7 @@ void blend::delrecipe( const atomic::nft id, const uint64_t recipe_id )
     // erase recipe from existing blends
     auto & blend = _blends.get( id.template_id, "blend::delrecipe: [id.template_id] does not exist" );
     if ( blend.recipe_ids.count( recipe_id ) ) {
-        _blends.modify( blend, get_self(), [&]( auto & row ) {
+        _blends.modify( blend, get_ram_payer( id ), [&]( auto & row ) {
             row.recipe_ids.erase( recipe_id );
         });
     }
