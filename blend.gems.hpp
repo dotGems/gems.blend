@@ -213,9 +213,6 @@ public:
     [[eosio::action]]
     void reset( const name table, const optional<name> scope  );
 
-    // [[eosio::action]]
-    // void cleanup( );
-
     [[eosio::action]]
     void blendlog( const name owner,
                    const name collection_name,
