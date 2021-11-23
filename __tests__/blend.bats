@@ -65,7 +65,7 @@
 
   run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 999]]]' -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "`template_id` does not exist" ]]
+  [[ "$output" =~ "`template_id` does not exist" ]] || false
 
 }
 
@@ -80,19 +80,19 @@
 
   run cleos push action blend.gems addrecipe '[["mycollectio1", 3], [["mycollectio1", 1], ["mycollectio1", 2]]]' -p myaccount
   [ $status -eq 1 ]
-  [[ "$output" =~ "missing authority" ]]
+  [[ "$output" =~ "missing authority" ]] || false
 
   run cleos push action blend.gems setblend '[["mycollectio1", 3], "My Blend Update", "2021-07-05T00:00:00", null]' -p myaccount
   [ $status -eq 1 ]
-  [[ "$output" =~ "missing authority" ]]
+  [[ "$output" =~ "missing authority" ]] || false
 
   run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 0]' -p myaccount
   [ $status -eq 1 ]
-  [[ "$output" =~ "missing authority" ]]
+  [[ "$output" =~ "missing authority" ]] || false
 
   run cleos push action blend.gems delblend '[["mycollectio1", 4]]' -p myaccount
   [ $status -eq 1 ]
-  [[ "$output" =~ "missing authority" ]]
+  [[ "$output" =~ "missing authority" ]] || false
 
 }
 
@@ -107,7 +107,7 @@
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779, 1099511627780], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "could not detect any valid recipes" ]]
+  [[ "$output" =~ "could not detect any valid recipes" ]] || false
 
 }
 
@@ -122,7 +122,7 @@
 
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627781, 1099511627782, 1099511627783], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "could not detect any valid recipes" ]]
+  [[ "$output" =~ "could not detect any valid recipes" ]] || false
 
 }
 
@@ -184,7 +184,7 @@
 
   run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 999]' -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "[recipe_id] does not exist" ]]
+  [[ "$output" =~ "[recipe_id] does not exist" ]] || false
 
 }
 
@@ -207,6 +207,6 @@
 
   run cleos push action blend.gems delblend '[["mycollectio1", 5]]' -p mycollection
   [ $status -eq 1 ]
-  [[ "$output" =~ "[id.template_id] does not exist" ]]
+  [[ "$output" =~ "[id.template_id] does not exist" ]] || false
 
 }
