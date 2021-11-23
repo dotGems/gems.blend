@@ -18,20 +18,50 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ## Table of Content
 
+- [TABLE `status`](#table-status)
+- [TABLE `scopes`](#table-scopes)
 - [TABLE `blends`](#table-blends)
 - [TABLE `recipes`](#table-recipes)
-- [TABLE `ontransfer`](#table-ontransfer)
-- [TABLE `status`](#table-status)
 - [ACTION `setblend`](#action-setblend)
-- [ACTION `setrecipe`](#action-setrecipe)
+- [ACTION `addrecipe`](#action-addrecipe)
 - [ACTION `delblend`](#action-delblend)
 - [ACTION `delrecipe`](#action-delrecipe)
 
+## TABLE `status`
+
+## params
+
+- `{vector<uint32_t>} counters` - counters
+- `{uint32_t} counters[0]` - total mint
+- `{uint32_t} counters[1]` - total burn
+- `{time_point_sec} last_updated` - last updated
+
+### example
+
+```json
+{
+    "counters": [10, 30],
+    "last_updated": "2021-04-12T12:23:42"
+}
+```
+
+## TABLE `scopes`
+
+## params
+
+- `{set<name>} collection_names` - collection names
+
+### example
+
+```json
+{
+    "collection_names": ["mycollection"]
+}
+```
+
 ## TABLE `blends`
 
-| `param`        | `index_position` | `key_type` |
-|--------------- |------------------|------------|
-| `bycollection` | 2                | i64        |
+- scope: `{name} collection_name`
 
 ### params
 
@@ -55,6 +85,8 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ## TABLE `recipes`
 
+- scope: `{name} collection_name`
+
 ### params
 
 - `{uint64_t} id` - (auto-incremental primary key) recipe ID
@@ -69,43 +101,6 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 }
 ```
 
-## TABLE `ontransfer`
-
-- scope: `{name} owner`
-
-### params
-
-- `{name} owner` - (primary key) account name
-- `{vector<uint64_t>} asset_ids` - received AtomicHub NFT asset IDs
-- `{vector<atomic::nft>} templates` - AtomicHub NFT templates
-
-### example
-
-```json
-{
-    "owner": "myaccount",
-    "asset_ids": [1099511627776, 1099511627777],
-    "templates": [{"collection_name": "mycollection", "template_id": 123}, {"collection_name": "mycollection", "template_id": 456}]
-}
-```
-
-## TABLE `status`
-
-- `{vector<uint32_t>} counters` - counters
-  - `{uint32_t} counters[0]` - recipes counter
-  - `{uint32_t} counters[1]` - total mint
-  - `{uint32_t} counters[2]` - total burn
-- `{time_point_sec} last_updated` - last updated
-
-### example
-
-```json
-{
-    "counters": [10, 1234, 300],
-    "last_updated": "2021-04-12T12:23:42"
-}
-```
-
 ## ACTION `setblend`
 
 Set NFT blend
@@ -115,7 +110,6 @@ Set NFT blend
 ### params
 
 - `{atomic::nft} id` - AtomicAsset NFT template
-- `{set<uint64_t>} recipe_ids` - input recipes ID's
 - `{string} description` - blend description
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
@@ -123,23 +117,24 @@ Set NFT blend
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '[["mycollection", 789], [1, 2], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
 ```
 
-## ACTION `initrecipe`
+## ACTION `addrecipe`
 
-Initialize NFT recipe
+Add NFT recipe to blend
 
 - **authority**: `get_self()`
 
 ### params
 
+- `{atomic::nft} id` - AtomicAsset NFT template
 - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems initrecipe '[[["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+$ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
 ```
 
 ## ACTION `delblend`
@@ -166,10 +161,11 @@ Delete NFT recipe
 
 ### params
 
+- `{atomic::nft} id` - AtomicAsset NFT template
 - `{uint64_t} recipe_id` - recipe ID
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems delrecipe '[1]' -p blend.gems
+$ cleos push action blend.gems delrecipe '[["mycollection", 789], 1]' -p blend.gems
 ```
