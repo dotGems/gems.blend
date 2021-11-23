@@ -16,4 +16,15 @@ void blend::transfer( const name from, const name to, const extended_asset value
     transfer.send( from, to, value.quantity, memo );
 }
 
+void blend::update_status( const uint32_t index, const uint32_t count )
+{
+    status_table _status( get_self(), get_self().value );
+    auto status = _status.get_or_default();
+
+    if ( status.counters.size() <= index ) status.counters.resize( index + 1);
+    status.counters[index] += count;
+    status.last_updated = current_time_point();
+    _status.set( status, get_self() );
+}
+
 }

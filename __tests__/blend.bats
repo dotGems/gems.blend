@@ -51,37 +51,34 @@
 
 }
 
-@test "invalid set recipes" {
+@test "valid set blend & add recipe #0" {
 
-  run cleos push action blend.gems initrecipe '[[["mycollectio1", 999]]]' -p blend.gems
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems
+  [ $status -eq 0 ]
+
+  run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]]]' -p blend.gems
+  [ $status -eq 0 ]
+
+}
+
+@test "invalid add recipes" {
+
+  run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 999]]]' -p blend.gems
   [ $status -eq 1 ]
   [[ "$output" =~ "`template_id` does not exist" ]]
 
 }
 
-@test "valid set recipe #0 & blend" {
+@test "override set blend" {
 
-  run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]]]' -p blend.gems
-  [ $status -eq 0 ]
-
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend Update", "2021-07-05T00:00:00", null]' -p blend.gems
   [ $status -eq 0 ]
 
 }
 
-@test "override set recipe & blend" {
+@test "add recipe #1" {
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems -f
-  [ $status -eq 0 ]
-
-}
-
-@test "set recipe #1" {
-
-  run cleos push action blend.gems initrecipe '[[["mycollectio1", 1], ["mycollectio1", 2]]]' -p blend.gems
-  [ $status -eq 0 ]
-
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], [0, 1], "My Blend", "2021-07-05T00:00:00", null]' -p blend.gems
+  run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 1], ["mycollectio1", 2]]]' -p blend.gems
   [ $status -eq 0 ]
 
 }
@@ -122,22 +119,19 @@
   [ "$result" = "2" ]
 
   result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[1]')
-  [ "$result" = "2" ]
-
-  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[2]')
   [ "$result" = "6" ]
 }
 
 
 @test "delete recipe #0" {
 
-  run cleos push action blend.gems delrecipe '[0]' -p blend.gems
+  run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 0]' -p blend.gems
   [ $status -eq 0 ]
 
-  result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0].recipe_ids | length')
+  result=$(cleos get table blend.gems mycollectio1 blends | jq -r '.rows[0].recipe_ids | length')
   [ "$result" = "1" ]
 
-  result=$(cleos get table blend.gems blend.gems recipes | jq -r '.rows | length')
+  result=$(cleos get table blend.gems mycollectio1 recipes | jq -r '.rows | length')
   [ "$result" = "1" ]
 }
 
@@ -154,13 +148,18 @@
 @test "status check again" {
 
   result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[0]')
-  [ "$result" = "2" ]
-
-  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[1]')
   [ "$result" = "3" ]
 
-  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[2]')
+  result=$(cleos get table blend.gems blend.gems status | jq -r '.rows[0].counters[1]')
   [ "$result" = "8" ]
+}
+
+@test "delete non-existing recipe" {
+
+  run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 999]' -p blend.gems
+  [ $status -eq 1 ]
+  [[ "$output" =~ "[recipe_id] does not exist" ]]
+
 }
 
 @test "delete blend" {
@@ -168,30 +167,22 @@
   run cleos push action blend.gems delblend '[["mycollectio1", 4]]' -p blend.gems
   [ $status -eq 0 ]
 
-  result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0] | length')
+  result=$(cleos get table blend.gems mycollectio1 blends | jq -r '.rows[0] | length')
   [ "$result" = "0" ]
 }
 
-@test "cleanup orphan recipe #1" {
+# @test "cleanup orphan recipe #1" {
 
-  run cleos push action blend.gems cleanup '[]' -p blend.gems
-  [ $status -eq 0 ]
+#   run cleos push action blend.gems cleanup '[]' -p blend.gems
+#   [ $status -eq 0 ]
 
-  result=$(cleos get table blend.gems blend.gems recipes | jq -r '.rows[0] | length')
-  [ "$result" = "0" ]
+#   result=$(cleos get table blend.gems blend.gems recipes | jq -r '.rows[0] | length')
+#   [ "$result" = "0" ]
 
-  result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0].recipe_ids | length')
-  [ "$result" = "0" ]
+#   result=$(cleos get table blend.gems blend.gems blends | jq -r '.rows[0].recipe_ids | length')
+#   [ "$result" = "0" ]
 
-}
-
-@test "delete non-existing recipe" {
-
-  run cleos push action blend.gems delrecipe '[1]' -p blend.gems
-  [ $status -eq 1 ]
-  [[ "$output" =~ "[recipe_id] does not exist" ]]
-
-}
+# }
 
 @test "delete non-existing blend" {
 
@@ -201,11 +192,11 @@
 
 }
 
-@test "nothing to cleanup" {
+# @test "nothing to cleanup" {
 
-  sleep 1
-  run cleos push action blend.gems cleanup '[]' -p blend.gems
-  [ $status -eq 1 ]
-  [[ "$output" =~ "nothing to cleanup" ]]
+#   sleep 1
+#   run cleos push action blend.gems cleanup '[]' -p blend.gems
+#   [ $status -eq 1 ]
+#   [[ "$output" =~ "nothing to cleanup" ]]
 
-}
+# }

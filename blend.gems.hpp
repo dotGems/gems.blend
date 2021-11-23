@@ -20,18 +20,19 @@ public:
     /**
      * ## TABLE `status`
      *
+     * ## params
+     *
      * - `{vector<uint32_t>} counters` - counters
-     *   - `{uint32_t} counters[0]` - recipes counter
-     *   - `{uint32_t} counters[1]` - total mint
-     *   - `{uint32_t} counters[2]` - total burn
+     *   - `{uint32_t} counters[0]` - total mint
+     *   - `{uint32_t} counters[1]` - total burn
      * - `{time_point_sec} last_updated` - last updated
      *
      * ### example
      *
      * ```json
      * {
-     *   "counters": [10, 1234, 300],
-     *   "last_updated": "2021-04-12T12:23:42"
+     *     "counters": [10, 30],
+     *     "last_updated": "2021-04-12T12:23:42"
      * }
      * ```
      */
@@ -42,11 +43,29 @@ public:
     typedef eosio::singleton< "status"_n, status_row > status_table;
 
     /**
+     * ## TABLE `scopes`
+     *
+     * ## params
+     *
+     * - `{set<name>} collection_names` - collection names
+     *
+     * ### example
+     *
+     * ```json
+     * {
+     *     "collection_names": ["mycollection"]
+     * }
+     * ```
+     */
+    struct [[eosio::table("scopes")]] scopes_row {
+        set<name>     collection_names;
+    };
+    typedef eosio::singleton< "scopes"_n, scopes_row > scopes_table;
+
+    /**
      * ## TABLE `blends`
      *
-     * | `param`        | `index_position` | `key_type` |
-     * |--------------- |------------------|------------|
-     * | `bycollection` | 2                | i64        |
+     * - scope: `{name} collection_name`
      *
      * ### params
      *
@@ -76,14 +95,13 @@ public:
         time_point_sec      end_time;
 
         uint64_t primary_key() const { return id.template_id; }
-        uint64_t by_collection() const { return id.collection_name.value; }
     };
-    typedef eosio::multi_index< "blends"_n, blends_row,
-        indexed_by<"bycollection"_n, const_mem_fun<blends_row, uint64_t, &blends_row::by_collection>>
-    > blends_table;
+    typedef eosio::multi_index< "blends"_n, blends_row> blends_table;
 
     /**
      * ## TABLE `recipes`
+     *
+     * - scope: `{name} collection_name`
      *
      * ### params
      *
@@ -117,7 +135,6 @@ public:
      * ### params
      *
      * - `{atomic::nft} id` - AtomicAsset NFT template
-     * - `{set<uint64_t>} recipe_ids` - input recipes ID's
      * - `{string} description` - blend description
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
@@ -125,31 +142,32 @@ public:
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], [1, 2], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const atomic::nft id, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
-     * ## ACTION `initrecipe`
+     * ## ACTION `addrecipe`
      *
-     * Initialize NFT recipe
+     * Add NFT recipe to blend
      *
      * - **authority**: `get_self()`
      *
      * ### params
      *
+     * - `{atomic::nft} id` - AtomicAsset NFT template
      * - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems initrecipe '[[["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+     * $ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void initrecipe( vector<atomic::nft> templates );
+    void addrecipe( const atomic::nft id, vector<atomic::nft> templates );
 
     /**
      * ## ACTION `delblend`
@@ -180,25 +198,27 @@ public:
      *
      * ### params
      *
+     * - `{atomic::nft} id` - AtomicAsset NFT template
      * - `{uint64_t} recipe_id` - recipe ID
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems delrecipe '[1]' -p blend.gems
+     * $ cleos push action blend.gems delrecipe '[["mycollection", 789], 1]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void delrecipe( const uint64_t recipe_id );
+    void delrecipe( const atomic::nft id, const uint64_t recipe_id );
 
     [[eosio::action]]
     void reset( const name table, const optional<name> scope  );
 
-    [[eosio::action]]
-    void cleanup( );
+    // [[eosio::action]]
+    // void cleanup( );
 
     [[eosio::action]]
     void blendlog( const name owner,
+                   const name collection_name,
                    const vector<uint64_t> in_asset_ids,
                    const uint64_t out_asset_id,
                    const vector<atomic::nft> in_templates,
@@ -214,7 +234,7 @@ public:
 
     // static actions
     using setblend_action = eosio::action_wrapper<"setblend"_n, &gems::blend::setblend>;
-    using initrecipe_action = eosio::action_wrapper<"initrecipe"_n, &gems::blend::initrecipe>;
+    using addrecipe_action = eosio::action_wrapper<"addrecipe"_n, &gems::blend::addrecipe>;
     using delblend_action = eosio::action_wrapper<"delblend"_n, &gems::blend::delblend>;
     using delrecipe_action = eosio::action_wrapper<"delrecipe"_n, &gems::blend::delrecipe>;
     using reset_action = eosio::action_wrapper<"reset"_n, &gems::blend::reset>;
@@ -228,10 +248,10 @@ private:
     void validate_templates( const vector<atomic::nft> templates, const bool burnable );
     void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
-    uint64_t detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates );
+    uint64_t detect_recipe( const name collection_name, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates );
     bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );
-    uint64_t get_next_recipe_id();
+    vector<atomic::nft> sort_templates( vector<atomic::nft> templates );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );

@@ -27,8 +27,8 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     attempt_to_blend( from, collection_name, template_id, asset_ids, received_nfts);
 
     // stats
-    update_status(1, 1); // mint
-    update_status(2, asset_ids.size()); // burn
+    update_status(0, 1); // mint
+    update_status(1, asset_ids.size()); // burn
 }
 
 std::pair<name, int32_t> blend::parse_memo( const string memo )
@@ -53,9 +53,9 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::check_time: has ended");
 }
 
-uint64_t blend::detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
+uint64_t blend::detect_recipe( const name collection_name, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
 {
-    blend::recipes_table _recipes( get_self(), get_self().value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
     sort( received_templates.begin(), received_templates.end());
 
     for ( const uint64_t recipe_id : recipe_ids ) {
@@ -68,7 +68,7 @@ uint64_t blend::detect_recipe( const set<uint64_t> recipe_ids, vector<atomic::nf
 
 bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates )
 {
-    if( templates.size() != sorted_templates.size()) return false;
+    if ( templates.size() != sorted_templates.size()) return false;
 
     // sort recipe ingredients and compare to sorted received vector
     sort( templates.begin(), templates.end());
@@ -77,15 +77,15 @@ bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic
 
 void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates )
 {
-    blend::blends_table _blends( get_self(), get_self().value );
-    blend::recipes_table _recipes( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
 
     // get blend
     const auto & blend = _blends.get( template_id, "blend::attempt_to_blend: [template_id] in the memo does not exists");
     check( blend.id.collection_name == collection_name, "blend::attempt_to_blend: [collection_name] in the memo does not match blend");
 
     // get recipe
-    const uint64_t recipe_id = detect_recipe( blend.recipe_ids, received_templates );
+    const uint64_t recipe_id = detect_recipe( collection_name, blend.recipe_ids, received_templates );
     const auto & recipe = _recipes.get( recipe_id, "blend::attempt_to_blend: [recipe_id] does not exists");
     check_time( blend.start_time, blend.end_time );
 
@@ -104,6 +104,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
+                   collection_name,
                    in_asset_ids,
                    next_asset_id,
                    received_templates,
@@ -114,6 +115,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
 
 [[eosio::action]]
 void blend::blendlog( const name owner,
+                      const name collection_name,
                       const vector<uint64_t> in_asset_ids,
                       const uint64_t out_asset_id,
                       const vector<atomic::nft> in_templates,
@@ -131,11 +133,15 @@ void blend::reset( const name table, const optional<name> scope  )
 {
     require_auth( get_self() );
 
-    blend::blends_table _blends( get_self(), get_self().value );
-    blend::recipes_table _recipes( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), scope ? scope->value : get_self().value );
+    blend::recipes_table _recipes( get_self(), scope ? scope->value : get_self().value );
+    blend::status_table _status( get_self(), get_self().value );
+    blend::scopes_table _scopes( get_self(), get_self().value );
 
     if ( table == "blends"_n ) clear_table( _blends );
     else if ( table == "recipes"_n ) clear_table( _recipes );
+    else if ( table == "status"_n ) _status.remove();
+    else if ( table == "scopes"_n ) _scopes.remove();
     else check( false, "invalid table name");
 }
 
@@ -151,64 +157,56 @@ void blend::validate_templates( const vector<atomic::nft> templates, const bool 
 }
 
 [[eosio::action]]
-void blend::initrecipe( vector<atomic::nft> templates )
+void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 {
     require_auth( get_self() );
 
+    // tables
+    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+    blend::blends_table _blends( get_self(), id.collection_name.value );
+
     // validate
-    check( templates.size() >= 1, "blend::initrecipe: [templates] cannot be empty");
+    check( templates.size() >= 1, "blend::addrecipe: [templates] cannot be empty");
     validate_templates( templates, true );
 
     // pre-sort ingredients for detect_recipe efficiency
     sort( templates.begin(), templates.end() );
 
-    blend::recipes_table _recipes( get_self(), get_self().value );
-
-    // disallow duplicate recipes
-    // uncomment if action causes CPU issues due to large amounts of recipes in contract
-    for ( recipes_row recipe: _recipes ) {
-        check( !is_match( templates, recipe.templates ), "blend::initrecipe: recipe already exists" );
+    // disallow duplicate recipes within same blend
+    auto & blend = _blends.get(id.template_id, "blend::addrecipe: [id.template_id] cannot find any blends" );
+    for ( const uint64_t recipe_id : blend.recipe_ids ) {
+        auto recipe = _recipes.get( recipe_id, "blend::addrecipe: [recipe_id] does not exists" );
+        check( !is_match( templates, recipe.templates ), "blend::addrecipe: recipe already exists" );
     }
+
+    // add recipe to blend
+    const uint64_t recipe_id = _recipes.available_primary_key();
+    _blends.modify( blend, get_self(), [&]( auto & row ) {
+        row.recipe_ids.insert( recipe_id );
+    });
 
     // recipe content
     auto insert = [&]( auto & row ) {
-        row.id = get_next_recipe_id();
+        row.id = recipe_id;
         row.templates = templates;
     };
     _recipes.emplace( get_self(), insert );
-
-    // stats
-    update_status(0, 1); // recipe counter
-}
-
-uint64_t blend::get_next_recipe_id()
-{
-    blend::status_table _status( get_self(), get_self().value );
-    if ( !_status.exists() ) return 0;
-    return _status.get().counters[0];
 }
 
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const set<uint64_t> recipe_ids, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const atomic::nft id, const string description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     require_auth( get_self() );
 
-    blend::blends_table _blends( get_self(), get_self().value );
-    blend::recipes_table _recipes( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), id.collection_name.value );
+    blend::recipes_table _recipes( get_self(), id.collection_name.value );
 
     // validate
-    check( recipe_ids.size(), "blend::setblend: [recipe_ids] must contain at least 1 item");
     validate_templates( { id }, false );
-
-    // validate recipes
-    for ( const uint64_t recipe_id : recipe_ids ) {
-        _recipes.get( recipe_id, "blend::setblend: [recipe_id] does not exists");
-    }
 
     // recipe content
     auto insert = [&]( auto & row ) {
         row.id = id;
-        row.recipe_ids = recipe_ids;
         row.description = description;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = *end_time;
@@ -225,70 +223,66 @@ void blend::delblend( const atomic::nft id )
 {
     require_auth( get_self() );
 
-    blend::blends_table _blends( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), id.collection_name.value );
+    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+
+    // delete any recipes connected to blend
     auto & blend = _blends.get( id.template_id, "blend::delblend: [id.template_id] does not exist" );
-    check( blend.id.collection_name == id.collection_name, "blend::delblend: [id.collection_name] does not match blend");
+    for ( const uint64_t recipe_id : blend.recipe_ids ) {
+        auto recipe = _recipes.find( recipe_id );
+        if ( recipe != _recipes.end() ) _recipes.erase( recipe );
+    }
     _blends.erase( blend );
 }
 
 [[eosio::action]]
-void blend::delrecipe( const uint64_t recipe_id )
+void blend::delrecipe( const atomic::nft id, const uint64_t recipe_id )
 {
     require_auth( get_self() );
 
+    // tables
+    blend::blends_table _blends( get_self(), id.collection_name.value );
+    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+
     // erase recipe from existing blends
-    blend::blends_table _blends( get_self(), get_self().value );
-    for (const auto& blend: _blends) {
-        if ( blend.recipe_ids.count(recipe_id) ) {
-            _blends.modify( blend, get_self(), [&]( auto & row ) {
-                row.recipe_ids.erase( recipe_id );
-            });
-        }
+    auto & blend = _blends.get( id.template_id, "blend::delrecipe: [id.template_id] does not exist" );
+    if ( blend.recipe_ids.count( recipe_id ) ) {
+        _blends.modify( blend, get_self(), [&]( auto & row ) {
+            row.recipe_ids.erase( recipe_id );
+        });
     }
 
-    blend::recipes_table _recipes( get_self(), get_self().value );
+    // erase recipe
     auto & recipe = _recipes.get( recipe_id, "blend::delrecipe: [recipe_id] does not exist" );
     _recipes.erase( recipe );
 }
 
-void blend::update_status( const uint32_t index, const uint32_t count )
-{
-    status_table _status( get_self(), get_self().value );
-    auto status = _status.get_or_default();
+// [[eosio::action]]
+// void blend::cleanup( )
+// {
+//     require_auth( get_self() );
 
-    if( status.counters.size() <= index ) status.counters.resize( index + 1);
-    status.counters[index] += count;
-    status.last_updated = current_time_point();
-    _status.set( status, get_self() );
-}
+//     // collect all recipe ID's from blends
+//     set<uint64_t> used_recipes;
+//     blend::blends_table _blends( get_self(), get_self().value );
+//     for (const auto& blend: _blends) {
+//         for (const auto& recipe_id: blend.recipe_ids) {
+//             used_recipes.insert(recipe_id);
+//         }
+//     }
 
-
-[[eosio::action]]
-void blend::cleanup( )
-{
-    require_auth( get_self() );
-
-    // collect all recipe ID's from blends
-    set<uint64_t> used_recipes;
-    blend::blends_table _blends( get_self(), get_self().value );
-    for (const auto& blend: _blends) {
-        for (const auto& recipe_id: blend.recipe_ids) {
-            used_recipes.insert(recipe_id);
-        }
-    }
-
-    // erase any recipes that no longer belong to blends
-    blend::recipes_table _recipes( get_self(), get_self().value );
-    int erased = 0;
-    for( auto it = _recipes.begin(); it != _recipes.end(); ){
-        if ( used_recipes.count( it->id ) == 0 ) {
-            it = _recipes.erase( it );
-            ++erased;
-        } else {
-            ++it;
-        }
-    }
-    check( erased, "blend::cleanup: nothing to cleanup");
-}
+//     // erase any recipes that no longer belong to blends
+//     blend::recipes_table _recipes( get_self(), get_self().value );
+//     int erased = 0;
+//     for( auto it = _recipes.begin(); it != _recipes.end(); ){
+//         if ( used_recipes.count( it->id ) == 0 ) {
+//             it = _recipes.erase( it );
+//             ++erased;
+//         } else {
+//             ++it;
+//         }
+//     }
+//     check( erased, "blend::cleanup: nothing to cleanup");
+// }
 
 }
