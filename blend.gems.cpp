@@ -241,7 +241,7 @@ void blend::delblend( const atomic::nft id )
     }
     _blends.erase( blend );
 
-    // add scope
+    // remove scope if empty
     if ( _blends.begin() == _blends.end() ) {
         auto scopes = _scopes.get_or_default();
         scopes.collection_names.erase(id.collection_name);
