@@ -109,7 +109,6 @@ Set NFT blend
 
 ### params
 
-- `{name} creator` - blend creator (RAM payer)
 - `{atomic::nft} id` - AtomicAsset NFT template
 - `{string} description` - blend description
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
@@ -118,7 +117,7 @@ Set NFT blend
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '["myaccount", ["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
 ```
 
 ## ACTION `addrecipe`

@@ -217,7 +217,7 @@ void blend::setblend( const atomic::nft id, const string description, const opti
         row.id = id;
         row.description = description;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
-        row.end_time = *end_time;
+        row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
     };
 
     // create/modify blend
