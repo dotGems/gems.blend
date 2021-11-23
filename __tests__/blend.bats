@@ -123,6 +123,12 @@
 }
 
 
+@test "scopes check" {
+
+  result=$(cleos get table blend.gems blend.gems scopes | jq -r '.rows[0].collection_names[0]')
+  [ "$result" = "mycollectio1" ]
+}
+
 @test "delete recipe #0" {
 
   run cleos push action blend.gems delrecipe '[["mycollectio1", 4], 0]' -p blend.gems
@@ -168,6 +174,12 @@
   [ $status -eq 0 ]
 
   result=$(cleos get table blend.gems mycollectio1 blends | jq -r '.rows[0] | length')
+  [ "$result" = "0" ]
+}
+
+@test "scopes check again" {
+
+  result=$(cleos get table blend.gems blend.gems scopes | jq -r '.rows[0].collection_names | length')
   [ "$result" = "0" ]
 }
 
