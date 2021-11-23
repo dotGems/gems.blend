@@ -130,7 +130,7 @@ public:
      *
      * Set NFT blend
      *
-     * - **authority**: `get_self()`
+     * - **authority**: `atomicassets::author` or `get_self()`
      *
      * ### params
      *
@@ -142,7 +142,7 @@ public:
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
@@ -153,7 +153,7 @@ public:
      *
      * Add NFT recipe to blend
      *
-     * - **authority**: `get_self()`
+     * - **authority**: `atomicassets::author` or `get_self()`
      *
      * ### params
      *
@@ -174,7 +174,7 @@ public:
      *
      * Delete NFT blend
      *
-     * - **authority**: `get_self()`
+     * - **authority**: `atomicassets::author` or `get_self()`
      *
      * ### params
      *
@@ -194,7 +194,7 @@ public:
      *
      * Delete NFT recipe
      *
-     * - **authority**: `get_self()`
+     * - **authority**: `atomicassets::author` or `get_self()`
      *
      * ### params
      *
@@ -249,6 +249,7 @@ private:
     bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );
     vector<atomic::nft> sort_templates( vector<atomic::nft> templates );
+    name get_ram_payer( const atomic::nft id );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );

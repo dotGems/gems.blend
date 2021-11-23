@@ -6,11 +6,11 @@
 2. User sends AtomicAssets NFT assets to `blend.gems` with desired blend id in the memo.
 
 ```bash
-# setup NFT recipe
-$ cleos push action blend.gems initrecipe '[[["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
-
 # setup NFT blend
-$ cleos push action blend.gems setblend '[["mycollection", 789], [1], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '[["mycollection", 789], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p myauthor
+
+# setup NFT recipe
+$ cleos push action blend.gems addtrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p myauthor
 
 # user send NFT's to contract (memo schema `<collection_name>:<template_id>`)
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "mycollection:789"]' -p myaccount
@@ -19,7 +19,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 ## Table of Content
 
 - [TABLE `status`](#table-status)
-- [TABLE `scopes`](#table-scopes)
+- [TABLE `collections`](#table-collections)
 - [TABLE `blends`](#table-blends)
 - [TABLE `recipes`](#table-recipes)
 - [ACTION `setblend`](#action-setblend)
@@ -45,7 +45,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 }
 ```
 
-## TABLE `scopes`
+## TABLE `collections`
 
 ## params
 
@@ -105,7 +105,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 Set NFT blend
 
-- **authority**: `get_self()`
+- **authority**: `atomicassets::author` or `get_self()`
 
 ### params
 
@@ -124,7 +124,7 @@ $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "20
 
 Add NFT recipe to blend
 
-- **authority**: `get_self()`
+- **authority**: `atomicassets::author` or `get_self()`
 
 ### params
 
@@ -141,7 +141,7 @@ $ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollectio
 
 Delete NFT blend
 
-- **authority**: `get_self()`
+- **authority**: `atomicassets::author` or `get_self()`
 
 ### params
 
@@ -157,7 +157,7 @@ $ cleos push action blend.gems delblend '[["mycollection", 789]]' -p blend.gems
 
 Delete NFT recipe
 
-- **authority**: `get_self()`
+- **authority**: `atomicassets::author` or `get_self()`
 
 ### params
 

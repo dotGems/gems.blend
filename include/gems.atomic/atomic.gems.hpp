@@ -115,6 +115,16 @@ uint64_t get_next_asset_id( )
     return config.get().asset_counter;
 }
 
+name get_author( const atomic::nft id )
+{
+    return get_collection( id.collection_name ).author;
+}
+
+name get_author( const name collection_name )
+{
+    return get_collection( collection_name ).author;
+}
+
 uint32_t get_issued_supply( const name collection_name, const int32_t template_id )
 {
     return get_template( collection_name, template_id ).issued_supply;
