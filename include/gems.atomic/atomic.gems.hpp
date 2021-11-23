@@ -125,6 +125,25 @@ name get_author( const name collection_name )
     return get_collection( collection_name ).author;
 }
 
+set<name> vector_to_set( const vector<name> values )
+{
+    set<name> items;
+    for ( name value : values ) {
+        items.insert( value );
+    }
+    return items;
+}
+
+set<name> get_authorized_accounts( const atomic::nft id )
+{
+    return vector_to_set(get_collection( id.collection_name ).authorized_accounts);
+}
+
+set<name> get_authorized_accounts( const name collection_name )
+{
+    return vector_to_set(get_collection( collection_name ).authorized_accounts);
+}
+
 uint32_t get_issued_supply( const name collection_name, const int32_t template_id )
 {
     return get_template( collection_name, template_id ).issued_supply;
