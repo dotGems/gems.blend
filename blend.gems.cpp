@@ -136,12 +136,12 @@ void blend::reset( const name table, const optional<name> scope  )
     blend::blends_table _blends( get_self(), scope ? scope->value : get_self().value );
     blend::recipes_table _recipes( get_self(), scope ? scope->value : get_self().value );
     blend::status_table _status( get_self(), get_self().value );
-    blend::scopes_table _scopes( get_self(), get_self().value );
+    blend::collections_table _collections( get_self(), get_self().value );
 
     if ( table == "blends"_n ) clear_table( _blends );
     else if ( table == "recipes"_n ) clear_table( _recipes );
     else if ( table == "status"_n ) _status.remove();
-    else if ( table == "scopes"_n ) _scopes.remove();
+    else if ( table == "collections"_n ) _collections.remove();
     else check( false, "invalid table name");
 }
 
@@ -200,7 +200,7 @@ void blend::setblend( const atomic::nft id, const string description, const opti
 
     blend::blends_table _blends( get_self(), id.collection_name.value );
     blend::recipes_table _recipes( get_self(), id.collection_name.value );
-    blend::scopes_table _scopes( get_self(), get_self().value );
+    blend::collections_table _collections( get_self(), get_self().value );
 
     // validate
     validate_templates( { id }, false );
@@ -219,9 +219,9 @@ void blend::setblend( const atomic::nft id, const string description, const opti
     else  _blends.modify( itr, get_self(), insert );
 
     // add scope
-    auto scopes = _scopes.get_or_default();
-    scopes.collection_names.insert(id.collection_name);
-    _scopes.set( scopes, get_self() );
+    auto collections = _collections.get_or_default();
+    collections.collection_names.insert(id.collection_name);
+    _collections.set( collections, get_self() );
 }
 
 [[eosio::action]]
@@ -231,7 +231,7 @@ void blend::delblend( const atomic::nft id )
 
     blend::blends_table _blends( get_self(), id.collection_name.value );
     blend::recipes_table _recipes( get_self(), id.collection_name.value );
-    blend::scopes_table _scopes( get_self(), get_self().value );
+    blend::collections_table _collections( get_self(), get_self().value );
 
     // delete any recipes connected to blend
     auto & blend = _blends.get( id.template_id, "blend::delblend: [id.template_id] does not exist" );
@@ -243,9 +243,9 @@ void blend::delblend( const atomic::nft id )
 
     // remove scope if empty
     if ( _blends.begin() == _blends.end() ) {
-        auto scopes = _scopes.get_or_default();
-        scopes.collection_names.erase(id.collection_name);
-        _scopes.set( scopes, get_self() );
+        auto collections = _collections.get_or_default();
+        collections.collection_names.erase(id.collection_name);
+        _collections.set( collections, get_self() );
     }
 }
 

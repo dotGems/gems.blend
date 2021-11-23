@@ -43,7 +43,7 @@ public:
     typedef eosio::singleton< "status"_n, status_row > status_table;
 
     /**
-     * ## TABLE `scopes`
+     * ## TABLE `collections`
      *
      * ## params
      *
@@ -57,10 +57,10 @@ public:
      * }
      * ```
      */
-    struct [[eosio::table("scopes")]] scopes_row {
+    struct [[eosio::table("collections")]] collections_row {
         set<name>     collection_names;
     };
-    typedef eosio::singleton< "scopes"_n, scopes_row > scopes_table;
+    typedef eosio::singleton< "collections"_n, collections_row > collections_table;
 
     /**
      * ## TABLE `blends`
