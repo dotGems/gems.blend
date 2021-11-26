@@ -243,14 +243,14 @@ private:
 
     // blend
     void validate_templates( const vector<atomic::nft> templates, const bool burnable );
-    void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids, const vector<atomic::nft>& received_nfts );
+    void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
-    uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft> received_templates);
+    uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft> received_templates );
     bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );
     vector<atomic::nft> sort_templates( vector<atomic::nft> templates );
     name get_ram_payer( const atomic::nft id );
-    pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> mint_attributes( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates );
+    pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> mint_attributes( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );
