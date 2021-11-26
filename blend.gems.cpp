@@ -2,6 +2,7 @@
 
 #include "blend.gems.hpp"
 #include "src/helpers.cpp"
+#include "plugins/plugins.cpp"
 
 namespace gems {
 
@@ -75,7 +76,7 @@ bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic
     return sorted_templates == templates;
 }
 
-void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates )
+void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t> in_asset_ids, const vector<atomic::nft> received_templates )
 {
     blend::blends_table _blends( get_self(), collection_name.value );
     blend::recipes_table _recipes( get_self(), collection_name.value );
@@ -90,15 +91,18 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     check_time( blend.start_time, blend.end_time );
 
     // already picked our recipe, no need for extra checks
-    vector<atomic::nft> recipe_templates = recipe.templates;
     for ( const uint64_t asset_id : in_asset_ids ) {
         atomic::burnasset( get_self(), asset_id );
     }
+    // generate immutate/mutable attributes
+    const auto attributes = gems::blend::mint_attributes( owner, collection_name, template_id, in_asset_ids, received_templates );
+    const ATTRIBUTE_MAP immutable_attributes = attributes.first;
+    const ATTRIBUTE_MAP mutable_attributes = attributes.second;
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
     const name schema = atomic::get_template( collection_name, template_id ).schema_name;
-    atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), {}, {}, {} );
+    atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), immutable_attributes, mutable_attributes, {} );
     atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blended at .gems 💎" );
 
     // logging
