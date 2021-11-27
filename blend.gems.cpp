@@ -1,4 +1,5 @@
 #include <sx.utils/utils.hpp>
+#include <gems/atomic.gems.hpp>
 
 #include "blend.gems.hpp"
 #include "src/helpers.cpp"

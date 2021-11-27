@@ -3,7 +3,6 @@
 #include <eosio/eosio.hpp>
 #include <eosio/asset.hpp>
 #include <eosio/singleton.hpp>
-#include <gems.atomic/atomic.gems.hpp>
 
 #include <optional>
 #include <string>
