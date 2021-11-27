@@ -1,3 +1,5 @@
+#pragma once
+
 #define assert(condition) ((void)0)
 
 #include <string>

@@ -2,6 +2,7 @@
 
 #include "blend.gems.hpp"
 #include "src/helpers.cpp"
+#include "plugins/plugins.cpp"
 
 namespace gems {
 
@@ -14,17 +15,11 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
     if ( from == get_self() || memo == get_self().to_string() ) return;
 
-    // build vector of received templates
-    vector<atomic::nft> received_nfts;
-    for ( const uint64_t asset_id : asset_ids ) {
-        received_nfts.push_back( atomic::get_nft( get_self(), asset_id ) );
-    }
-
     // parse memo
     const auto [ collection_name, template_id ] = parse_memo( memo );
 
     // attempt to blend
-    attempt_to_blend( from, collection_name, template_id, asset_ids, received_nfts);
+    attempt_to_blend( from, collection_name, template_id, asset_ids );
 
     // stats
     update_status(0, 1); // mint
@@ -53,11 +48,14 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::check_time: has ended");
 }
 
-uint64_t blend::detect_recipe( const name collection_name, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
+uint64_t blend::detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
 {
     blend::recipes_table _recipes( get_self(), collection_name.value );
+
+    // order templates
     sort( received_templates.begin(), received_templates.end());
 
+    // detect recipe
     for ( const uint64_t recipe_id : recipe_ids ) {
         auto recipe = _recipes.get( recipe_id, "blend::detect_recipe: [recipe_id] does not exists");
         if ( is_match( received_templates, recipe.templates )) return recipe_id;
@@ -75,7 +73,7 @@ bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic
     return sorted_templates == templates;
 }
 
-void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids, const vector<atomic::nft>& received_templates )
+void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
 {
     blend::blends_table _blends( get_self(), collection_name.value );
     blend::recipes_table _recipes( get_self(), collection_name.value );
@@ -84,21 +82,28 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     const auto & blend = _blends.get( template_id, "blend::attempt_to_blend: [template_id] in the memo does not exists");
     check( blend.id.collection_name == collection_name, "blend::attempt_to_blend: [collection_name] in the memo does not match blend");
 
+    // build vector of received templates
+    vector<atomic::nft> received_templates;
+    for ( const uint64_t asset_id : in_asset_ids ) {
+        received_templates.push_back( atomic::get_nft( get_self(), asset_id ) );
+    }
+
     // get recipe
-    const uint64_t recipe_id = detect_recipe( collection_name, blend.recipe_ids, received_templates );
+    const uint64_t recipe_id = detect_recipe( collection_name, in_asset_ids, blend.recipe_ids, received_templates );
     const auto & recipe = _recipes.get( recipe_id, "blend::attempt_to_blend: [recipe_id] does not exists");
     check_time( blend.start_time, blend.end_time );
 
     // already picked our recipe, no need for extra checks
-    vector<atomic::nft> recipe_templates = recipe.templates;
     for ( const uint64_t asset_id : in_asset_ids ) {
         atomic::burnasset( get_self(), asset_id );
     }
+    // generate immutate/mutable attributes
+    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( owner, collection_name, template_id, in_asset_ids );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
     const name schema = atomic::get_template( collection_name, template_id ).schema_name;
-    atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), {}, {}, {} );
+    atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), immutable_attributes, mutable_attributes, {} );
     atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blended at .gems 💎" );
 
     // logging
