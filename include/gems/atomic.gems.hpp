@@ -79,7 +79,7 @@ atomic::nft get_nft( const name owner, const uint64_t asset_id )
     return atomic::nft{ my_asset.collection_name, my_asset.template_id };
 }
 
-atomicdata::ATOMIC_ATTRIBUTE get_template_attribute( const atomicassets::assets_s asset, const string key )
+atomicdata::ATTRIBUTE_MAP get_template_immutable( const atomicassets::assets_s& asset )
 {
     const name collection_name = asset.collection_name;
     const name schema_name = asset.schema_name;
@@ -87,16 +87,32 @@ atomicdata::ATOMIC_ATTRIBUTE get_template_attribute( const atomicassets::assets_
 
     vector<atomicdata::FORMAT> format = atomic::get_schema( collection_name, schema_name ).format;
     vector<uint8_t> data = atomic::get_template( collection_name, template_id ).immutable_serialized_data;
-    ATTRIBUTE_MAP deserialized = atomicdata::deserialize( data, format );
-    return deserialized.at(key);
+    return atomicdata::deserialize( data, format );
 }
 
-atomicdata::ATOMIC_ATTRIBUTE get_template_attribute( const name collection_name, const name schema_name, const int32_t template_id, const string key )
+atomicdata::ATTRIBUTE_MAP get_template_immutable( const name collection_name, const name schema_name, const int32_t template_id )
 {
     vector<atomicdata::FORMAT> format = atomic::get_schema( collection_name, schema_name ).format;
     vector<uint8_t> data = atomic::get_template( collection_name, template_id ).immutable_serialized_data;
-    ATTRIBUTE_MAP deserialized = atomicdata::deserialize( data, format );
-    return deserialized.at(key);
+    return atomicdata::deserialize( data, format );
+}
+
+name tolower( const string str )
+{
+    string result;
+    for ( char c : str )
+    {
+        result += std::tolower(c);
+    }
+    return name{result};
+}
+
+string attribute_to_string( const ATTRIBUTE_MAP& data, const string key ) {
+    return std::get<string>( data.at(key) );
+}
+
+name attribute_to_name( const ATTRIBUTE_MAP& data, const string key ) {
+    return name{ tolower( std::get<string>( data.at(key) )) };
 }
 
 name get_collection_name( const name owner, const uint64_t asset_id )

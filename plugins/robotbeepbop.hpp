@@ -8,8 +8,9 @@ namespace robotbeepbop {
 
         uint64_t counter = 0;
         for ( const auto asset : in_assets ) {
-            const ATOMIC_ATTRIBUTE name = atomic::get_template_attribute( asset, "name" );
-            if ( std::get<string>(name) == "MSTR BTC ETF" ) counter += 100;
+            const ATTRIBUTE_MAP immutable = atomic::get_template_immutable( asset );
+            const string name = atomic::attribute_to_string( immutable, "name" );
+            if ( name == "MSTR BTC ETF" ) counter += 100;
         }
         immutable_data["counter"] = ATOMIC_ATTRIBUTE{ counter };
         immutable_data["img"] = ATOMIC_ATTRIBUTE{"Qme7FuzMzusD2YYyZRjHAsXvfNUAZviDsjQhLTv1hRWoTh"};

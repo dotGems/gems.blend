@@ -100,19 +100,12 @@ namespace pomelo {
         return 0;
     }
 
-    name tolower( const string str )
+    string select_img( const ATTRIBUTE_MAP& immutable_data )
     {
-        string result;
-        for ( char c : str )
-        {
-            result += std::tolower(c);
-        }
-        return name{result};
-    }
-
-    string get_attribute( const atomicassets::assets_s& asset, const string key )
-    {
-        return std::get<string>( atomic::get_template_attribute( asset, key ) );
+        const name shape = atomic::attribute_to_name( immutable_data, "shape" );
+        const name color = atomic::attribute_to_name( immutable_data, "color" );
+        const name clarity = atomic::attribute_to_name( immutable_data, "clarity" );
+        return "IPFS";
     }
 
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> diamond( const vector<atomicassets::assets_s>& in_assets )
@@ -124,9 +117,10 @@ namespace pomelo {
 
         // add shapes & sum scores
         for ( const auto asset : in_assets ) {
-            const string shape = get_attribute( asset, "shape" );
-            const name color = name{ tolower( get_attribute( asset, "color" ) ) };
-            const name clarity = name{ tolower( get_attribute( asset, "clarity" ) ) };
+            const ATTRIBUTE_MAP immutable = atomic::get_template_immutable( asset );
+            const string shape = atomic::attribute_to_string( immutable, "shape" );
+            const name color = atomic::attribute_to_name( immutable, "color" );
+            const name clarity = atomic::attribute_to_name( immutable, "clarity" );
 
             // accumulate all shapes (higher chance of selecting the more as input)
             shapes.push_back( shape );
@@ -141,6 +135,7 @@ namespace pomelo {
         immutable_data["shape"] = random_select( shapes );
         immutable_data["color"] = select_color( color_score );
         immutable_data["clarity"] = select_clarity( clarity_score );
+        immutable_data["img"] = select_img( immutable_data );
 
         return { immutable_data, {} };
     }
