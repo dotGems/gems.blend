@@ -97,6 +97,18 @@ atomicdata::ATTRIBUTE_MAP get_template_immutable( const name collection_name, co
     return atomicdata::deserialize( data, format );
 }
 
+atomicdata::ATTRIBUTE_MAP get_asset_immutable( const atomicassets::assets_s& asset )
+{
+    vector<atomicdata::FORMAT> format = atomic::get_schema( asset.collection_name, asset.schema_name ).format;
+    return atomicdata::deserialize( asset.immutable_serialized_data, format );
+}
+
+atomicdata::ATTRIBUTE_MAP get_asset_mutable( const atomicassets::assets_s& asset )
+{
+    vector<atomicdata::FORMAT> format = atomic::get_schema( asset.collection_name, asset.schema_name ).format;
+    return atomicdata::deserialize( asset.mutable_serialized_data, format );
+}
+
 name tolower( const string str )
 {
     string result;
