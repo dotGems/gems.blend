@@ -103,9 +103,143 @@ namespace pomelo {
     string select_img( const ATTRIBUTE_MAP& immutable_data )
     {
         const name shape = atomic::attribute_to_name( immutable_data, "shape" );
-        const name color = atomic::attribute_to_name( immutable_data, "color" );
-        const name clarity = atomic::attribute_to_name( immutable_data, "clarity" );
-        return "IPFS";
+        const int color_score = calculate_color( atomic::attribute_to_name( immutable_data, "color" ) );
+        const int clarity_score = calculate_clarity( atomic::attribute_to_name( immutable_data, "clarity" ) );
+
+        switch ( shape.value ) {
+            case "round"_n.value:
+                switch ( color_score ) {
+                    case 100:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 80:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 60:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 40:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 20:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                }
+            case "square"_n.value:
+                switch ( color_score ) {
+                    case 100:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 80:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 60:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 40:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 20:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                }
+
+            case "triangle"_n.value:
+                switch ( color_score ) {
+                    case 100:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 80:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 60:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 40:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                    case 20:
+                        switch ( clarity_score ) {
+                            case 100: return "IPFS";
+                            case 80: return "IPFS";
+                            case 60: return "IPFS";
+                            case 40: return "IPFS";
+                            case 20: return "IPFS";
+                        }
+                }
+        }
+        check( false, "pomelo::diamond::select_img: invalid value");
+        return "";
     }
 
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> diamond( const vector<atomicassets::assets_s>& in_assets )
