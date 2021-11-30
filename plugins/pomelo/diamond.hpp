@@ -21,6 +21,7 @@ namespace pomelo {
         { "N", 40 },
         { "O", 40 },
         { "P", 40 },
+        { "Q", 40 },
         { "R", 40 },
         // light yellow
         { "S", 20 },
