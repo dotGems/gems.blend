@@ -5,7 +5,7 @@ namespace pomelo {
     {
         switch ( template_id ) {
             case 123:
-                return pomelo::diamond( in_assets );
+                return pomelo::diamond::mint_attributes( in_assets );
         }
         return { };
     }
