@@ -110,7 +110,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
-                   collection_name,
+                   blend.description,
                    in_asset_ids,
                    next_asset_id,
                    received_templates,
@@ -121,7 +121,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
 
 [[eosio::action]]
 void blend::blendlog( const name owner,
-                      const name collection_name,
+                      const string description,
                       const vector<uint64_t> in_asset_ids,
                       const uint64_t out_asset_id,
                       const vector<atomic::nft> in_templates,

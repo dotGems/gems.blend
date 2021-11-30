@@ -3,49 +3,47 @@
 
 namespace pomelo {
 
-    const map<string, int> COLOR_SCORE = {
-        // colorless
-        { "D", 100 },
-        { "E", 100 },
-        { "F", 100 },
-        // near colorless
-        { "G", 80 },
-        { "H", 80 },
-        { "I", 80 },
-        { "J", 80 },
-        // faint yellow
-        { "K", 60 },
-        { "L", 60 },
-        { "M", 60 },
-        // very light yellow
-        { "N", 40 },
-        { "O", 40 },
-        { "P", 40 },
-        { "Q", 40 },
-        { "R", 40 },
-        // light yellow
-        { "S", 20 },
-        { "T", 20 },
-        { "U", 20 },
-        { "V", 20 },
-        { "W", 20 },
-        { "X", 20 },
-        { "Y", 20 },
-        { "Z", 20 }
-    };
+    // Color grading
+    // 100 - Rank 5 - colorless
+    //  80 - Rank 4 - near colorless
+    //  60 - Rank 3 - faint yellow
+    //  40 - Rank 2 - very light yellow
+    //  20 - Rank 1 - light yellow
 
+    // Clarity Grading
+    // 100 - Rank 5 - Internally Flawless
+    //  80 - Rank 4 - Very Very Slight Inclusions
+    //  60 - Rank 3 - Very Slight Inclusions
+    //  40 - Rank 2 - Slight Inclusions
+    //  20 - Rank 1 - Imperfect
+
+    // Ranks
+    const vector<string> COLOR_RANK_5 = {"D", "E", "F"};
+    const vector<string> COLOR_RANK_4 = {"G", "H", "I", "J"};
+    const vector<string> COLOR_RANK_3 = {"K", "L", "M"};
+    const vector<string> COLOR_RANK_2 = {"N", "O", "P", "Q", "R"};
+    const vector<string> COLOR_RANK_1 = {"S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+    const vector<string> CLARITY_RANK_5 = {"FL", "IF"};
+    const vector<string> CLARITY_RANK_4 = {"VVS1", "VVS2"};
+    const vector<string> CLARITY_RANK_3 = {"VS1", "VS2"};
+    const vector<string> CLARITY_RANK_2 = {"SI1", "SI2"};
+    const vector<string> CLARITY_RANK_1 = {"I1", "I2", "I3"};
+
+    // Scores
+    const map<string, int> COLOR_SCORE = {
+        { "D", 100 }, { "E", 100 }, { "F", 100 },
+        { "G", 80 }, { "H", 80 }, { "I", 80 }, { "J", 80 },
+        { "K", 60 }, { "L", 60 }, { "M", 60 },
+        { "N", 40 }, { "O", 40 }, { "P", 40 }, { "Q", 40 }, { "R", 40 },
+        { "S", 20 }, { "T", 20 }, { "U", 20 }, { "V", 20 }, { "W", 20 }, { "X", 20 }, { "Y", 20 }, { "Z", 20 }
+    };
     const map<string, int> CLARITY_SCORE = {
-        { "FL", 100 },
-        { "IF", 100 },
-        { "VVS1", 80 },
-        { "VVS2", 80 },
-        { "VS1", 60 },
-        { "VS2", 60 },
-        { "SI1", 40 },
-        { "SI2", 40 },
-        { "I1", 20 },
-        { "I2", 20 },
-        { "I3", 20 }
+        { "FL", 100 }, { "IF", 100 },
+        { "VVS1", 80 }, { "VVS2", 80 },
+        { "VS1", 60 }, { "VS2", 60 },
+        { "SI1", 40 }, { "SI2", 40 },
+        { "I1", 20 }, { "I2", 20 }, { "I3", 20 }
     };
 
     int calculate_color( const string& color )
@@ -66,22 +64,26 @@ namespace pomelo {
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
     }
 
+    int calculate_min_score( const int rank ) {
+        return 40 + 60 * rank;
+    }
+
     string select_color( const int color_score )
     {
-        if ( color_score >= 340 ) return random_select( {"D", "E", "F"});
-        if ( color_score >= 280 ) return random_select( {"G", "H", "I", "J"});
-        if ( color_score >= 220 ) return random_select( {"K", "L", "M"});
-        if ( color_score >= 160 ) return random_select( {"N", "O", "P", "Q", "R"});
-        return random_select({"S", "T", "U", "V", "W", "X", "Y", "Z"});
+        if ( color_score >= calculate_min_score( 5 ) ) return random_select( COLOR_RANK_5 );
+        if ( color_score >= calculate_min_score( 4 ) ) return random_select( COLOR_RANK_4 );
+        if ( color_score >= calculate_min_score( 3 ) ) return random_select( COLOR_RANK_3 );
+        if ( color_score >= calculate_min_score( 2 ) ) return random_select( COLOR_RANK_2 );
+        return random_select( COLOR_RANK_1 );
     }
 
     string select_clarity( const int clarity_score )
     {
-        if ( clarity_score >= 340 ) return random_select( {"FL", "IF"});
-        if ( clarity_score >= 280 ) return random_select( {"VVS1", "VVS2"});
-        if ( clarity_score >= 220 ) return random_select( {"VS1", "VS2"});
-        if ( clarity_score >= 160 ) return random_select( {"SI1", "SI2"});
-        return random_select({"I1", "I2", "I3"});
+        if ( clarity_score >= calculate_min_score( 5 ) ) return random_select( CLARITY_RANK_5 );
+        if ( clarity_score >= calculate_min_score( 4 ) ) return random_select( CLARITY_RANK_4 );
+        if ( clarity_score >= calculate_min_score( 3 ) ) return random_select( CLARITY_RANK_3 );
+        if ( clarity_score >= calculate_min_score( 2 ) ) return random_select( CLARITY_RANK_2 );
+        return random_select( CLARITY_RANK_1 );
     }
 
     string select_img( const ATTRIBUTE_MAP& immutable_data )
@@ -235,7 +237,7 @@ namespace pomelo {
 
         // add shapes & sum scores
         for ( const auto& asset : in_assets ) {
-            const ATTRIBUTE_MAP immutable = atomic::get_template_immutable( asset );
+            const ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
             const string shape = atomic::attribute_to_string( immutable, "shape" );
             const string color = atomic::attribute_to_string( immutable, "color" );
             const string clarity = atomic::attribute_to_string( immutable, "clarity" );

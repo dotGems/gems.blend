@@ -214,7 +214,7 @@ public:
 
     [[eosio::action]]
     void blendlog( const name owner,
-                   const name collection_name,
+                   const string description,
                    const vector<uint64_t> in_asset_ids,
                    const uint64_t out_asset_id,
                    const vector<atomic::nft> in_templates,
