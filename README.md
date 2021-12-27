@@ -7,7 +7,7 @@
 
 ```bash
 # setup NFT blend
-$ cleos push action blend.gems setblend '[["mycollection", 789], "2021-11-16T00:00:00", "2021-12-01T00:00:00"]' -p myauthor
+$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, [], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
 
 # setup NFT recipe
 $ cleos push action blend.gems addtrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p myauthor
@@ -68,6 +68,8 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 - `{atomic::nft} id` - output AtomicAsset NFT template
 - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
 - `{string} description` - blend description
+- `{name} plugin` - (optional) plugin (custom attributes)
+- `{vector<extended_asset>} [tokens=[]]` - (optional) token deposit required
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
@@ -78,6 +80,8 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
     "id": {"collection_name": "mycollection", "template_id": 21883},
     "recipe_ids": [1, 2],
     "description": "My Blend",
+    "plugin": "myplugin",
+    "tokens": [{"contract": "eosio.token", "quantity": "1.0000 EOS"}],
     "start_time": "2021-07-01T00:00:00",
     "end_time": "2021-10-01T00:00:00"
 }
@@ -100,7 +104,6 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
     "templates": [{"collection_name": "mycollection", "template_id": 21883}]
 }
 ```
-
 ## ACTION `setblend`
 
 Set NFT blend
@@ -111,13 +114,15 @@ Set NFT blend
 
 - `{atomic::nft} id` - AtomicAsset NFT template
 - `{string} [description=""]` - (optional) blend description
+- `{name} [plugin=""]` - (optional) plugin (custom attributes)
+- `{vector<extended_asset>} [tokens=[]]` - (optional) token deposit required
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p blend.gems
+$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, [], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
 ```
 
 ## ACTION `addrecipe`

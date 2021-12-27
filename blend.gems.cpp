@@ -99,7 +99,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
         atomic::burnasset( get_self(), asset_id );
     }
     // generate immutate/mutable attributes
-    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( owner, collection_name, template_id, in_asset_ids );
+    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( {}, owner, collection_name, template_id, in_asset_ids );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
@@ -207,7 +207,7 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 }
 
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const optional<string> description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const vector<extended_asset> tokens, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
 
@@ -219,11 +219,14 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
     validate_templates( { id }, false );
     const set<name> authorized_accounts = atomic::get_authorized_accounts( id );
     check( authorized_accounts.find(get_self()) != authorized_accounts.end(), "blend::setblend: contract must be included in [atomic::authorized_accounts]" );
+    if ( plugin ) check_plugin( *plugin );
 
     // recipe content
     auto insert = [&]( auto & row ) {
         row.id = id;
         if ( description ) row.description = *description;
+        row.plugin = *plugin;
+        row.tokens = tokens;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
     };

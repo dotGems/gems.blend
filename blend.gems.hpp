@@ -71,6 +71,8 @@ public:
      * - `{atomic::nft} id` - output AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
      * - `{string} description` - blend description
+     * - `{name} plugin` - (optional) plugin (custom attributes)
+     * - `{vector<extended_asset>} [tokens=[]]` - (optional) token deposit required
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
      *
@@ -81,17 +83,21 @@ public:
      *     "id": {"collection_name": "mycollection", "template_id": 21883},
      *     "recipe_ids": [1, 2],
      *     "description": "My Blend",
+     *     "plugin": "myplugin",
+     *     "tokens": [{"contract": "eosio.token", "quantity": "1.0000 EOS"}],
      *     "start_time": "2021-07-01T00:00:00",
      *     "end_time": "2021-10-01T00:00:00"
      * }
      * ```
      */
     struct [[eosio::table("blends")]] blends_row {
-        atomic::nft         id;
-        set<uint64_t>       recipe_ids;
-        string              description;
-        time_point_sec      start_time;
-        time_point_sec      end_time;
+        atomic::nft                 id;
+        set<uint64_t>               recipe_ids;
+        string                      description;
+        name                        plugin;
+        vector<extended_asset>      tokens;
+        time_point_sec              start_time;
+        time_point_sec              end_time;
 
         uint64_t primary_key() const { return id.template_id; }
     };
@@ -135,17 +141,19 @@ public:
      *
      * - `{atomic::nft} id` - AtomicAsset NFT template
      * - `{string} [description=""]` - (optional) blend description
+     * - `{name} [plugin=""]` - (optional) plugin (custom attributes)
+     * - `{vector<extended_asset>} [tokens=[]]` - (optional) token deposit required
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
+     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, [], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft id, const optional<string> description, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const vector<extended_asset> tokens, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
      * ## ACTION `addrecipe`
@@ -249,7 +257,10 @@ private:
     std::pair<name, int32_t> parse_memo( const string memo );
     vector<atomic::nft> sort_templates( vector<atomic::nft> templates );
     name get_ram_payer( const atomic::nft id );
-    pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> mint_attributes( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids );
+
+    // plugins
+    void check_plugin( const name plugin );
+    pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> mint_attributes( const name plugin, const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids );
 
     // update counters in status singleton
     void update_status( const uint32_t index, const uint32_t count );
