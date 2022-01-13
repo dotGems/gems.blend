@@ -5,7 +5,38 @@
 #include "src/helpers.cpp"
 #include "plugins/plugins.cpp"
 
+// static values
+static constexpr uint16_t MAX_PROTOCOL_FEE = 2000;
+
+// error messages
+static string ERROR_CONFIG_NOT_EXISTS = "curve.sx: contract is under maintenance";
+
 namespace gems {
+
+/**
+ * Notify contract when any token transfer notifiers relay contract
+ */
+[[eosio::on_notify("*::transfer")]]
+void blend::on_transfer( const name from, const name to, const asset quantity, const string memo )
+{
+    require_auth( from );
+
+    // ignore transfers
+    if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
+    if ( from == get_self() || memo == get_self().to_string() ) return;
+
+    // parse memo
+    const auto [ collection_name, template_id ] = parse_memo( memo );
+
+    // validate deposit
+    const extended_asset ext_in = { quantity, get_first_receiver() };
+
+    // deposit
+    add_quantity( from, atomic::nft{ collection_name, template_id }, ext_in );
+
+    // stats
+    update_status(2, 1); // deposit
+}
 
 [[eosio::on_notify("atomicassets::transfer")]]
 void blend::on_nft_transfer( const name from, const name to, const vector<uint64_t> asset_ids, const std::string memo )
@@ -19,12 +50,42 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     // parse memo
     const auto [ collection_name, template_id ] = parse_memo( memo );
 
+    // !!! TO-DO <START> !!!
+    // check if token quantity deposit is first required
+    // check if valid quantity exists in order prior to attempting blend
+    // !!! TO-DO <END> !!!
+
     // attempt to blend
     attempt_to_blend( from, collection_name, template_id, asset_ids );
 
     // stats
     update_status(0, 1); // mint
     update_status(1, asset_ids.size()); // burn
+}
+
+void blend::deduct_token_payment( const name from, const name collection_name, const int32_t template_id )
+{
+    blend::orders_table _orders( get_self(), from.value );
+    blend::config_table _config( get_self(), get_self().value );
+    blend::blends_table _blends( get_self(), get_self().value );
+    auto config = _config.get();
+
+    // get required payment for blend recipe
+    const extended_asset required = _blends.get( template_id ).quantity;
+    if ( !required.quantity.amount ) return; // skip if not required token payment
+
+    // check if user has valid deposit
+    auto & orders = _orders.get( template_id, "blend.gems::cancel: no deposits for this user in this NFT ID");
+    check( orders.quantity == required, "blend::deduct_token_payment: invalid quantity, must be exactly " + required.quantity.to_string() );
+    _orders.erase( orders );
+
+    // send asset to author account
+    const name author = atomic::get_author( collection_name );
+    const extended_symbol ext_sym = required.get_extended_symbol();
+    const int64_t to_protocol = required.quantity.amount * config.protocol_fee / 10000;
+    const int64_t to_author = required.quantity.amount - to_protocol;
+    transfer( get_self(), author, { to_author, ext_sym }, "blended at .gems 💎");
+    transfer( get_self(), config.fee_account, { to_protocol, ext_sym }, "blended at .gems 💎");
 }
 
 std::pair<name, int32_t> blend::parse_memo( const string memo )
@@ -37,6 +98,29 @@ std::pair<name, int32_t> blend::parse_memo( const string memo )
     const int32_t template_id = std::stol(memo_parts[1]);
 
     return { collection_name, template_id };
+}
+
+void blend::add_quantity( const name owner, const atomic::nft id, const extended_asset value )
+{
+    blend::orders_table _orders( get_self(), owner.value );
+    blend::blends_table _blends( get_self(), get_self().value );
+
+    // validate deposit
+    const extended_asset required = _blends.get( id.template_id ).quantity;
+
+    check( value.quantity.amount, "blend::on_transfer: empty input quantity" );
+    check( value == required, "blend::on_transfer: invalid quantity, must be exactly " + required.quantity.to_string() );
+
+    // add deposit order
+    auto itr = _orders.find( id.template_id );
+    check( itr == _orders.end(), "gems::add_quantity: quantity deposit already exists, proceed with blend or cancel deposit");
+    _orders.emplace( get_self(), [&]( auto & row ) {
+        row.id = id;
+        row.quantity = value;
+    });
+
+    // !!! TO-DO !!!
+    // Log deposit to user
 }
 
 void blend::check_time( const time_point_sec start_time, const time_point_sec end_time )
@@ -206,8 +290,58 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
     _recipes.emplace( ram_payer, insert );
 }
 
+// returns any remaining orders to owner account
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const vector<extended_asset> tokens, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::cancel( const name owner, const atomic::nft id )
+{
+    if ( !has_auth( get_self() )) require_auth( owner );
+
+    blend::orders_table _orders( get_self(), owner.value );
+    auto & orders = _orders.get( id.template_id, "blend.gems::cancel: no deposits for this user in this NFT ID");
+    if ( orders.quantity.quantity.amount ) transfer( get_self(), owner, orders.quantity, "blend.gems: cancel");
+
+    _orders.erase( orders );
+}
+
+[[eosio::action]]
+void blend::setstatus( const name status )
+{
+    require_auth( get_self() );
+
+    blend::config_table _config( get_self(), get_self().value );
+    check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
+    auto config = _config.get();
+    config.status = status;
+    _config.set( config, get_self() );
+}
+
+[[eosio::action]]
+void blend::setfee( const optional<uint16_t> protocol_fee, const optional<name> fee_account )
+{
+    require_auth( get_self() );
+
+    // config
+    blend::config_table _config( get_self(), get_self().value );
+    check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
+    auto config = _config.get();
+
+    // required params
+    check( *protocol_fee <= MAX_PROTOCOL_FEE, "blend::setfee: [protocol_fee] has exceeded maximum limit");
+
+    // optional params
+    if ( fee_account->value ) check( is_account( *fee_account ), "blend::setfee: [fee_account] does not exist");
+
+    // set config
+    config.protocol_fee = *protocol_fee;
+    config.fee_account = *fee_account;
+
+    // validate
+    if ( config.protocol_fee ) check( config.fee_account.value, "blend::setfee: must provide [fee_account] if [protocol_fee] is defined");
+    _config.set( config, get_self() );
+}
+
+[[eosio::action]]
+void blend::setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const optional<extended_asset> quantity, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
     if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
 
@@ -224,9 +358,9 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
     // recipe content
     auto insert = [&]( auto & row ) {
         row.id = id;
-        if ( description ) row.description = *description;
+        row.description = *description;
         row.plugin = *plugin;
-        row.tokens = tokens;
+        row.quantity = *quantity;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
     };
