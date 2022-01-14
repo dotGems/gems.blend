@@ -169,7 +169,7 @@ public:
      * ```json
      * {
      *   "id": {"collection_name": "mycollection", "template_id": 21883},
-     *   "quantity": {"contract": "eosio.token", "quantity": "1000.0000 A"}
+     *   "quantity": {"contract": "eosio.token", "quantity": "1.0000 EOS"}
      * }
      * ```
      */

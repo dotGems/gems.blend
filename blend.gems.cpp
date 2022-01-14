@@ -360,7 +360,7 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
         row.id = id;
         row.description = *description;
         row.plugin = *plugin;
-        row.quantity = *quantity;
+        if ( quantity ) row.quantity = *quantity;
         row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
         row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
     };
