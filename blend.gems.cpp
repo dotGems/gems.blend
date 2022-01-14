@@ -309,8 +309,8 @@ void blend::setstatus( const name status )
     require_auth( get_self() );
 
     blend::config_table _config( get_self(), get_self().value );
-    check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
-    auto config = _config.get();
+    // check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
+    auto config = _config.get_or_default();
     config.status = status;
     _config.set( config, get_self() );
 }
@@ -322,8 +322,8 @@ void blend::setfee( const optional<uint16_t> protocol_fee, const optional<name> 
 
     // config
     blend::config_table _config( get_self(), get_self().value );
-    check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
-    auto config = _config.get();
+    // check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
+    auto config = _config.get_or_default();
 
     // required params
     check( *protocol_fee <= MAX_PROTOCOL_FEE, "blend::setfee: [protocol_fee] has exceeded maximum limit");

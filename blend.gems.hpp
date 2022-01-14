@@ -200,6 +200,10 @@ public:
      * ### Example
      *
      * ```bash
+     * # basic
+     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", null, null, null, null]' -p myaccount
+     *
+     * # advanced
      * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
      * ```
      */

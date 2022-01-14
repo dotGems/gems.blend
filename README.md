@@ -19,6 +19,108 @@ $ cleos push action blend.gems addtrecipe '[["mycollection", 789], [["mycollecti
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "mycollection:789"]' -p myaccount
 ```
 
+## HTTP requests
+
+#### get `collections` (single row)
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "d.blend.gems",
+  "table": "collections",
+  "json": true,
+  "limit": 1
+}' | jq .
+```
+
+#### get `blends` (all)
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "robotbeepbop",
+  "table": "blends",
+  "json": true,
+  "limit": 100
+}' | jq .
+```
+
+#### get `blends` by `template_id`
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "robotbeepbop",
+  "table": "blends",
+  "json": true,
+  "lower_bound": 3027,
+  "upper_bound": 3027,
+  "limit": 1
+}' | jq .
+```
+
+#### get `recipes` (all)
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "robotbeepbop",
+  "table": "recipes",
+  "json": true,
+  "limit": 100
+}' | jq .
+```
+
+#### get `recipes` by `recipe_id`
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "robotbeepbop",
+  "table": "recipes",
+  "json": true,
+  "lower_bound": 0,
+  "upper_bound": 0,
+  "limit": 1
+}' | jq .
+```
+
+#### get `config` (single row)
+
+```curl
+curl -X 'POST' \
+  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "code": "d.blend.gems",
+  "scope": "d.blend.gems",
+  "table": "config",
+  "json": true,
+  "limit": 1
+}' | jq .
+```
+
 ## Table of Content
 
 - [TABLE `status`](#table-status)
@@ -114,7 +216,6 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 *scope*: `owner` (name)
 
 - `{atomic::nft} id` - output AtomicAsset NFT template
-- `{vector<uint64_t>} asset_ids}
 - `{extended_asset} quantity` - quantity asset
 
 ### example
@@ -122,8 +223,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 ```json
 {
     "id": {"collection_name": "mycollection", "template_id": 21883},
-    "asset_ids": [ 1099512167123, 1099512167124 ],
-    "quantity": {"contract": "eosio.token", "quantity": "1000.0000 A"}
+    "quantity": {"contract": "eosio.token", "quantity": "1.0000 EOS"}
 }
 ```
 
@@ -145,6 +245,10 @@ Set NFT blend
 ### Example
 
 ```bash
+# basic
+$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", null, null, null, null]' -p myaccount
+
+# advanced
 $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
 ```
 
