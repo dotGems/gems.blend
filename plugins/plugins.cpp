@@ -3,7 +3,7 @@
 namespace gems {
     void blend::check_plugin( const name plugin )
     {
-        const set<name> plugins = { "pomelo"_n };
+        const set<name> plugins = { "diamond"_n };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 

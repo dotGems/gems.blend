@@ -4,41 +4,26 @@
 namespace pomelo {
 
 namespace diamond {
-
-    // Color
-    // Grade 5 - Colorless
-    // Grade 4 - Near Colorless
-    // Grade 3 - Faint Yellow
-    // Grade 2 - Very Light Yellow
-    // Grade 1 - Light Yellow
-
     // Clarity
-    // Grade 5 - Internally Flawless
-    // Grade 4 - Very Very Slight Inclusions
-    // Grade 3 - Very Slight Inclusions
-    // Grade 2 - Slight Inclusions
-    // Grade 1 - Imperfect
+    // score 5 - Internally Flawless
+    // score 4 - Very Very Slight Inclusions
+    // score 3 - Very Slight Inclusions
+    // score 2 - Slight Inclusions
+    // score 1 - Imperfect
+    const vector<string> CLARITIES = {"FL", "IF","VVS1", "VVS2","VS1", "VS2","SI1", "SI2", "I1", "I2", "I3"};
+    const vector<string> CLARITY_SCORE_5 = {"FL", "IF"};
+    const vector<string> CLARITY_SCORE_4 = {"VVS1", "VVS2"};
+    const vector<string> CLARITY_SCORE_3 = {"VS1", "VS2"};
+    const vector<string> CLARITY_SCORE_2 = {"SI1", "SI2"};
+    const vector<string> CLARITY_SCORE_1 = {"I1", "I2", "I3"};
 
-    const vector<string> COLOR_GRADE_5 = {"D", "E", "F"};
-    const vector<string> COLOR_GRADE_4 = {"G", "H", "I", "J"};
-    const vector<string> COLOR_GRADE_3 = {"K", "L", "M"};
-    const vector<string> COLOR_GRADE_2 = {"N", "O", "P", "Q", "R"};
-    const vector<string> COLOR_GRADE_1 = {"S", "T", "U", "V", "W", "X", "Y", "Z"};
+    // Colors
+    const vector<string> COLORS = {"White", "Rose", "Amber", "Mint", "Ice Blue"};
 
-    const vector<string> CLARITY_GRADE_5 = {"FL", "IF"};
-    const vector<string> CLARITY_GRADE_4 = {"VVS1", "VVS2"};
-    const vector<string> CLARITY_GRADE_3 = {"VS1", "VS2"};
-    const vector<string> CLARITY_GRADE_2 = {"SI1", "SI2"};
-    const vector<string> CLARITY_GRADE_1 = {"I1", "I2", "I3"};
+    // Shapes
+    const vector<string> SHAPES = {"Round", "Pear", "Heart"};
 
-    const map<string, int> COLOR_GRADES = {
-        { "D", 5 }, { "E", 5 }, { "F", 5 },
-        { "G", 4 }, { "H", 4 }, { "I", 4 }, { "J", 4 },
-        { "K", 3 }, { "L", 3 }, { "M", 3 },
-        { "N", 2 }, { "O", 2 }, { "P", 2 }, { "Q", 2 }, { "R", 2 },
-        { "S", 1 }, { "T", 1 }, { "U", 1 }, { "V", 1 }, { "W", 1 }, { "X", 1 }, { "Y", 1 }, { "Z", 1 }
-    };
-    const map<string, int> CLARITY_GRADES = {
+    const map<string, int> CLARITY_SCORES = {
         { "FL", 5 }, { "IF", 5 },
         { "VVS1", 4 }, { "VVS2", 4 },
         { "VS1", 3 }, { "VS2", 3 },
@@ -46,16 +31,10 @@ namespace diamond {
         { "I1", 1 }, { "I2", 1 }, { "I3", 1 }
     };
 
-    int calculate_color( const string& color )
-    {
-        check( COLOR_GRADES.count(color), "pomelo::diamond::calculate_color: [color] invalid value");
-        return COLOR_GRADES.at(color);
-    }
-
     int calculate_clarity( const string& clarity )
     {
-        check( CLARITY_GRADES.count(clarity), "pomelo::diamond::calculate_clarity: [clarity] invalid value");
-        return CLARITY_GRADES.at(clarity);
+        check( CLARITY_SCORES.count(clarity), "pomelo::diamond::calculate_clarity: [clarity] invalid value");
+        return CLARITY_SCORES.at(clarity);
     }
 
     string random_select( const vector<string>& values )
@@ -64,54 +43,79 @@ namespace diamond {
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
     }
 
-    string select_color( const int grade )
+    string select_clarity( const int score )
     {
-        if ( grade == 5 ) return random_select( COLOR_GRADE_5 );
-        if ( grade == 4 ) return random_select( COLOR_GRADE_4 );
-        if ( grade == 3 ) return random_select( COLOR_GRADE_3 );
-        if ( grade == 2 ) return random_select( COLOR_GRADE_2 );
-        return random_select( COLOR_GRADE_1 );
+        if ( score == 5 ) return random_select( CLARITY_SCORE_5 );
+        if ( score == 4 ) return random_select( CLARITY_SCORE_4 );
+        if ( score == 3 ) return random_select( CLARITY_SCORE_3 );
+        if ( score == 2 ) return random_select( CLARITY_SCORE_2 );
+        if ( score == 1 ) return random_select( CLARITY_SCORE_1 );
+        check( false,  "pomelo::diamond::select_clarity: [score] invalid");
+        return "";
     }
 
-    string select_clarity( const int grade )
+    string select_img( const string shape, const string color, const int score )
     {
-        if ( grade == 5 ) return random_select( CLARITY_GRADE_5 );
-        if ( grade == 4 ) return random_select( CLARITY_GRADE_4 );
-        if ( grade == 3 ) return random_select( CLARITY_GRADE_3 );
-        if ( grade == 2 ) return random_select( CLARITY_GRADE_2 );
-        return random_select( CLARITY_GRADE_1 );
-    }
+        const bool noise = (score == 5 || score == 4) ? false : true;
+        const vector<string> COLORS = {"White", "Rose", "Amber", "Mint", "Ice Blue"};
+        const vector<string> SHAPES = {"Round", "Pear", "Heart"};
 
-    string select_img( const string shape, int grade )
-    {
-        if ( shape == "Round") {
-            switch ( grade ) {
-                case 5: return "IPFS";
-                case 4: return "IPFS";
-                case 3: return "IPFS";
-                case 2: return "IPFS";
-                case 1: return "IPFS";
+        if ( color == "White") {
+            if ( noise ) {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            } else {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
             }
         }
-        if ( shape == "Circle" ) {
-            switch ( grade ) {
-                case 5: return "IPFS";
-                case 4: return "IPFS";
-                case 3: return "IPFS";
-                case 2: return "IPFS";
-                case 1: return "IPFS";
+        if ( color == "Rose" ) {
+            if ( noise ) {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            } else {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
             }
         }
-        if ( shape == "Heart" ) {
-            switch ( grade ) {
-                case 5: return "IPFS";
-                case 4: return "IPFS";
-                case 3: return "IPFS";
-                case 2: return "IPFS";
-                case 1: return "IPFS";
+        if ( color == "Amber" ) {
+            if ( noise ) {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            } else {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
             }
         }
-        check( false, "pomelo::diamond::select_img: invalid value");
+        if ( color == "Mint" ) {
+            if ( noise ) {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            } else {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            }
+        }
+        if ( color == "Ice Blue" ) {
+            if ( noise ) {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            } else {
+                if ( shape == "Round" ) return "IPFS";
+                if ( shape == "Pear" ) return "IPFS";
+                if ( shape == "Heart" ) return "IPFS";
+            }
+        }
+        check( false, "pomelo::diamond::select_img: invalid values");
         return "";
     }
 
@@ -119,6 +123,7 @@ namespace diamond {
     {
         // containers
         vector<string> shapes;
+        vector<string> colors;
         int total = 0;
 
         // add shapes & sum scores
@@ -128,26 +133,27 @@ namespace diamond {
             const string color = atomic::attribute_to_string( immutable, "color" );
             const string clarity = atomic::attribute_to_string( immutable, "clarity" );
 
-            // accumulate all shapes (higher chance of selecting the more as input)
+            // accumulate all shapes & colors (higher chance of selecting the more as input)
             shapes.push_back( shape );
+            colors.push_back( color );
 
-            // color & clarity scores
-            total += calculate_color( color );
+            // sum clarity scores
             total += calculate_clarity( clarity );
         }
 
-        // grade (lowest) 1-2-3-4-5 (highest)
-        // 4x ingredients (1-5)
-        int grade = total / 8;
+        // sum scores, divide by 4 and round down
+        // score (lowest) 1-2-3-4-5 (highest)
+        int score = total / 4;
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
         const string shape = random_select( shapes );
-        immutable_data["grade"] = grade;
+        const string color = random_select( colors );
+        immutable_data["score"] = score;
         immutable_data["shape"] = shape;
-        immutable_data["color"] = select_color( grade );
-        immutable_data["clarity"] = select_clarity( grade );
-        immutable_data["img"] = select_img( shape, grade );
+        immutable_data["color"] = color;
+        immutable_data["clarity"] = select_clarity( score );
+        immutable_data["img"] = select_img( shape, color, score );
 
         return { immutable_data, {} };
     }
