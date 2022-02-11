@@ -16,12 +16,14 @@ namespace diamond {
     const vector<string> CLARITY_QUALITY_3 = {"VS1", "VS2"};
     const vector<string> CLARITY_QUALITY_2 = {"SI1", "SI2"};
     const vector<string> CLARITY_QUALITY_1 = {"I1", "I2", "I3"};
+
+
     const map<string, int> CLARITY_QUALITY = {
-        { "FL", 5 }, { "IF", 5 },
-        { "VVS1", 4 }, { "VVS2", 4 },
-        { "VS1", 3 }, { "VS2", 3 },
-        { "SI1", 2 }, { "SI2", 2 },
-        { "I1", 1 }, { "I2", 1 }, { "I3", 1 }
+        { "FL", 5 }, { "IF", 5 },               // Rare
+        { "VVS1", 4 }, { "VVS2", 4 },           // Uncommon
+        { "VS1", 3 }, { "VS2", 3 },             // Common
+        { "SI1", 2 }, { "SI2", 2 },             // Common
+        { "I1", 1 }, { "I2", 1 }, { "I3", 1 }   // Common
     };
 
     // Color
@@ -42,20 +44,31 @@ namespace diamond {
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
     }
 
-    string select_clarity( const int quality )
+    string select_clarity( const int average )
     {
-        if ( quality == 5 ) return random_select( CLARITY_QUALITY_5 );
-        if ( quality == 4 ) return random_select( CLARITY_QUALITY_4 );
-        if ( quality == 3 ) return random_select( CLARITY_QUALITY_3 );
-        if ( quality == 2 ) return random_select( CLARITY_QUALITY_2 );
-        if ( quality == 1 ) return random_select( CLARITY_QUALITY_1 );
+        if ( average == 5 ) return random_select( CLARITY_QUALITY_5 );
+        if ( average == 4 ) return random_select( CLARITY_QUALITY_4 );
+        if ( average == 3 ) return random_select( CLARITY_QUALITY_3 );
+        if ( average == 2 ) return random_select( CLARITY_QUALITY_2 );
+        if ( average == 1 ) return random_select( CLARITY_QUALITY_1 );
         check( false,  "pomelo::diamond::select_clarity: [quality] invalid");
         return "";
     }
 
-    string select_img( const string shape, const string color, const int quality )
+    string select_quality( const int average )
     {
-        const bool noise = (quality == 5 || quality == 4) ? false : true;
+        if ( average == 5 ) return "Rare";
+        if ( average == 4 ) return "Uncommon";
+        if ( average == 3 ) return "Common";
+        if ( average == 2 ) return "Common";
+        if ( average == 1 ) return "Common";
+        check( false,  "pomelo::diamond::select_clarity: [quality] invalid");
+        return "";
+    }
+
+    string select_img( const string shape, const string color, const string quality )
+    {
+        const bool noise = (quality == "Rare" || quality == "Uncommon") ? false : true;
         if ( color == "White") {
             if ( noise ) {
                 if ( shape == "Round" ) return "IPFS";
@@ -139,16 +152,17 @@ namespace diamond {
 
         // sum quality, divide by 4 and round down
         // quality = (lowest) 1-2-3-4-5 (highest)
-        int quality = total / 4;
+        int average = total / 4;
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
         const string shape = random_select( shapes );
         const string color = random_select( colors );
+        const string quality = select_quality( average );
         immutable_data["quality"] = quality;
         immutable_data["shape"] = shape;
         immutable_data["color"] = color;
-        immutable_data["clarity"] = select_clarity( quality );
+        immutable_data["clarity"] = select_clarity( average );
         immutable_data["img"] = select_img( shape, color, quality );
 
         return { immutable_data, {} };
