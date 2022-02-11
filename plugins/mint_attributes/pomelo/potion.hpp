@@ -8,12 +8,12 @@ namespace potion {
     {
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
-        immutable_data["nonce"] = gems::random::generate(1)[0]; // int64
-        immutable_data["timestamp"] = current_time_point().sec_since_epoch(); // uint32
+        immutable_data["total"] = 10; // int16
 
         // mutable
         ATTRIBUTE_MAP mutable_data = {};
-        mutable_data["quantity"] = 10; // int16
+        mutable_data["available"] = 10; // int16
+        mutable_data["timestamp"] = current_time_point().sec_since_epoch(); // uint32
 
         return { immutable_data, mutable_data };
     }
