@@ -1,9 +1,10 @@
 #include "mint_attributes/pomelo/diamond.hpp"
+#include "mint_attributes/pomelo/potion.hpp"
 
 namespace gems {
     void blend::check_plugin( const name plugin )
     {
-        const set<name> plugins = { "diamond"_n };
+        const set<name> plugins = { "diamond"_n, "potion"_n };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 
@@ -19,10 +20,8 @@ namespace gems {
         }
 
         // supported plugins
-        switch ( plugin.value ) {
-            case "diamond"_n.value:
-                return pomelo::diamond::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
-        }
+        if ( plugin == "diamond"_n ) return pomelo::diamond::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == "potion"_n ) return pomelo::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         check( false, "blend::mint_attributes: invalid [plugin]");
         return { };
     }
