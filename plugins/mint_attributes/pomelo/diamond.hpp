@@ -43,24 +43,24 @@ namespace diamond {
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
     }
 
-    string select_clarity( const int average )
+    string select_clarity( const int quality )
     {
-        if ( average == 5 ) return random_select( CLARITY_QUALITY_5 );
-        if ( average == 4 ) return random_select( CLARITY_QUALITY_4 );
-        if ( average == 3 ) return random_select( CLARITY_QUALITY_3 );
-        if ( average == 2 ) return random_select( CLARITY_QUALITY_2 );
-        if ( average == 1 ) return random_select( CLARITY_QUALITY_1 );
+        if ( quality == 5 ) return random_select( CLARITY_QUALITY_5 );
+        if ( quality == 4 ) return random_select( CLARITY_QUALITY_4 );
+        if ( quality == 3 ) return random_select( CLARITY_QUALITY_3 );
+        if ( quality == 2 ) return random_select( CLARITY_QUALITY_2 );
+        if ( quality == 1 ) return random_select( CLARITY_QUALITY_1 );
         check( false,  "pomelo::diamond::select_clarity: [quality] invalid");
         return "";
     }
 
-    string select_rarity( const int average )
+    string select_rarity( const int quality )
     {
-        if ( average == 5 ) return "Rare";
-        if ( average == 4 ) return "Rare";
-        if ( average == 3 ) return "Common";
-        if ( average == 2 ) return "Common";
-        if ( average == 1 ) return "Common";
+        if ( quality == 5 ) return "Rare";
+        if ( quality == 4 ) return "Rare";
+        if ( quality == 3 ) return "Common";
+        if ( quality == 2 ) return "Common";
+        if ( quality == 1 ) return "Common";
         check( false,  "pomelo::diamond::select_clarity: [quality] invalid");
         return "";
     }
@@ -149,7 +149,7 @@ namespace diamond {
             total += calculate_clarity( clarity );
         }
 
-        // calculate average of clarity score (round down)
+        // calculate clarity quality average (round down)
         // (lowest) 1-2-3-4-5 (highest)
         int average = total / 5;
 
