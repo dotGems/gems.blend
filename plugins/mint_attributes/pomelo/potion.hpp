@@ -8,7 +8,7 @@ namespace potion {
     {
         // mutable
         ATTRIBUTE_MAP mutable_data = {};
-        mutable_data["available"] = 10; // int16
+        mutable_data["mana"] = 10; // int16
         mutable_data["timestamp"] = current_time_point().sec_since_epoch(); // uint32
 
         return { {}, mutable_data };

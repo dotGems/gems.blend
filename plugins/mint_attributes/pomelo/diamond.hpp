@@ -17,10 +17,9 @@ namespace diamond {
     const vector<string> CLARITY_QUALITY_2 = {"SI1", "SI2"};
     const vector<string> CLARITY_QUALITY_1 = {"I1", "I2", "I3"};
 
-
     const map<string, int> CLARITY_QUALITY = {
         { "FL", 5 }, { "IF", 5 },               // Rare
-        { "VVS1", 4 }, { "VVS2", 4 },           // Uncommon
+        { "VVS1", 4 }, { "VVS2", 4 },           // Rare
         { "VS1", 3 }, { "VS2", 3 },             // Common
         { "SI1", 2 }, { "SI2", 2 },             // Common
         { "I1", 1 }, { "I2", 1 }, { "I3", 1 }   // Common
@@ -55,10 +54,10 @@ namespace diamond {
         return "";
     }
 
-    string select_quality( const int average )
+    string select_rarity( const int average )
     {
         if ( average == 5 ) return "Rare";
-        if ( average == 4 ) return "Uncommon";
+        if ( average == 4 ) return "Rare";
         if ( average == 3 ) return "Common";
         if ( average == 2 ) return "Common";
         if ( average == 1 ) return "Common";
@@ -68,7 +67,7 @@ namespace diamond {
 
     string select_img( const string shape, const string color, const string quality )
     {
-        const bool noise = (quality == "Rare" || quality == "Uncommon") ? false : true;
+        const bool noise = (quality == "Rare") ? false : true;
         if ( color == "White") {
             if ( noise ) {
                 if ( shape == "Round" ) return "IPFS";
@@ -150,20 +149,20 @@ namespace diamond {
             total += calculate_clarity( clarity );
         }
 
-        // sum quality, divide by 4 and round down
-        // quality = (lowest) 1-2-3-4-5 (highest)
-        int average = total / 4;
+        // calculate average of clarity score (round down)
+        // (lowest) 1-2-3-4-5 (highest)
+        int average = total / 5;
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
         const string shape = random_select( shapes );
         const string color = random_select( colors );
-        const string quality = select_quality( average );
-        immutable_data["quality"] = quality;
+        const string rarity = select_rarity( average );
+        immutable_data["rarity"] = rarity;
         immutable_data["shape"] = shape;
         immutable_data["color"] = color;
         immutable_data["clarity"] = select_clarity( average );
-        immutable_data["img"] = select_img( shape, color, quality );
+        immutable_data["img"] = select_img( shape, color, rarity );
 
         return { immutable_data, {} };
     }
