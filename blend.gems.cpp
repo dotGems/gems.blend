@@ -351,7 +351,7 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
 
     // validate
     validate_templates( { id }, false );
-    const set<name> authorized_accounts = atomic::get_authorized_accounts( id );
+    const set<name> authorized_accounts = atomic::get_authorized_accounts( id.collection_name );
     check( authorized_accounts.find(get_self()) != authorized_accounts.end(), "blend::setblend: contract must be included in [atomic::authorized_accounts]" );
     if ( plugin ) check_plugin( *plugin );
 

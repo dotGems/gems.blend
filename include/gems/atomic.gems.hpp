@@ -151,6 +151,16 @@ name get_schema_name( const name owner, const uint64_t asset_id )
     return {};
 }
 
+name get_schema_name( const name collection_name, const int32_t template_id )
+{
+    return get_template( collection_name, template_id ).schema_name;
+}
+
+name get_schema_name( const atomic::nft id )
+{
+    return get_template( id.collection_name, id.template_id ).schema_name;
+}
+
 uint64_t get_next_asset_id( )
 {
     atomicassets::config_t config( ATOMIC_ASSETS_CONTRACT, ATOMIC_ASSETS_CONTRACT.value );
@@ -176,14 +186,20 @@ set<name> vector_to_set( const vector<name> values )
     return items;
 }
 
-set<name> get_authorized_accounts( const atomic::nft id )
-{
-    return vector_to_set(get_collection( id.collection_name ).authorized_accounts);
-}
-
 set<name> get_authorized_accounts( const name collection_name )
 {
     return vector_to_set(get_collection( collection_name ).authorized_accounts);
+}
+
+bool is_authorized_account( const name collection_name, const name account )
+{
+    const set<name> authorized_accounts = atomic::get_authorized_accounts( collection_name );
+    return authorized_accounts.find(account) != authorized_accounts.end();
+}
+
+void check_authorized_account( const name collection_name, const name account )
+{
+    check( is_authorized_account( collection_name, account ), "atomic::gems::check_authorized_account: [account=" + account.to_string() + "] is not authorized" );
 }
 
 uint32_t get_issued_supply( const name collection_name, const int32_t template_id )
@@ -194,6 +210,16 @@ uint32_t get_issued_supply( const name collection_name, const int32_t template_i
 uint32_t get_max_supply( const name collection_name, const int32_t template_id )
 {
     return get_template( collection_name, template_id ).max_supply;
+}
+
+bool attribute_exists( const vector<FORMAT> data, const FORMAT& format )
+{
+    const auto res = std::find_if(
+        data.begin(),
+        data.end(),
+        [&](const auto& attr) { return attr.name == format.name && attr.type == format.type;}
+    );
+    return res != data.end();
 }
 
 }   // end atomic

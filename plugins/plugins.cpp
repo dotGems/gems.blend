@@ -1,10 +1,11 @@
-#include "mint_attributes/pomelo/diamond.hpp"
-#include "mint_attributes/pomelo/potion.hpp"
+#include "diamond.hpp"
+#include "potion.hpp"
+#include "potion.large.hpp"
 
 namespace gems {
     void blend::check_plugin( const name plugin )
     {
-        const set<name> plugins = { "diamond"_n, "potion"_n };
+        const set<name> plugins = { "diamond"_n, "potion"_n, "potion.large"_n };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 
@@ -21,6 +22,7 @@ namespace gems {
 
         // supported plugins
         if ( plugin == "diamond"_n ) return pomelo::diamond::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == "potion.large"_n ) return pomelo::potionLarge::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion"_n ) return pomelo::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         check( false, "blend::mint_attributes: invalid [plugin]");
         return { };
