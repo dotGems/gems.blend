@@ -166,5 +166,16 @@ namespace diamond {
 
         return { immutable_data, {} };
     }
+    void validate_attributes( const atomic::nft id )
+    {
+        const auto my_template = atomic::get_template( id.collection_name, id.template_id );
+        const auto schema = atomic::get_schema( id.collection_name, my_template.schema_name );
+        check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
+        check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
+        check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
+        check( atomic::attribute_exists(schema.format, { "shape", "string" }), "blend::validate_attributes: [nft] must have 'shape' as String");
+        check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
+        check( atomic::attribute_exists(schema.format, { "clarity", "string" }), "blend::validate_attributes: [nft] must have 'clarity' as String");
+    }
 } // namespace diamond
 } // namespace pomelo

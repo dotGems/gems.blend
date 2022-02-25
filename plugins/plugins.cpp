@@ -9,6 +9,12 @@ namespace gems {
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 
+    void blend::validate_attributes( const name plugin, const atomic::nft id )
+    {
+        if ( plugin == "potion"_n || plugin == "potion.large"_n ) pomelo::potion::validate_attributes( id );
+        if ( plugin == "diamond"_n ) pomelo::diamond::validate_attributes( id );
+    }
+
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> blend::mint_attributes( const name plugin, const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
     {
         // no plugin provided
