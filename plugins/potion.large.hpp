@@ -20,7 +20,7 @@ namespace potionLarge {
         // mutable
         ATTRIBUTE_MAP mutable_data = {};
         mutable_data["mana"] = mana; // Integer Number (uint64)
-        mutable_data["timestamp"] = 0; // Integer Number (uint64)
+        mutable_data["timestamp"] = static_cast<uint64_t>(0); // Integer Number (uint64)
 
         return { {}, mutable_data };
     }

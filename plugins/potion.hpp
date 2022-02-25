@@ -18,8 +18,8 @@ namespace potion {
     {
         // mutable
         ATTRIBUTE_MAP mutable_data = {};
-        mutable_data["mana"] = 7; // Integer Number (uint64)
-        mutable_data["timestamp"] = 0; // Integer Number (uint64)
+        mutable_data["mana"] = static_cast<uint64_t>(7); // Integer Number (uint64)
+        mutable_data["timestamp"] = static_cast<uint64_t>(0); // Integer Number (uint64)
 
         return { {}, mutable_data };
     }

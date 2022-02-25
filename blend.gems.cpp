@@ -183,7 +183,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
         atomic::burnasset( get_self(), asset_id );
     }
     // generate immutate/mutable attributes
-    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( {}, owner, collection_name, template_id, in_asset_ids );
+    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( blend.plugin, owner, collection_name, template_id, in_asset_ids );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
