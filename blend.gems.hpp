@@ -334,7 +334,7 @@ private:
     void transfer( const name from, const name to, const extended_asset quantity, const string memo );
 
     // blend
-    void validate_templates( const vector<atomic::nft> templates, const bool burnable );
+    void validate_templates( const vector<atomic::nft> templates, const bool burnable, const bool transferable );
     void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids );
     void check_time( const time_point_sec start_time, const time_point_sec end_time );
     uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft> received_templates );

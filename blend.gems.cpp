@@ -84,8 +84,8 @@ void blend::deduct_token_payment( const name from, const name collection_name, c
     const extended_symbol ext_sym = required.get_extended_symbol();
     const int64_t to_protocol = required.quantity.amount * config.protocol_fee / 10000;
     const int64_t to_author = required.quantity.amount - to_protocol;
-    transfer( get_self(), author, { to_author, ext_sym }, "blended at .gems 💎");
-    transfer( get_self(), config.fee_account, { to_protocol, ext_sym }, "blended at .gems 💎");
+    transfer( get_self(), author, { to_author, ext_sym }, "blend fee");
+    transfer( get_self(), config.fee_account, { to_protocol, ext_sym }, "protocol fee");
 }
 
 std::pair<name, int32_t> blend::parse_memo( const string memo )
@@ -188,8 +188,8 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
     const name schema = atomic::get_template( collection_name, template_id ).schema_name;
-    atomic::mintasset( get_self(), collection_name, schema, template_id, get_self(), immutable_attributes, mutable_attributes, {} );
-    atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blended at .gems 💎" );
+    atomic::mintasset( get_self(), collection_name, schema, template_id, owner, immutable_attributes, mutable_attributes, {} );
+    // atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blend " + blend.description );
 
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
@@ -235,14 +235,14 @@ void blend::reset( const name table, const optional<name> scope  )
     else check( false, "invalid table name");
 }
 
-void blend::validate_templates( const vector<atomic::nft> templates, const bool burnable )
+void blend::validate_templates( const vector<atomic::nft> templates, const bool burnable, const bool transferable )
 {
     for ( const atomic::nft item : templates ) {
         check( item.collection_name.value, "blend::validate_templates: [collection_name] is required");
         check( item.template_id, "blend::validate_templates: [template_id] is required");
         const auto my_template = atomic::get_template( item.collection_name, item.template_id );
         if ( burnable ) check( my_template.burnable, "blend::validate_templates: [template] must be `burnable`");
-        check( my_template.transferable, "blend::validate_templates: [template] must be `transferable`");
+        if ( transferable ) check( my_template.transferable, "blend::validate_templates: [template] must be `transferable`");
     }
 }
 
@@ -263,7 +263,7 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 
     // validate
     check( templates.size() >= 1, "blend::addrecipe: [templates] cannot be empty");
-    validate_templates( templates, true );
+    validate_templates( templates, true, true );
 
     // pre-sort ingredients for detect_recipe efficiency
     sort( templates.begin(), templates.end() );
@@ -350,7 +350,7 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
     blend::collections_table _collections( get_self(), get_self().value );
 
     // validate
-    validate_templates( { id }, false );
+    validate_templates( { id }, false, false );
     const set<name> authorized_accounts = atomic::get_authorized_accounts( id.collection_name );
     check( authorized_accounts.find(get_self()) != authorized_accounts.end(), "blend::setblend: contract must be included in [atomic::authorized_accounts]" );
     if ( plugin ) {
