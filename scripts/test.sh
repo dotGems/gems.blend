@@ -33,5 +33,3 @@ cleos push action blend.gems addrecipe '[["mycollection", 5], [["mycollection", 
 
 # user send NFT's to be blended (memo optional)
 cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778], "mycollection:2"]' -p myaccount -p mycollection
-
-cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627781], "mycollection:5"]' -p myaccount -p mycollection
