@@ -53,7 +53,7 @@
 
 @test "valid set blend & add recipe #0" {
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend", "2021-07-05T00:00:00", null]' -p mycollection
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend", null, null, null, null]' -p mycollection
   [ $status -eq 0 ]
 
   run cleos push action blend.gems addrecipe '[["mycollectio1", 4], [["mycollectio1", 1], ["mycollectio1", 2], ["mycollectio1", 3], ["mycollectio1", 3]]]' -p mycollection
@@ -71,7 +71,7 @@
 
 @test "override set blend" {
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend Update", "2021-07-05T00:00:00", null]' -p mycollection
+  run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend Update", null, null, null, null]' -p mycollection
   [ $status -eq 0 ]
 
 }
@@ -82,7 +82,7 @@
   [ $status -eq 1 ]
   [[ "$output" =~ "missing authority" ]] || false
 
-  run cleos push action blend.gems setblend '[["mycollectio1", 3], "My Blend Update", "2021-07-05T00:00:00", null]' -p myaccount
+  run cleos push action blend.gems setblend '[["mycollectio1", 3], "My Blend Update", null, null, null, null]' -p myaccount
   [ $status -eq 1 ]
   [[ "$output" =~ "missing authority" ]] || false
 
