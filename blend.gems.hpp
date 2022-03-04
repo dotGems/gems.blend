@@ -344,6 +344,7 @@ private:
     name get_ram_payer( const atomic::nft id );
     void deduct_token_payment( const name from, const name collection_name, const int32_t template_id );
     void add_quantity( const name owner, const atomic::nft id, const extended_asset value );
+    void check_status();
 
     // plugins
     void check_plugin( const name plugin );

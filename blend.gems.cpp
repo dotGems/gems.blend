@@ -23,7 +23,10 @@ void blend::on_transfer( const name from, const name to, const asset quantity, c
 
     // ignore transfers
     if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
-    if ( from == get_self() || memo == get_self().to_string() ) return;
+    if ( from == get_self() || from == "eosio.ram"_n ) return;
+
+    // validate
+    check_status();
 
     // parse memo
     const auto [ collection_name, template_id ] = parse_memo( memo );
@@ -46,6 +49,9 @@ void blend::on_nft_transfer( const name from, const name to, const vector<uint64
     // ignore transfers
     if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
     if ( from == get_self() || memo == get_self().to_string() ) return;
+
+    // validate
+    check_status();
 
     // parse memo
     const auto [ collection_name, template_id ] = parse_memo( memo );
@@ -429,6 +435,14 @@ void blend::delrecipe( const atomic::nft id, const uint64_t recipe_id )
     // erase recipe
     auto & recipe = _recipes.get( recipe_id, "blend::delrecipe: [recipe_id] does not exist" );
     _recipes.erase( recipe );
+}
+
+void blend::check_status()
+{
+    config_table _config( get_self(), get_self().value );
+    check( _config.exists(), "blend::check_status: config does not exists" );
+    const name status = _config.get().status;
+    check( status == "ok"_n, "curve::check_status: contract is under maintenance");
 }
 
 }
