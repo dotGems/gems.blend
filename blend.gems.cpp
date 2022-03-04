@@ -225,12 +225,16 @@ void blend::reset( const name table, const optional<name> scope  )
 
     blend::blends_table _blends( get_self(), scope ? scope->value : get_self().value );
     blend::recipes_table _recipes( get_self(), scope ? scope->value : get_self().value );
+    blend::orders_table _orders( get_self(), scope ? scope->value : get_self().value );
     blend::status_table _status( get_self(), get_self().value );
+    blend::config_table _config( get_self(), get_self().value );
     blend::collections_table _collections( get_self(), get_self().value );
 
     if ( table == "blends"_n ) clear_table( _blends );
     else if ( table == "recipes"_n ) clear_table( _recipes );
+    else if ( table == "orders"_n ) clear_table( _orders );
     else if ( table == "status"_n ) _status.remove();
+    else if ( table == "config"_n ) _config.remove();
     else if ( table == "collections"_n ) _collections.remove();
     else check( false, "invalid table name");
 }
