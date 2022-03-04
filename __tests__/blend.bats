@@ -51,6 +51,13 @@
 
 }
 
+
+@test "set config" {
+
+  run cleos push action blend.gems setstatus '[ok]' -p blend.gems
+  [ $status -eq 0 ]
+}
+
 @test "valid set blend & add recipe #0" {
 
   run cleos push action blend.gems setblend '[["mycollectio1", 4], "My Blend", null, null, null, null]' -p mycollection
@@ -108,7 +115,6 @@
   run cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779, 1099511627780], "mycollectio1:4"]' -p myaccount -p mycollection
   [ $status -eq 1 ]
   [[ "$output" =~ "could not detect any valid recipes" ]] || false
-
 }
 
 @test "blend recipe #0" {
