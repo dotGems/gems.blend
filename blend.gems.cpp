@@ -275,6 +275,13 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
     check( templates.size() >= 1, "blend::addrecipe: [templates] cannot be empty");
     validate_templates( templates, true, true );
 
+    // maximum unique templates (prevent overloading UI)
+    set<int32_t> uniques;
+    for ( const auto row : templates ) {
+        uniques.insert( row.template_id );
+    }
+    check( uniques.size() <= 10, "blend::addrecipe: [templates] cannot exceed 10 unique templates");
+
     // pre-sort ingredients for detect_recipe efficiency
     sort( templates.begin(), templates.end() );
 
