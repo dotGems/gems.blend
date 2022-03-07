@@ -8,9 +8,6 @@
 // static values
 static constexpr uint16_t MAX_PROTOCOL_FEE = 2000;
 
-// error messages
-static string ERROR_CONFIG_NOT_EXISTS = "curve.sx: contract is under maintenance";
-
 namespace gems {
 
 /**
@@ -22,7 +19,6 @@ void blend::on_transfer( const name from, const name to, const asset quantity, c
     require_auth( from );
 
     // ignore transfers
-    if ( is_account( "notify.gems"_n )) require_recipient( "notify.gems"_n );
     if ( from == get_self() || from == "eosio.ram"_n ) return;
 
     // validate
@@ -326,7 +322,6 @@ void blend::setstatus( const name status )
     require_auth( get_self() );
 
     blend::config_table _config( get_self(), get_self().value );
-    // check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
     auto config = _config.get_or_default();
     config.status = status;
     _config.set( config, get_self() );
@@ -339,7 +334,6 @@ void blend::setfee( const optional<uint16_t> protocol_fee, const optional<name> 
 
     // config
     blend::config_table _config( get_self(), get_self().value );
-    // check( _config.exists(), ERROR_CONFIG_NOT_EXISTS );
     auto config = _config.get_or_default();
 
     // required params
