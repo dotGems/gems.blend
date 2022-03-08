@@ -171,7 +171,7 @@ namespace utils {
         for ( const auto c: str ) {
             i++;
             if ( islower(c) || (isdigit(c) && c <= '6') || c == '.') {
-                if (i == 0 && !islower(c) ) return {};
+                if (i == 0 && isdigit(c) ) return {};
                 if (i == 12 && ( c<'a' || c>'j' )) return {};
             }
             else return {};
