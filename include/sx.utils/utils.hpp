@@ -166,13 +166,13 @@ namespace utils {
      */
     static name parse_name(const string& str) {
 
-        if(str.length()==0 || str.length()>13) return {};
-        int i=-1;
-        for (const auto c: str ) {
+        if ( str.length() == 0 || str.length() > 13 ) return {};
+        int i = -1;
+        for ( const auto c: str ) {
             i++;
-            if( islower(c) || (isdigit(c) && c<='6') || c=='.') {
-                if(i==0 && !islower(c) ) return {};
-                if(i==12 && (c<'a' || c>'j')) return {};
+            if ( islower(c) || (isdigit(c) && c <= '6') || c == '.') {
+                if (i == 0 && !islower(c) ) return {};
+                if (i == 12 && ( c<'a' || c>'j' )) return {};
             }
             else return {};
         }
