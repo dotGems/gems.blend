@@ -23,6 +23,9 @@ cleos push action atomicassets mintasset '["mycollection", "mycollection", "myit
 cleos push action atomicassets mintasset '["mycollection", "mycollection", "myitems", 3, "myaccount", [], [], []]' -p mycollection -f
 cleos push action atomicassets mintasset '["mycollection", "mycollection", "myitems", 1, "myaccount", [], [], []]' -p mycollection -f
 
+# set status
+cleos push action blend.gems setstatus '["ok"]' -p blend.gems
+
 # setup NFT blend recipe
 cleos push action blend.gems setblend '[["mycollection", 2], "My Blend", null, null, null, null]' -p mycollection
 cleos push action blend.gems addrecipe '[["mycollection", 2], [["mycollection", 1], ["mycollection", 2], ["mycollection", 3]]]' -p mycollection

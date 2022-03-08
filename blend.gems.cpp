@@ -131,7 +131,7 @@ void blend::check_time( const time_point_sec start_time, const time_point_sec en
     const int64_t hours = remaining / 60 / 60;
     const int64_t minutes = (remaining - hours * 60 * 60) / 60;
     const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
-    check( remaining <= 0, "blend::check_time: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
+    if ( start_time.sec_since_epoch() ) check( remaining <= 0, "blend::check_time: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
     if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::check_time: has ended");
 }
 
@@ -375,8 +375,8 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
         row.description = *description;
         row.plugin = *plugin;
         if ( quantity ) row.quantity = *quantity;
-        row.start_time = start_time ? *start_time : static_cast<time_point_sec>( current_time_point() );
-        row.end_time = end_time ? *end_time : static_cast<time_point_sec>( current_time_point().sec_since_epoch() + 365 * 86400 );
+        row.start_time = *start_time;
+        row.end_time = *end_time;
     };
 
     // create/modify blend
@@ -443,7 +443,7 @@ void blend::check_status()
     config_table _config( get_self(), get_self().value );
     check( _config.exists(), "blend::check_status: config does not exists" );
     const name status = _config.get().status;
-    check( status == "ok"_n, "curve::check_status: contract is under maintenance");
+    check( status == "ok"_n, "blend::check_status: contract is under maintenance");
 }
 
 }
