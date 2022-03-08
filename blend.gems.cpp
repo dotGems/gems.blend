@@ -96,9 +96,7 @@ std::pair<name, int32_t> blend::parse_memo( const string memo )
     const auto memo_parts = sx::utils::split(memo, ":");
     check( sx::utils::is_digit(memo_parts[1]), "blend::parse_memo: invalid [template_id] in the memo (ex: 'mycollection:12345')");
 
-    // TO-DO handle `.gems` collection_name
-    // const name collection_name = sx::utils::parse_name(memo_parts[0]);
-    const name collection_name = name{memo_parts[0]};
+    const name collection_name = sx::utils::parse_name(memo_parts[0]);
     check( collection_name.value, "blend::parse_memo: invalid [collection_name=" + memo_parts[0] + "] in the memo (ex: 'mycollection:12345')");
     const int32_t template_id = std::stol(memo_parts[1]);
 
