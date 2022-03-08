@@ -144,7 +144,7 @@ uint64_t blend::detect_recipe( const name collection_name, const vector<uint64_t
     blend::recipes_table _recipes( get_self(), collection_name.value );
 
     // order templates
-    sort( received_templates.begin(), received_templates.end());
+    sort( received_templates.begin(), received_templates.end(), [](const atomic::nft& lhs, const atomic::nft& rhs) { return lhs.template_id < rhs.template_id; });
 
     // detect recipe
     for ( const uint64_t recipe_id : recipe_ids ) {
@@ -160,8 +160,12 @@ bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic
     if ( templates.size() != sorted_templates.size()) return false;
 
     // sort recipe ingredients and compare to sorted received vector
-    sort( templates.begin(), templates.end());
-    return sorted_templates == templates;
+    sort( templates.begin(), templates.end(), [](const atomic::nft& lhs, const atomic::nft& rhs) { return lhs.template_id < rhs.template_id; });
+
+    for( size_t i = 0; i < templates.size(); i++){
+        if(sorted_templates[i].template_id != templates[i].template_id) return false;
+    }
+    return true;
 }
 
 void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
@@ -276,7 +280,7 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
     validate_templates( templates, true, true );
 
     // pre-sort ingredients for detect_recipe efficiency
-    sort( templates.begin(), templates.end() );
+    sort( templates.begin(), templates.end(), [](const atomic::nft& lhs, const atomic::nft& rhs) { return lhs.template_id < rhs.template_id; } );
 
     // disallow duplicate recipes within same blend
     auto & blend = _blends.get(id.template_id, "blend::addrecipe: [id.template_id] cannot find any blends" );
