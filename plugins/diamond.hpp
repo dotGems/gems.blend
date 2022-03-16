@@ -70,57 +70,57 @@ namespace diamond {
         const bool noise = (quality == "Rare") ? false : true;
         if ( color == "White") {
             if ( noise ) {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmNhV8Tnq1gRk6itp4STpW9ZJcMhiHMA7zTwzc6SGBA3tV";
+                if ( shape == "Pear" ) return "Qmb9vtynjCeEQoDSFbh4WzhbD3yffm6u3Fm6S9TorbSTVJ";
+                if ( shape == "Heart" ) return "QmWQGMkE3icr3nVh1374WU81KzEY3HE97i3UsKoJdxfvfm";
             } else {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmZqmV6tgcvojWhb9HZcodzScjdBgPR7qFwREYyJ6QN6LX";
+                if ( shape == "Pear" ) return "QmUWFfxKhAdDAuRt2YgQBTAhRRqpsnuRspJMtdGZhzd3Y8";
+                if ( shape == "Heart" ) return "QmUAKaYi83DFsUHwjFE8TrxqPnSrJgTuaNgPqBApm9PHj8";
             }
         }
         if ( color == "Rose" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmZu3rr38WFMFwn2dGibWaCnLroKJtqr9obqegSHZikuZX";
+                if ( shape == "Pear" ) return "QmTwHorLGXB5MdcXwQsF5jbvYkM4DsGNUtwNwYFWj9j7N8";
+                if ( shape == "Heart" ) return "QmRYhR2heXJKusPJvUmSiQtZ5gvgSng2gUPR1AnPmyQmoR";
             } else {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmUa7yVAC9YNDGd6Aa6EFRaSuwG6et6xdTqX19phiU8i7t";
+                if ( shape == "Pear" ) return "QmRyGA5zMHgbqpEq7TaVHbsb6PfXyJ1UjgihWE6tX4U9XJ";
+                if ( shape == "Heart" ) return "QmUikq1uXm7AiqWQcuj8QBcnS531zfST1jkaEq9Jcc7k4Z";
             }
         }
         if ( color == "Amber" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmWspyWorrG8wD5bepaZfiNxvjLRuFAKMoMHkyrrNSeYGK";
+                if ( shape == "Pear" ) return "QmNV2nyJhUpvxktH1izS1SP2fTtUNkPt85tuGVtBtcPGAj";
+                if ( shape == "Heart" ) return "QmQqGfEPzD7uXgyrubFzDw94XtQbeYeJZ696cFCF35Z1h2";
             } else {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmReDTwuS4zkNNihfWDxAM78jt28GZVZjtDnz17Y2vQCky";
+                if ( shape == "Pear" ) return "QmdKgCAqA2Gt1dypjNG2DxrcMqFm8i6rZsje65nmxSdXYq";
+                if ( shape == "Heart" ) return "QmcXm8McmPArjhMwisjY3j51mgorvedJB6THr3YRjWKeF4";
             }
         }
         if ( color == "Mint" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmZWV1xCdnEPyEYpfvNpqx5FgoxZwcWkL6bMprhFgxppHw";
+                if ( shape == "Pear" ) return "QmQDUcEcW3JqmNx5ZJtamAViRbRiebqVu7YWhzur8Vkerp";
+                if ( shape == "Heart" ) return "QmaNwC58nQitewgeKqnatDsZvNX3g5oprLQTVd43D6Tqs1";
             } else {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmbQEvxggYUJqaNqwQbgvnsapF8keYhuK3MayL8T2gmfdi";
+                if ( shape == "Pear" ) return "QmcyDTMrREwo79h6BZxL4C3dsKG5JZEcGfe3h6FYyWF5w4";
+                if ( shape == "Heart" ) return "Qma9iQSJNfGKjeJ8M4ZsVBwSgfQWGTUxuYYj9trQuJhZju";
             }
         }
         if ( color == "Ice Blue" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmeRM1s9b18fqP21LTU5H6h7AG6GrmLhqfS1qGVqeTuuar";
+                if ( shape == "Pear" ) return "QmdsJKsQgzFcUSXDMnkiZYX4tHuwN5KSDiEB53jcr89i4r";
+                if ( shape == "Heart" ) return "Qma3gj4NbXgXWoTxi97TCatRcQyfHy2RkAvh6LuTFNiKcR";
             } else {
-                if ( shape == "Round" ) return "IPFS";
-                if ( shape == "Pear" ) return "IPFS";
-                if ( shape == "Heart" ) return "IPFS";
+                if ( shape == "Round" ) return "QmTsaHv4foW751rkV12ohuZTFHLf4wUrsrzMiDRdis3jez";
+                if ( shape == "Pear" ) return "QmeCyhRStPtFXn8aGPxyJzAj7jvK4YRPHJVQvwfR4ehAXy";
+                if ( shape == "Heart" ) return "QmSHHTAui11gz2DFubo12AfZy6pgeumHX7hk9ionpNXRZn";
             }
         }
         check( false, "pomelo::diamond::select_img: invalid values");
