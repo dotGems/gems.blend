@@ -134,38 +134,63 @@ namespace diamond {
         vector<string> colors;
         int total = 0;
 
+        print("GET ATTRIBUTES\n");
+        print("==============\n");
         // add shapes & sum clarity quality
         for ( const auto& asset : in_assets ) {
-            const ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
-            const string shape = atomic::attribute_to_string( immutable, "shape" );
-            const string color = atomic::attribute_to_string( immutable, "color" );
-            const string clarity = atomic::attribute_to_string( immutable, "clarity" );
+            print("\nASSET\n");
+            print("=====\n");
+            print("asset.asset_id: ", asset.asset_id, "\n");
+            print("asset.schema_name: ", asset.schema_name, "\n");
+            if ( asset.schema_name != "diamonds"_n ) continue; // skip if not diamonds
+            ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
+            const string shape = std::get<string>(immutable["shape"]);
+            const string color = std::get<string>(immutable["color"]);
+            const string clarity = std::get<string>(immutable["clarity"]);
 
             // accumulate all shapes & colors (higher chance of selecting the more as input)
             shapes.push_back( shape );
             colors.push_back( color );
 
             // sum clarity quality
-            total += calculate_clarity( clarity );
-        }
+            const int score = calculate_clarity( clarity );
+            total += score;
 
+            print("get.shape: ", shape, "\n");
+            print("get.color: ", color, "\n");
+            print("get.clarity: ", clarity, "\n");
+            print("score: ", score, "\n");
+        }
         // calculate clarity quality average (round down)
         // (lowest) 1-2-3-4-5 (highest)
         int average = total / 5;
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
+        const string rarity = select_rarity( average );
         const string shape = random_select( shapes );
         const string color = random_select( colors );
-        const string rarity = select_rarity( average );
+        const string clarity = select_clarity( average );
+        const string img = select_img( shape, color, rarity );
         immutable_data["rarity"] = rarity;
         immutable_data["shape"] = shape;
         immutable_data["color"] = color;
-        immutable_data["clarity"] = select_clarity( average );
-        immutable_data["img"] = select_img( shape, color, rarity );
+        immutable_data["clarity"] = clarity;
+        immutable_data["img"] = img;
+
+        print("\n🎉 RESULT 🎉\n");
+        print("===========\n");
+        print("total: ", total, "\n");
+        print("average: ", average, "\n");
+        print("rarity: ", rarity, "\n");
+        print("shape: ", shape, "\n");
+        print("color: ", color, "\n");
+        print("clarity: ", clarity, "\n");
+        print("img: ", img, "\n");
 
         return { immutable_data, {} };
     }
+
     void validate_attributes( const atomic::nft id )
     {
         const auto my_template = atomic::get_template( id.collection_name, id.template_id );

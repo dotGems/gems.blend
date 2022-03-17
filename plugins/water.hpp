@@ -70,57 +70,57 @@ namespace water {
         const bool noise = (quality == "Rare") ? false : true;
         if ( color == "White") {
             if ( noise ) {
-                if ( shape == "Round" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
-                if ( shape == "Pear" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
-                if ( shape == "Heart" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
+                if ( shape == "Round" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Pear" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Heart" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
             } else {
-                if ( shape == "Round" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
-                if ( shape == "Pear" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
-                if ( shape == "Heart" ) return "QmPTMdvWYVSrgWxixKXpQ1nq9t1CZVWZaLyo64XReRxMYP";
+                if ( shape == "Round" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Pear" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Heart" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
             }
         }
         if ( color == "Rose" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
-                if ( shape == "Pear" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
-                if ( shape == "Heart" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
+                if ( shape == "Round" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
+                if ( shape == "Pear" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
+                if ( shape == "Heart" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
             } else {
-                if ( shape == "Round" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
-                if ( shape == "Pear" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
-                if ( shape == "Heart" ) return "QmX3aeNRPrhXCGjRKV9ACbW325xUECfNgS9jt8dasLWC4q";
+                if ( shape == "Round" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
+                if ( shape == "Pear" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
+                if ( shape == "Heart" ) return "QmU7imr2si99q3xwirNfyiAXKY2qcxCg7UhdfCSwiY8Hgy";
             }
         }
         if ( color == "Amber" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
-                if ( shape == "Pear" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
-                if ( shape == "Heart" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
+                if ( shape == "Round" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Pear" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Heart" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
             } else {
-                if ( shape == "Round" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
-                if ( shape == "Pear" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
-                if ( shape == "Heart" ) return "QmXZNgn9kEvEoE2esrSb1NSM3k23iA4RLftCmM4taBJKL7";
+                if ( shape == "Round" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Pear" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
+                if ( shape == "Heart" ) return "QmQHcoEKbK9sqkTFUxtWMoA2LWGA5o2nZ2JEEM4AEtPZ5D";
             }
         }
         if ( color == "Mint" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
-                if ( shape == "Pear" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
-                if ( shape == "Heart" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
+                if ( shape == "Round" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
+                if ( shape == "Pear" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
+                if ( shape == "Heart" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
             } else {
-                if ( shape == "Round" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
-                if ( shape == "Pear" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
-                if ( shape == "Heart" ) return "QmbQymSN4bHNqexH9akTFAnWSyvS5hZnbcFsqu8dMMPySY";
+                if ( shape == "Round" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
+                if ( shape == "Pear" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
+                if ( shape == "Heart" ) return "QmSdXzTKTgqrzeMbsojtuSgnnkeSKqhTT1sp85m59MrNCu";
             }
         }
         if ( color == "Ice Blue" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
-                if ( shape == "Pear" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
-                if ( shape == "Heart" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
+                if ( shape == "Round" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
+                if ( shape == "Pear" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
+                if ( shape == "Heart" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
             } else {
-                if ( shape == "Round" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
-                if ( shape == "Pear" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
-                if ( shape == "Heart" ) return "Qmbg84f8SjR8KuntVVtSC9vxyBN5G3utKJJFmsmFtJ1v64";
+                if ( shape == "Round" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
+                if ( shape == "Pear" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
+                if ( shape == "Heart" ) return "QmQgMaHpPgR1dxAYe3QRaeHr5xR3bxBT5KpcbruWT9W8bm";
             }
         }
         check( false, "pomelo::water::select_img: invalid values");
@@ -134,38 +134,63 @@ namespace water {
         vector<string> colors;
         int total = 0;
 
+        print("GET ATTRIBUTES\n");
+        print("==============\n");
         // add shapes & sum clarity quality
         for ( const auto& asset : in_assets ) {
-            const ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
-            const string shape = atomic::attribute_to_string( immutable, "shape" );
-            const string color = atomic::attribute_to_string( immutable, "color" );
-            const string clarity = atomic::attribute_to_string( immutable, "clarity" );
+            print("\nASSET\n");
+            print("=====\n");
+            print("asset_id: ", asset.asset_id, "\n");
+            print("schema_name: ", asset.schema_name, "\n");
+            if ( asset.schema_name != "water"_n ) continue; // skip if not water
+            ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
+            const string shape = std::get<string>(immutable["shape"]);
+            const string color = std::get<string>(immutable["color"]);
+            const string clarity = std::get<string>(immutable["clarity"]);
 
             // accumulate all shapes & colors (higher chance of selecting the more as input)
             shapes.push_back( shape );
             colors.push_back( color );
 
             // sum clarity quality
-            total += calculate_clarity( clarity );
-        }
+            const int score = calculate_clarity( clarity );
+            total += score;
 
+            print("get.shape: ", shape, "\n");
+            print("get.color: ", color, "\n");
+            print("get.clarity: ", clarity, "\n");
+            print("score: ", score, "\n");
+        }
         // calculate clarity quality average (round down)
         // (lowest) 1-2-3-4-5 (highest)
         int average = total / 5;
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
+        const string rarity = select_rarity( average );
         const string shape = random_select( shapes );
         const string color = random_select( colors );
-        const string rarity = select_rarity( average );
+        const string clarity = select_clarity( average );
+        const string img = select_img( shape, color, rarity );
         immutable_data["rarity"] = rarity;
         immutable_data["shape"] = shape;
         immutable_data["color"] = color;
-        immutable_data["clarity"] = select_clarity( average );
-        immutable_data["img"] = select_img( shape, color, rarity );
+        immutable_data["clarity"] = clarity;
+        immutable_data["img"] = img;
+
+        print("\n🎉 RESULT 🎉\n");
+        print("===========\n");
+        print("total: ", total, "\n");
+        print("average: ", average, "\n");
+        print("rarity: ", rarity, "\n");
+        print("shape: ", shape, "\n");
+        print("color: ", color, "\n");
+        print("clarity: ", clarity, "\n");
+        print("img: ", img, "\n");
 
         return { immutable_data, {} };
     }
+
     void validate_attributes( const atomic::nft id )
     {
         const auto my_template = atomic::get_template( id.collection_name, id.template_id );
