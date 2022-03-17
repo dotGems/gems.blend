@@ -139,7 +139,7 @@ namespace water {
         // add shapes & sum clarity quality
         for ( const auto& asset : in_assets ) {
             print("\nASSET\n");
-            print("=====\n");
+            print("-----\n");
             print("asset_id: ", asset.asset_id, "\n");
             print("schema_name: ", asset.schema_name, "\n");
             if ( asset.schema_name != "water"_n ) continue; // skip if not water

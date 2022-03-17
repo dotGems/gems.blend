@@ -139,7 +139,7 @@ namespace diamond {
         // add shapes & sum clarity quality
         for ( const auto& asset : in_assets ) {
             print("\nASSET\n");
-            print("=====\n");
+            print("-----\n");
             print("asset.asset_id: ", asset.asset_id, "\n");
             print("asset.schema_name: ", asset.schema_name, "\n");
             if ( asset.schema_name != "diamonds"_n ) continue; // skip if not diamonds
