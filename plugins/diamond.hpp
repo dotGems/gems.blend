@@ -114,13 +114,13 @@ namespace diamond {
         }
         if ( color == "Ice Blue" ) {
             if ( noise ) {
-                if ( shape == "Round" ) return "QmeRM1s9b18fqP21LTU5H6h7AG6GrmLhqfS1qGVqeTuuar";
-                if ( shape == "Pear" ) return "QmdsJKsQgzFcUSXDMnkiZYX4tHuwN5KSDiEB53jcr89i4r";
-                if ( shape == "Heart" ) return "Qma3gj4NbXgXWoTxi97TCatRcQyfHy2RkAvh6LuTFNiKcR";
-            } else {
                 if ( shape == "Round" ) return "QmTsaHv4foW751rkV12ohuZTFHLf4wUrsrzMiDRdis3jez";
                 if ( shape == "Pear" ) return "QmeCyhRStPtFXn8aGPxyJzAj7jvK4YRPHJVQvwfR4ehAXy";
                 if ( shape == "Heart" ) return "QmSHHTAui11gz2DFubo12AfZy6pgeumHX7hk9ionpNXRZn";
+            } else {
+                if ( shape == "Round" ) return "QmeRM1s9b18fqP21LTU5H6h7AG6GrmLhqfS1qGVqeTuuar";
+                if ( shape == "Pear" ) return "QmdsJKsQgzFcUSXDMnkiZYX4tHuwN5KSDiEB53jcr89i4r";
+                if ( shape == "Heart" ) return "Qma3gj4NbXgXWoTxi97TCatRcQyfHy2RkAvh6LuTFNiKcR";
             }
         }
         check( false, "pomelo::diamond::select_img: invalid values");
