@@ -2,11 +2,12 @@
 #include "potion.hpp"
 #include "potion.large.hpp"
 #include "water.hpp"
+#include "pomelo-s3.hpp"
 
 namespace gems {
     void blend::check_plugin( const name plugin )
     {
-        const set<name> plugins = { "diamond"_n, "potion"_n, "potion.large"_n, "water"_n };
+        const set<name> plugins = { "diamond"_n, "potion"_n, "potion.large"_n, "water"_n, "pomelo.s3"_n };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 
@@ -14,6 +15,7 @@ namespace gems {
     {
         if ( plugin == "potion"_n || plugin == "potion.large"_n ) pomelo::potion::validate_attributes( id );
         if ( plugin == "diamond"_n ) pomelo::diamond::validate_attributes( id );
+        if ( plugin == "pomelo.s3"_n ) pomelo::s3::validate_attributes( id );
 
         // test plugins
         if ( plugin == "water"_n ) test::water::validate_attributes( id );
@@ -34,6 +36,7 @@ namespace gems {
         if ( plugin == "diamond"_n ) return pomelo::diamond::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion.large"_n ) return pomelo::potionLarge::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion"_n ) return pomelo::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == "pomelo.s3"_n ) return pomelo::s3::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         // test plugins
         if ( plugin == "water"_n ) return test::water::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
