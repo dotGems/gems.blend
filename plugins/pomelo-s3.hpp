@@ -9,24 +9,12 @@ namespace s3 {
     const string RARITY_RARE = "Rare";
     const string RARITY_LEGENDARY = "Legendary";
 
-    // fuel
-    const string FUEL_0 = "Full";
-    const string FUEL_1 = "Half";
-    const string FUEL_2 = "Quarter";
-
     // colors
     const string COLOR_0 = "Red";
     const string COLOR_1 = "Orange";
     const string COLOR_2 = "Pink";
     const string COLOR_3 = "Blue";
     const string COLOR_4 = "Yellow";
-
-    // ship types
-    const string SHIP_TYPE_0 = "Falcon";
-    const string SHIP_TYPE_1 = "Explorer";
-    const string SHIP_TYPE_2 = "Luna";
-    const string SHIP_TYPE_3 = "Enterprise";
-    const string SHIP_TYPE_4 = "Thor";
 
     // moon phases - common
     const string PHASE_COMMON_0 = "Waning Crescent Moon";
@@ -57,40 +45,6 @@ namespace s3 {
         {COLOR_3, PHASE_LEGENDARY_3},
         {COLOR_4, PHASE_LEGENDARY_4},
     };
-
-    // Fuel
-    const vector<string> FUEL = {FUEL_0, FUEL_1, FUEL_2};
-
-    // Super Moon Types
-    const map<string, int> FUEL_QUALITY = {
-        { FUEL_0, 5 },
-        { FUEL_1, 3 },
-        { FUEL_2, 1 },
-    };
-
-    // Color
-    const vector<string> COLOR = {COLOR_0, COLOR_1, COLOR_2, COLOR_3, COLOR_4};
-
-    // Ship Types
-    const map<string, string> SHIP_TYPES = {
-        { COLOR_0, SHIP_TYPE_0 },
-        { COLOR_1, SHIP_TYPE_0 },
-        { COLOR_2, SHIP_TYPE_0 },
-        { COLOR_3, SHIP_TYPE_0 },
-        { COLOR_4, SHIP_TYPE_0 },
-    };
-
-    int get_fuel( const string& fuel )
-    {
-        check( FUEL_QUALITY.count(fuel), "pomelo::get_fuel: [fuel] invalid value");
-        return FUEL_QUALITY.at(fuel);
-    }
-
-    string get_ship_type( const string& color )
-    {
-        check( SHIP_TYPES.count(color), "pomelo::get_ship_type: [color] invalid value");
-        return SHIP_TYPES.at(color);
-    }
 
     string random_select( const vector<string>& values )
     {
@@ -131,7 +85,7 @@ namespace s3 {
 
     string select_img( const string phase )
     {
-        // LEGENDARY
+        // legendary
         if ( phase == PHASE_LEGENDARY_0 ) return "<IPFS>";
         if ( phase == PHASE_LEGENDARY_1 ) return "<IPFS>";
         if ( phase == PHASE_LEGENDARY_2 ) return "<IPFS>";
@@ -171,7 +125,7 @@ namespace s3 {
     {
         // containers
         vector<string> colors;
-        int fuel_total = 0;
+        uint8_t fuel_total = 0;
 
         print("GET ATTRIBUTES\n");
         print("==============\n");
@@ -183,19 +137,17 @@ namespace s3 {
             print("asset.schema_name: ", asset.schema_name, "\n");
             if ( asset.schema_name != "rockets"_n ) continue; // skip if not rockets
             ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
-            const string fuel = std::get<string>(immutable["fuel"]);
+            const uint8_t fuel = std::get<uint8_t>(immutable["fuel"]);
             const string color = std::get<string>(immutable["color"]);
 
             // accumulate all colors (higher chance of selecting the more as input)
             colors.push_back( color );
 
-            // sum clarity quality
-            const int score = get_fuel( fuel );
-            fuel_total += score;
+            // sum fuel
+            fuel_total += fuel;
 
             print("get.color: ", color, "\n");
             print("get.fuel: ", fuel, "\n");
-            print("score: ", score, "\n");
         }
 
         // ultra rare requirement (pure = all same color)
@@ -230,7 +182,7 @@ namespace s3 {
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
-        check( atomic::attribute_exists(schema.format, { "fuel", "string" }), "blend::validate_attributes: [nft] must have 'fuel' as String");
+        check( atomic::attribute_exists(schema.format, { "phase", "string" }), "blend::validate_attributes: [nft] must have 'phase' as String");
         check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
     }
 } // namespace s3
