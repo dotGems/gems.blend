@@ -1,8 +1,8 @@
+#pragma once
 #include <gems/atomic.gems.hpp>
 #include <gems/random.gems.hpp>
 
 namespace pomelo {
-
 namespace s3 {
     // rarity
     const string RARITY_COMMON = "Common";

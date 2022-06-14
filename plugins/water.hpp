@@ -1,3 +1,4 @@
+#pragma once
 #include <gems/atomic.gems.hpp>
 #include <gems/random.gems.hpp>
 
