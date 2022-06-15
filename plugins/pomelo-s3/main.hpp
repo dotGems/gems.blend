@@ -162,7 +162,7 @@ namespace main {
         const string img = select_img( phase );
         immutable_data["rarity"] = rarity;
         immutable_data["color"] = color;
-        immutable_data["phase"] = phase;
+        immutable_data["name"] = phase;
         immutable_data["img"] = img;
 
         print("\n🎉 RESULT 🎉\n");
@@ -183,7 +183,6 @@ namespace main {
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
-        check( atomic::attribute_exists(schema.format, { "phase", "string" }), "blend::validate_attributes: [nft] must have 'phase' as String");
         check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
     }
 } // namespace main

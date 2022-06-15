@@ -75,7 +75,7 @@ namespace dev {
         const string img = select_img( phase );
         immutable_data["rarity"] = rarity;
         immutable_data["color"] = color;
-        immutable_data["phase"] = phase;
+        immutable_data["name"] = phase;
         immutable_data["img"] = img;
 
         print("\n🎉 RESULT 🎉\n");
