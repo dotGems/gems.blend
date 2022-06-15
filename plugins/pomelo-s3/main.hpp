@@ -17,6 +17,10 @@ namespace main {
     const string COLOR_3 = "Navy";
     const string COLOR_4 = "Golden";
 
+    // colors - common & rare
+    const string COLOR_5 = "White";
+    const string COLOR_6 = "Black";
+
     // moon phases - common
     const string PHASE_COMMON_0 = "Waning Crescent Moon";
     const string PHASE_COMMON_1 = "Waxing Crescent Moon";
@@ -34,7 +38,7 @@ namespace main {
     const string PHASE_LEGENDARY_0 = "Blood Moon";
     const string PHASE_LEGENDARY_1 = "Super Harvest Moon";
     const string PHASE_LEGENDARY_2 = "Strawberry Supermoon";
-    const string PHASE_LEGENDARY_3 = "3 Wolf Moon";
+    const string PHASE_LEGENDARY_3 = "Three Wolf Moon";
     const string PHASE_LEGENDARY_4 = "Ring of Fire Eclipse";
 
     const vector<string> PHASE_RARITY_COMMON = {PHASE_COMMON_0, PHASE_COMMON_1, PHASE_COMMON_2, PHASE_COMMON_3, PHASE_COMMON_4, PHASE_COMMON_5};
@@ -56,8 +60,8 @@ namespace main {
     string select_color( const string phase, const eosio::string pure )
     {
         if ( pure.size() ) return pure;
-        if ( phase == PHASE_RARE_2 ) return "black";
-        return "white";
+        if ( phase == PHASE_RARE_2 ) return COLOR_6;
+        return COLOR_5;
     }
 
     string select_phase( const string rarity, const string pure )
@@ -116,7 +120,7 @@ namespace main {
         if ( !items.size() ) return ""; // empty
         string last;
         for ( const string item : items ) {
-            if ( last.size() ) last = item;
+            if ( !last.size() ) last = item;
             if ( item != last ) return ""; // one item does not match
         }
         return last;
@@ -171,6 +175,7 @@ namespace main {
         print("rarity: ", rarity, "\n");
         print("phase: ", phase, "\n");
         print("color: ", color, "\n");
+        print("pure: ", pure, "\n");
         print("img: ", img, "\n");
 
         return { immutable_data, {} };
