@@ -3,8 +3,8 @@
 #include <gems/random.gems.hpp>
 
 namespace pomelo {
-
-namespace diamond {
+namespace s2 {
+namespace main {
     // Clarity
     // quality 5 - Internally Flawless
     // quality 4 - Very Very Slight Inclusions
@@ -203,5 +203,6 @@ namespace diamond {
         check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
         check( atomic::attribute_exists(schema.format, { "clarity", "string" }), "blend::validate_attributes: [nft] must have 'clarity' as String");
     }
-} // namespace diamond
+} // namespace main
+} // namespace s2
 } // namespace pomelo

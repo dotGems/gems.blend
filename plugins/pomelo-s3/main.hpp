@@ -4,6 +4,7 @@
 
 namespace pomelo {
 namespace s3 {
+namespace main {
     // rarity
     const string RARITY_COMMON = "Common";
     const string RARITY_RARE = "Rare";
@@ -185,5 +186,6 @@ namespace s3 {
         check( atomic::attribute_exists(schema.format, { "phase", "string" }), "blend::validate_attributes: [nft] must have 'phase' as String");
         check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
     }
+} // namespace main
 } // namespace s3
 } // namespace pomelo
