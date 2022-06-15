@@ -11,10 +11,10 @@ namespace s3 {
 
     // colors
     const string COLOR_0 = "Red";
-    const string COLOR_1 = "Orange";
+    const string COLOR_1 = "Green";
     const string COLOR_2 = "Pink";
-    const string COLOR_3 = "Blue";
-    const string COLOR_4 = "Yellow";
+    const string COLOR_3 = "Navy";
+    const string COLOR_4 = "Golden";
 
     // moon phases - common
     const string PHASE_COMMON_0 = "Waning Crescent Moon";
@@ -31,10 +31,10 @@ namespace s3 {
 
     // moon phases - ultra rare
     const string PHASE_LEGENDARY_0 = "Blood Moon";
-    const string PHASE_LEGENDARY_1 = "Ring of Fire Eclipse";
+    const string PHASE_LEGENDARY_1 = "Super Harvest Moon";
     const string PHASE_LEGENDARY_2 = "Strawberry Supermoon";
     const string PHASE_LEGENDARY_3 = "3 Wolf Moon";
-    const string PHASE_LEGENDARY_4 = "Super Harvest Moon";
+    const string PHASE_LEGENDARY_4 = "Ring of Fire Eclipse";
 
     const vector<string> PHASE_RARITY_COMMON = {PHASE_COMMON_0, PHASE_COMMON_1, PHASE_COMMON_2, PHASE_COMMON_3, PHASE_COMMON_4, PHASE_COMMON_5};
     const vector<string> PHASE_RARITY_RARE = {PHASE_RARE_0, PHASE_RARE_1, PHASE_RARE_2};
