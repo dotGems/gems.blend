@@ -17,6 +17,13 @@ struct nft {
     friend auto operator<=>(const nft&, const nft&) = default;
 };
 
+struct nft_extra {
+    name collection_name;
+    int32_t template_id;
+    name schema_name;
+    friend auto operator<=>(const nft_extra&, const nft_extra&) = default;
+};
+
 void transfer_nft( const name from, const name to, const vector<uint64_t> asset_ids, const string memo )
 {
     vector<permission_level> permission = {{ from, "active"_n }};

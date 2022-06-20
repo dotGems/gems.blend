@@ -40,7 +40,6 @@ public:
     };
     typedef eosio::singleton< "config"_n, config_row > config_table;
 
-
     /**
      * ## TABLE `status`
      *
@@ -107,7 +106,7 @@ public:
      *
      * ```json
      * {
-     *     "id": {"collection_name": "mycollection", "template_id": 21883},
+     *     "id": {"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883},
      *     "recipe_ids": [1, 2],
      *     "description": "My Blend",
      *     "plugin": "myplugin",
@@ -121,10 +120,10 @@ public:
         atomic::nft                 id;
         set<uint64_t>               recipe_ids;
         string                      description;
-        name                        plugin;
-        extended_asset              quantity;
-        time_point_sec              start_time;
-        time_point_sec              end_time;
+        optional<name>              plugin;
+        optional<extended_asset>    quantity;
+        optional<time_point_sec>    start_time;
+        optional<time_point_sec>    end_time;
 
         uint64_t primary_key() const { return id.template_id; }
     };
@@ -145,13 +144,13 @@ public:
      * ```json
      * {
      *     "id": 1,
-     *     "templates": [{"collection_name": "mycollection", "template_id": 21883}]
+     *     "templates": [{"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883}]
      * }
      * ```
      */
     struct [[eosio::table("recipes")]] recipes_row {
-        uint64_t                id;
-        vector<atomic::nft>     templates;
+        uint64_t                        id;
+        vector<atomic::nft>       templates;
 
         uint64_t primary_key() const { return id; }
     };
@@ -162,20 +161,21 @@ public:
      *
      * *scope*: `owner` (name)
      *
+     * - `{atomic::nft} id` - output AtomicAsset NFT template
      * - `{extended_asset} quantity` - quantity asset
      *
      * ### example
      *
      * ```json
      * {
-     *   "id": {"collection_name": "mycollection", "template_id": 21883},
+     *   "id": {"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883},
      *   "quantity": {"contract": "eosio.token", "quantity": "1.0000 EOS"}
      * }
      * ```
      */
     struct [[eosio::table("orders")]] orders_row {
-        atomic::nft         id;
-        extended_asset      quantity;
+        atomic::nft             id;
+        extended_asset          quantity;
 
         uint64_t primary_key() const { return id.template_id; }
     };
@@ -336,7 +336,7 @@ private:
     // blend
     void validate_templates( const vector<atomic::nft> templates, const bool burnable, const bool transferable );
     void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids );
-    void check_time( const time_point_sec start_time, const time_point_sec end_time );
+    void check_time( const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
     uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft> received_templates );
     bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );

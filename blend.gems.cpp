@@ -73,7 +73,7 @@ void blend::deduct_token_payment( const name from, const name collection_name, c
     auto config = _config.get();
 
     // get required payment for blend recipe
-    const extended_asset required = _blends.get( template_id ).quantity;
+    const extended_asset required = *_blends.get( template_id ).quantity;
     if ( !required.quantity.amount ) return; // skip if not required token payment
 
     // check if user has valid deposit
@@ -109,7 +109,7 @@ void blend::add_quantity( const name owner, const atomic::nft id, const extended
     blend::blends_table _blends( get_self(), get_self().value );
 
     // validate deposit
-    const extended_asset required = _blends.get( id.template_id ).quantity;
+    const extended_asset required = *_blends.get( id.template_id ).quantity;
 
     check( value.quantity.amount, "blend::on_transfer: empty input quantity" );
     check( value == required, "blend::on_transfer: invalid quantity, must be exactly " + required.quantity.to_string() );
@@ -126,14 +126,14 @@ void blend::add_quantity( const name owner, const atomic::nft id, const extended
     // Log deposit to user
 }
 
-void blend::check_time( const time_point_sec start_time, const time_point_sec end_time )
+void blend::check_time( const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
-    const int64_t remaining = (start_time - current_time_point()).to_seconds();
+    const int64_t remaining = (*start_time - current_time_point()).to_seconds();
     const int64_t hours = remaining / 60 / 60;
     const int64_t minutes = (remaining - hours * 60 * 60) / 60;
     const int64_t seconds = remaining - hours * 60 * 60 - minutes * 60;
-    if ( start_time.sec_since_epoch() ) check( remaining <= 0, "blend::check_time: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
-    if ( end_time.sec_since_epoch() ) check( end_time > current_time_point(), "blend::check_time: has ended");
+    if ( start_time->sec_since_epoch() ) check( remaining <= 0, "blend::check_time: not yet availabe, opening in " + to_string(hours) + "h " + to_string(minutes) + "m " + to_string(seconds) + "s");
+    if ( end_time->sec_since_epoch() ) check( *end_time > current_time_point(), "blend::check_time: has ended");
 }
 
 uint64_t blend::detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
@@ -186,7 +186,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
         atomic::burnasset( get_self(), asset_id );
     }
     // generate immutate/mutable attributes
-    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( blend.plugin, owner, collection_name, template_id, in_asset_ids );
+    const auto [ immutable_attributes, mutable_attributes ] = gems::blend::mint_attributes( *blend.plugin, owner, collection_name, template_id, in_asset_ids );
 
     // mint blended NFT asset to owner
     const uint64_t next_asset_id = atomic::get_next_asset_id();
