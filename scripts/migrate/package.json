@@ -1,0 +1,14 @@
+{
+  "name": "migrate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Denis Carriere",
+  "license": "MIT",
+  "dependencies": {
+    "@greymass/eosio": "^0.6.0",
+    "isomorphic-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  }
+}
