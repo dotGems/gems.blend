@@ -94,10 +94,10 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} id` - output AtomicAsset NFT template
+     * - `{atomic::nft_extra} id` - output AtomicAsset NFT template
      * - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
-     * - `{string} description` - blend description
-     * - `{name} plugin` - (optional) plugin (custom attributes)
+     * - `{string} [description=null]]` - (optional) blend description
+     * - `{name} [plugin=null]` - (optional) plugin (custom attributes)
      * - `{extended_asset} [quantity=[]]` - (optional) token deposit required
      * - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
      * - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
@@ -117,9 +117,9 @@ public:
      * ```
      */
     struct [[eosio::table("blends")]] blends_row {
-        atomic::nft                 id;
+        atomic::nft_extra           id;
         set<uint64_t>               recipe_ids;
-        string                      description;
+        optional<string>            description;
         optional<name>              plugin;
         optional<extended_asset>    quantity;
         optional<time_point_sec>    start_time;
@@ -137,7 +137,7 @@ public:
      * ### params
      *
      * - `{uint64_t} id` - (auto-incremental primary key) recipe ID
-     * - `{vector<atomic::nft>} templates` - AtomicAsset NFT templates
+     * - `{vector<atomic::nft_extra>} templates` - AtomicAsset NFT templates
      *
      * ### example
      *
@@ -150,7 +150,7 @@ public:
      */
     struct [[eosio::table("recipes")]] recipes_row {
         uint64_t                        id;
-        vector<atomic::nft>       templates;
+        vector<atomic::nft_extra>       templates;
 
         uint64_t primary_key() const { return id; }
     };
@@ -190,7 +190,8 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} id` - AtomicAsset NFT template
+     * - `{name} collection_name` - AtomicAsset NFT collection name
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
      * - `{string} [description=""]` - (optional) blend description
      * - `{name} [plugin=""]` - (optional) plugin (custom attributes)
      * - `{extended_asset} [quantity=null]` - (optional) token deposit required
@@ -201,14 +202,14 @@ public:
      *
      * ```bash
      * # basic
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", null, null, null, null]' -p myaccount
+     * $ cleos push action blend.gems setblend '["mycollection", 789, "My Blend", null, null, null, null]' -p myaccount
      *
      * # advanced
-     * $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
+     * $ cleos push action blend.gems setblend '["mycollection", 789, "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const optional<extended_asset> quantity, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
+    void setblend( const name collection_name, const int32_t template_id, const optional<string> description, const optional<name> plugin, const optional<extended_asset> quantity, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
 
     /**
      * ## ACTION `addrecipe`
@@ -219,17 +220,18 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} id` - AtomicAsset NFT template
+     * - `{name} collection_name` - AtomicAsset NFT collection name
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
      * - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+     * $ cleos push action blend.gems addrecipe '["mycollection", 789, [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void addrecipe( const atomic::nft id, vector<atomic::nft> templates );
+    void addrecipe(  const name collection_name, const int32_t template_id, vector<atomic::nft> templates );
 
     /**
      * ## ACTION `delblend`
@@ -240,16 +242,17 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} id` - blend AtomicAsset NFT
+     * - `{name} collection_name` - AtomicAsset NFT collection name
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems delblend '[["mycollection", 789]]' -p blend.gems
+     * $ cleos push action blend.gems delblend '["mycollection", 789]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void delblend( const atomic::nft id );
+    void delblend( const name collection_name, const int32_t template_id );
 
     /**
      * ## ACTION `delrecipe`
@@ -260,17 +263,18 @@ public:
      *
      * ### params
      *
-     * - `{atomic::nft} id` - AtomicAsset NFT template
+     * - `{name} collection_name` - AtomicAsset NFT collection name
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
      * - `{uint64_t} recipe_id` - recipe ID
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems delrecipe '[["mycollection", 789], 1]' -p blend.gems
+     * $ cleos push action blend.gems delrecipe '["mycollection", 789, 1]' -p blend.gems
      * ```
      */
     [[eosio::action]]
-    void delrecipe( const atomic::nft id, const uint64_t recipe_id );
+    void delrecipe( const name collection_name, const int32_t template_id, const uint64_t recipe_id );
 
     /**
      * ## ACTION `cancel`
@@ -282,16 +286,16 @@ public:
      * ### params
      *
      * - `{name} owner` - owner account to claim
-     * - `{atomic::nft} id` - AtomicAsset NFT template
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
      *
      * ### Example
      *
      * ```bash
-     * $ cleos push action blend.gems cancel '["myaccount", ["mycollection", 789]]' -p myaccount
+     * $ cleos push action blend.gems cancel '["myaccount", 789]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void cancel( const name owner, const atomic::nft id );
+    void cancel( const name owner, const int32_t template_id );
 
     [[eosio::action]]
     void setfee( const optional<uint16_t> protocol_fee, const optional<name> fee_account );
@@ -307,8 +311,8 @@ public:
                    const string description,
                    const vector<uint64_t> in_asset_ids,
                    const uint64_t out_asset_id,
-                   const vector<atomic::nft> in_templates,
-                   const atomic::nft out_template,
+                   const vector<atomic::nft_extra> in_templates,
+                   const atomic::nft_extra out_template,
                    const int total_mint,
                    const int total_burn );
 
@@ -337,11 +341,12 @@ private:
     void validate_templates( const vector<atomic::nft> templates, const bool burnable, const bool transferable );
     void attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& asset_ids );
     void check_time( const optional<time_point_sec> start_time, const optional<time_point_sec> end_time );
-    uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft> received_templates );
+    uint64_t detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, const vector<atomic::nft_extra> received_templates );
     bool is_match( const vector<atomic::nft>& sorted_templates, vector<atomic::nft>& templates );
+    bool is_match( const vector<atomic::nft_extra>& sorted_templates, vector<atomic::nft_extra>& templates );
     std::pair<name, int32_t> parse_memo( const string memo );
     vector<atomic::nft> sort_templates( vector<atomic::nft> templates );
-    name get_ram_payer( const atomic::nft id );
+    name get_ram_payer( const name collection_name );
     void deduct_token_payment( const name from, const name collection_name, const int32_t template_id );
     void add_quantity( const name owner, const atomic::nft id, const extended_asset value );
     void check_status();

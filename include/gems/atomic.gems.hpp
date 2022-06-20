@@ -86,6 +86,12 @@ atomic::nft get_nft( const name owner, const uint64_t asset_id )
     return atomic::nft{ my_asset.collection_name, my_asset.template_id };
 }
 
+atomic::nft_extra get_nft_extra( const name owner, const uint64_t asset_id )
+{
+    atomicassets::assets_s my_asset = get_asset( owner, asset_id );
+    return atomic::nft_extra{ my_asset.collection_name, my_asset.template_id, my_asset.schema_name };
+}
+
 atomicdata::ATTRIBUTE_MAP get_template_immutable( const atomicassets::assets_s& asset )
 {
     const name collection_name = asset.collection_name;

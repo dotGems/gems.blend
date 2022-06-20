@@ -136,7 +136,7 @@ void blend::check_time( const optional<time_point_sec> start_time, const optiona
     if ( end_time->sec_since_epoch() ) check( *end_time > current_time_point(), "blend::check_time: has ended");
 }
 
-uint64_t blend::detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, vector<atomic::nft> received_templates )
+uint64_t blend::detect_recipe( const name collection_name, const vector<uint64_t> asset_ids, const set<uint64_t> recipe_ids, vector<atomic::nft_extra> received_templates )
 {
     blend::recipes_table _recipes( get_self(), collection_name.value );
 
@@ -161,6 +161,15 @@ bool blend::is_match( const vector<atomic::nft>& sorted_templates, vector<atomic
     return sorted_templates == templates;
 }
 
+bool blend::is_match( const vector<atomic::nft_extra>& sorted_templates, vector<atomic::nft_extra>& templates )
+{
+    if ( templates.size() != sorted_templates.size()) return false;
+
+    // sort recipe ingredients and compare to sorted received vector
+    sort( templates.begin(), templates.end());
+    return sorted_templates == templates;
+}
+
 void blend::attempt_to_blend( const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
 {
     blend::blends_table _blends( get_self(), collection_name.value );
@@ -171,9 +180,9 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     check( blend.id.collection_name == collection_name, "blend::attempt_to_blend: [collection_name] in the memo does not match blend");
 
     // build vector of received templates
-    vector<atomic::nft> received_templates;
+    vector<atomic::nft_extra> received_templates;
     for ( const uint64_t asset_id : in_asset_ids ) {
-        received_templates.push_back( atomic::get_nft( get_self(), asset_id ) );
+        received_templates.push_back( atomic::get_nft_extra( get_self(), asset_id ) );
     }
 
     // get recipe
@@ -197,7 +206,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
-                   blend.description,
+                   *blend.description,
                    in_asset_ids,
                    next_asset_id,
                    received_templates,
@@ -211,8 +220,8 @@ void blend::blendlog( const name owner,
                       const string description,
                       const vector<uint64_t> in_asset_ids,
                       const uint64_t out_asset_id,
-                      const vector<atomic::nft> in_templates,
-                      const atomic::nft out_template,
+                      const vector<atomic::nft_extra> in_templates,
+                      const atomic::nft_extra out_template,
                       const int total_mint,
                       const int total_burn )
 {
@@ -253,20 +262,20 @@ void blend::validate_templates( const vector<atomic::nft> templates, const bool 
     }
 }
 
-name blend::get_ram_payer( const atomic::nft id )
+name blend::get_ram_payer( const name collection_name )
 {
     if ( has_auth( get_self() ) ) return get_self();
-    return get_author( id );
+    return atomic::get_author( collection_name );
 }
 
 [[eosio::action]]
-void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
+void blend::addrecipe( const name collection_name, const int32_t template_id, vector<atomic::nft> templates )
 {
-    if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
 
     // tables
-    blend::recipes_table _recipes( get_self(), id.collection_name.value );
-    blend::blends_table _blends( get_self(), id.collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
+    blend::blends_table _blends( get_self(), collection_name.value );
 
     // validate
     check( templates.size() >= 1, "blend::addrecipe: [templates] cannot be empty");
@@ -274,24 +283,27 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
 
     // maximum unique templates (prevent overloading UI)
     set<int32_t> uniques;
+    vector<atomic::nft_extra> templates_extra;
     for ( const auto row : templates ) {
+        const name schema_name = atomic::get_template( row.collection_name, row.template_id ).schema_name;
         uniques.insert( row.template_id );
+        templates_extra.push_back( atomic::nft_extra{ row.collection_name, row.template_id, schema_name });
     }
     check( uniques.size() <= 10, "blend::addrecipe: [templates] cannot exceed 10 unique templates");
 
     // pre-sort ingredients for detect_recipe efficiency
-    sort( templates.begin(), templates.end() );
+    sort( templates_extra.begin(), templates_extra.end() );
 
     // disallow duplicate recipes within same blend
-    auto & blend = _blends.get(id.template_id, "blend::addrecipe: [id.template_id] cannot find any blends" );
+    auto & blend = _blends.get(template_id, "blend::addrecipe: [template_id] cannot find any blends" );
     for ( const uint64_t recipe_id : blend.recipe_ids ) {
         auto recipe = _recipes.get( recipe_id, "blend::addrecipe: [recipe_id] does not exists" );
-        check( !is_match( templates, recipe.templates ), "blend::addrecipe: recipe already exists" );
+        check( !is_match( templates_extra, recipe.templates ), "blend::addrecipe: recipe already exists" );
     }
 
     // add recipe to blend
     const uint64_t recipe_id = _recipes.available_primary_key();
-    const name ram_payer = get_ram_payer( id );
+    const name ram_payer = get_ram_payer( collection_name );
     _blends.modify( blend, ram_payer, [&]( auto & row ) {
         row.recipe_ids.insert( recipe_id );
     });
@@ -299,19 +311,19 @@ void blend::addrecipe( const atomic::nft id, vector<atomic::nft> templates )
     // recipe content
     auto insert = [&]( auto & row ) {
         row.id = recipe_id;
-        row.templates = templates;
+        row.templates = templates_extra;
     };
     _recipes.emplace( ram_payer, insert );
 }
 
 // returns any remaining orders to owner account
 [[eosio::action]]
-void blend::cancel( const name owner, const atomic::nft id )
+void blend::cancel( const name owner, const int32_t template_id )
 {
     if ( !has_auth( get_self() )) require_auth( owner );
 
     blend::orders_table _orders( get_self(), owner.value );
-    auto & orders = _orders.get( id.template_id, "blend.gems::cancel: no deposits for this user in this NFT ID");
+    auto & orders = _orders.get( template_id, "blend.gems::cancel: no deposits for this user in this NFT ID");
     if ( orders.quantity.quantity.amount ) transfer( get_self(), owner, orders.quantity, "blend.gems: cancel");
 
     _orders.erase( orders );
@@ -353,17 +365,20 @@ void blend::setfee( const optional<uint16_t> protocol_fee, const optional<name> 
 }
 
 [[eosio::action]]
-void blend::setblend( const atomic::nft id, const optional<string> description, const optional<name> plugin, const optional<extended_asset> quantity, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
+void blend::setblend( const name collection_name, const int32_t template_id, const optional<string> description, const optional<name> plugin, const optional<extended_asset> quantity, const optional<time_point_sec> start_time, const optional<time_point_sec> end_time )
 {
-    if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
 
-    blend::blends_table _blends( get_self(), id.collection_name.value );
-    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+    blend::blends_table _blends( get_self(), collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
     blend::collections_table _collections( get_self(), get_self().value );
 
     // validate
+    const atomic::nft id = { collection_name, template_id };
+    const name schema_name = atomic::get_template( collection_name, template_id ).schema_name;
+
     validate_templates( { id }, false, false );
-    const set<name> authorized_accounts = atomic::get_authorized_accounts( id.collection_name );
+    const set<name> authorized_accounts = atomic::get_authorized_accounts( collection_name );
     check( authorized_accounts.find(get_self()) != authorized_accounts.end(), "blend::setblend: contract must be included in [atomic::authorized_accounts]" );
     if ( plugin ) {
         check_plugin( *plugin );
@@ -372,17 +387,17 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
 
     // recipe content
     auto insert = [&]( auto & row ) {
-        row.id = id;
-        row.description = *description;
-        row.plugin = *plugin;
+        row.id = atomic::nft_extra{ collection_name, template_id, schema_name };
+        if ( description ) row.description = *description;
+        if ( plugin ) row.plugin = *plugin;
         if ( quantity ) row.quantity = *quantity;
-        row.start_time = *start_time;
-        row.end_time = *end_time;
+        if ( start_time ) row.start_time = *start_time;
+        if ( end_time )row.end_time = *end_time;
     };
 
     // create/modify blend
-    const name ram_payer = get_ram_payer( id );
-    auto itr = _blends.find( id.template_id );
+    const name ram_payer = get_ram_payer( collection_name );
+    auto itr = _blends.find( template_id );
     if ( itr == _blends.end() ) _blends.emplace( ram_payer, insert );
     else  _blends.modify( itr, ram_payer, insert );
 
@@ -393,16 +408,16 @@ void blend::setblend( const atomic::nft id, const optional<string> description, 
 }
 
 [[eosio::action]]
-void blend::delblend( const atomic::nft id )
+void blend::delblend( const name collection_name, const int32_t template_id )
 {
-    if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
 
-    blend::blends_table _blends( get_self(), id.collection_name.value );
-    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+    blend::blends_table _blends( get_self(), collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
     blend::collections_table _collections( get_self(), get_self().value );
 
     // delete any recipes connected to blend
-    auto & blend = _blends.get( id.template_id, "blend::delblend: [id.template_id] does not exist" );
+    auto & blend = _blends.get( template_id, "blend::delblend: [template_id] does not exist" );
     for ( const uint64_t recipe_id : blend.recipe_ids ) {
         auto recipe = _recipes.find( recipe_id );
         if ( recipe != _recipes.end() ) _recipes.erase( recipe );
@@ -412,24 +427,24 @@ void blend::delblend( const atomic::nft id )
     // remove scope if empty
     if ( _blends.begin() == _blends.end() ) {
         auto collections = _collections.get_or_default();
-        collections.collection_names.erase(id.collection_name);
+        collections.collection_names.erase(collection_name);
         _collections.set( collections, get_self() );
     }
 }
 
 [[eosio::action]]
-void blend::delrecipe( const atomic::nft id, const uint64_t recipe_id )
+void blend::delrecipe( const name collection_name, const int32_t template_id, const uint64_t recipe_id )
 {
-    if ( !has_auth( get_self() ) ) require_auth( get_author( id ) );
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
 
     // tables
-    blend::blends_table _blends( get_self(), id.collection_name.value );
-    blend::recipes_table _recipes( get_self(), id.collection_name.value );
+    blend::blends_table _blends( get_self(), collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
 
     // erase recipe from existing blends
-    auto & blend = _blends.get( id.template_id, "blend::delrecipe: [id.template_id] does not exist" );
+    auto & blend = _blends.get( template_id, "blend::delrecipe: [template_id] does not exist" );
     if ( blend.recipe_ids.count( recipe_id ) ) {
-        _blends.modify( blend, get_ram_payer( id ), [&]( auto & row ) {
+        _blends.modify( blend, get_ram_payer( collection_name ), [&]( auto & row ) {
             row.recipe_ids.erase( recipe_id );
         });
     }

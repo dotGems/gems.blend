@@ -171,11 +171,11 @@ curl -X 'POST' \
 
 ### params
 
-- `{atomic::nft} id` - output AtomicAsset NFT template
+- `{atomic::nft_extra} id` - output AtomicAsset NFT template
 - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
-- `{string} description` - blend description
-- `{name} plugin` - (optional) plugin (custom attributes)
-- `{extended_asset} [quantity=null]` - (optional) token deposit required
+- `{string} [description=null]]` - (optional) blend description
+- `{name} [plugin=null]` - (optional) plugin (custom attributes)
+- `{extended_asset} [quantity=[]]` - (optional) token deposit required
 - `{time_point_sec} [start_time=null]` - (optional) start time (ex: "2021-07-01T00:00:00")
 - `{time_point_sec} [end_time=null]` - (optional) end time (ex: "2021-08-01T00:00:00")
 
@@ -183,7 +183,7 @@ curl -X 'POST' \
 
 ```json
 {
-    "id": {"collection_name": "mycollection", "template_id": 21883},
+    "id": {"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883},
     "recipe_ids": [1, 2],
     "description": "My Blend",
     "plugin": "myplugin",
@@ -200,14 +200,14 @@ curl -X 'POST' \
 ### params
 
 - `{uint64_t} id` - (auto-incremental primary key) recipe ID
-- `{vector<atomic::nft>} templates` - AtomicAsset NFT templates
+- `{vector<atomic::nft_extra>} templates` - AtomicAsset NFT templates
 
 ### example
 
 ```json
 {
     "id": 1,
-    "templates": [{"collection_name": "mycollection", "template_id": 21883}]
+    "templates": [{"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883}]
 }
 ```
 
@@ -222,7 +222,7 @@ curl -X 'POST' \
 
 ```json
 {
-    "id": {"collection_name": "mycollection", "template_id": 21883},
+    "id": {"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883},
     "quantity": {"contract": "eosio.token", "quantity": "1.0000 EOS"}
 }
 ```
@@ -235,7 +235,8 @@ Set NFT blend
 
 ### params
 
-- `{atomic::nft} id` - AtomicAsset NFT template
+- `{name} collection_name` - AtomicAsset NFT collection name
+- `{int32_t} template_id` - AtomicAsset NFT template ID
 - `{string} [description=""]` - (optional) blend description
 - `{name} [plugin=""]` - (optional) plugin (custom attributes)
 - `{extended_asset} [quantity=null]` - (optional) token deposit required
@@ -246,10 +247,10 @@ Set NFT blend
 
 ```bash
 # basic
-$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", null, null, null, null]' -p myaccount
+$ cleos push action blend.gems setblend '["mycollection", 789, "My Blend", null, null, null, null]' -p myaccount
 
 # advanced
-$ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
+$ cleos push action blend.gems setblend '["mycollection", 789, "My Blend", "myplugin, {"contract": "eosio.token", "quantity": "0.1000 EOS"}, "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
 ```
 
 ## ACTION `addrecipe`
@@ -260,13 +261,14 @@ Add NFT recipe to blend
 
 ### params
 
-- `{atomic::nft} id` - AtomicAsset NFT template
+- `{name} collection_name` - AtomicAsset NFT collection name
+- `{int32_t} template_id` - AtomicAsset NFT template ID
 - `{vector<atomic::nft>} templates` - AtomicHub NFT templates
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+$ cleos push action blend.gems addrecipe '["mycollection", 789, [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
 ```
 
 ## ACTION `delblend`
@@ -277,12 +279,13 @@ Delete NFT blend
 
 ### params
 
-- `{atomic::nft} id` - blend AtomicAsset NFT
+- `{name} collection_name` - AtomicAsset NFT collection name
+- `{int32_t} template_id` - AtomicAsset NFT template ID
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems delblend '[["mycollection", 789]]' -p blend.gems
+$ cleos push action blend.gems delblend '["mycollection", 789]' -p blend.gems
 ```
 
 ## ACTION `delrecipe`
@@ -293,13 +296,14 @@ Delete NFT recipe
 
 ### params
 
-- `{atomic::nft} id` - AtomicAsset NFT template
+- `{name} collection_name` - AtomicAsset NFT collection name
+- `{int32_t} template_id` - AtomicAsset NFT template ID
 - `{uint64_t} recipe_id` - recipe ID
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems delrecipe '[["mycollection", 789], 1]' -p blend.gems
+$ cleos push action blend.gems delrecipe '["mycollection", 789, 1]' -p blend.gems
 ```
 
 ## ACTION `cancel`
@@ -311,10 +315,10 @@ Returns any remaining orders to owner account
 ### params
 
 - `{name} owner` - owner account to claim
-- `{atomic::nft} id` - AtomicAsset NFT template
+- `{int32_t} template_id` - AtomicAsset NFT template ID
 
 ### Example
 
 ```bash
-$ cleos push action blend.gems cancel '["myaccount", ["mycollection", 789]]' -p myaccount
+$ cleos push action blend.gems cancel '["myaccount", 789]' -p myaccount
 ```

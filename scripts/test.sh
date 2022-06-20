@@ -27,8 +27,8 @@ cleos push action atomicassets mintasset '["mycollection", "mycollection", "diam
 cleos push action blend.gems setstatus '["ok"]' -p blend.gems
 
 # setup NFT blend recipe
-cleos push action blend.gems setblend '[["mycollection", 3], "Diamond Pond", null, null, null, null]' -p mycollection
-cleos push action blend.gems addrecipe '[["mycollection", 3], [["mycollection", 1], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2]]]' -p mycollection
+cleos push action blend.gems setblend '["mycollection", 3, "Diamond Pond", null, null, null, null]' -p mycollection
+cleos push action blend.gems addrecipe '["mycollection", 3, [["mycollection", 1], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2], ["mycollection", 2]]]' -p mycollection
 
 # # # user send NFT's to be blended (memo optional)
 # cleos -v push action atomicassets transfer '["myaccount", "blend.gems", [1099511627776, 1099511627777, 1099511627778, 1099511627779, 1099511627780, 1099511627781], "mycollection:3"]' -p myaccount -p mycollection
