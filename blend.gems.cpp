@@ -269,6 +269,29 @@ name blend::get_ram_payer( const name collection_name )
 }
 
 [[eosio::action]]
+void blend::setrecipes( const name collection_name, const int32_t template_id, const set<uint64_t> recipe_ids )
+{
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
+
+    blend::blends_table _blends( get_self(), collection_name.value );
+    blend::recipes_table _recipes( get_self(), collection_name.value );
+
+    // maximum unique templates (prevent overloading UI)
+    check( recipe_ids.size() <= 10, "blend::setrecipes: [recipe_ids] cannot exceed 10 recipes");
+
+    // make sure recipe exists
+    for ( const uint64_t recipe_id : recipe_ids ) {
+        _recipes.get( recipe_id, "blend::setrecipes: [recipe_id] does not exists" );
+    }
+    // add recipe to blend
+    const name ram_payer = get_ram_payer( collection_name );
+    auto & blend = _blends.get(template_id, "blend::setrecipes: [template_id] does not exists" );
+    _blends.modify( blend, ram_payer, [&]( auto & row ) {
+        row.recipe_ids = recipe_ids;
+    });
+}
+
+[[eosio::action]]
 void blend::addrecipe( const name collection_name, const int32_t template_id, vector<atomic::nft> templates )
 {
     if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
@@ -295,7 +318,7 @@ void blend::addrecipe( const name collection_name, const int32_t template_id, ve
     sort( templates_extra.begin(), templates_extra.end() );
 
     // disallow duplicate recipes within same blend
-    auto & blend = _blends.get(template_id, "blend::addrecipe: [template_id] cannot find any blends" );
+    auto & blend = _blends.get(template_id, "blend::addrecipe: [template_id] does not exists" );
     for ( const uint64_t recipe_id : blend.recipe_ids ) {
         auto recipe = _recipes.get( recipe_id, "blend::addrecipe: [recipe_id] does not exists" );
         check( !is_match( templates_extra, recipe.templates ), "blend::addrecipe: recipe already exists" );

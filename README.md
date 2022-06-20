@@ -25,7 +25,7 @@ $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [10995121
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -41,7 +41,7 @@ curl -X 'POST' \
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -57,7 +57,7 @@ curl -X 'POST' \
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -75,7 +75,7 @@ curl -X 'POST' \
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -91,7 +91,7 @@ curl -X 'POST' \
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -109,7 +109,7 @@ curl -X 'POST' \
 
 ```curl
 curl -X 'POST' \
-  "https://eos.eosn.io/v1/chain/get_table_rows" \
+  "https://eos.api.eosnation.io/v1/chain/get_table_rows" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -129,6 +129,7 @@ curl -X 'POST' \
 - [TABLE `recipes`](#table-recipes)
 - [ACTION `setblend`](#action-setblend)
 - [ACTION `addrecipe`](#action-addrecipe)
+- [ACTION `setrecipe`](#action-setrecipe)
 - [ACTION `delblend`](#action-delblend)
 - [ACTION `delrecipe`](#action-delrecipe)
 - [ACTION `cancel`](#action-cancel)
@@ -269,6 +270,24 @@ Add NFT recipe to blend
 
 ```bash
 $ cleos push action blend.gems addrecipe '["mycollection", 789, [["mycollection", 123], ["mycollection", 456]]]' -p blend.gems
+```
+
+## ACTION `setrecipes`
+
+Set NFT recipe to blend
+
+- **authority**: `atomicassets::author` or `get_self()`
+
+### params
+
+- `{name} collection_name` - AtomicAsset NFT collection name
+- `{int32_t} template_id` - AtomicAsset NFT template ID
+- `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
+
+### Example
+
+```bash
+$ cleos push action blend.gems setrecipes '["mycollection", 789, [1]]' -p blend.gems
 ```
 
 ## ACTION `delblend`

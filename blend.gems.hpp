@@ -234,6 +234,28 @@ public:
     void addrecipe(  const name collection_name, const int32_t template_id, vector<atomic::nft> templates );
 
     /**
+     * ## ACTION `setrecipes`
+     *
+     * Set NFT recipe to blend
+     *
+     * - **authority**: `atomicassets::author` or `get_self()`
+     *
+     * ### params
+     *
+     * - `{name} collection_name` - AtomicAsset NFT collection name
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
+     * - `{set<uint64_t>} recipe_ids` - one or many input recipes ID's
+     *
+     * ### Example
+     *
+     * ```bash
+     * $ cleos push action blend.gems setrecipes '["mycollection", 789, [1]]' -p blend.gems
+     * ```
+     */
+    [[eosio::action]]
+    void setrecipes( const name collection_name, const int32_t template_id, const set<uint64_t> recipe_ids );
+
+    /**
      * ## ACTION `delblend`
      *
      * Delete NFT blend
