@@ -88,3 +88,12 @@ summary: Set status
 icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
 ---
 
+<h1 class="contract">setrecipes</h1>
+
+---
+spec_version: "0.2.0"
+title: setrecipes
+summary: Set recipes
+icon: https://avatars0.githubusercontent.com/u/75587337#4065db6936f0967a12224125dbdc91f9cc1bbc8d4ee2735ced6bdff180d73d79
+---
+

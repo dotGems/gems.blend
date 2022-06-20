@@ -2,7 +2,8 @@ import { APIClient, UInt64 } from "@greymass/eosio";
 
 global.fetch = require('isomorphic-fetch');
 
-const api = new APIClient({url: "https://eos.api.eosnation.io"});
+const url = "https://eos.api.eosnation.io";
+const api = new APIClient({url});
 
 const code = "blend.gems"
 
@@ -52,8 +53,8 @@ async function get_recipe(collection_name: string, recipe_id: number ): Promise<
     for ( const collection_name of collection_names) {
         console.log('\n# collection_name:', collection_name);
 
-        console.log(`mcleos push action ${code} reset '[blends, ${collection_name}]' -p ${code}`);
-        console.log(`mcleos push action ${code} reset '[recipes, ${collection_name}]' -p ${code}`);
+        console.log(`cleos -u ${url} push action ${code} reset '[blends, ${collection_name}]' -p ${code}`);
+        console.log(`cleos -u ${url} push action ${code} reset '[recipes, ${collection_name}]' -p ${code}`);
 
         const blends = await get_blends( collection_name );
         for ( const blend of blends ) {
@@ -64,14 +65,14 @@ async function get_recipe(collection_name: string, recipe_id: number ): Promise<
             if ( end_time == `"1970-01-01T00:00:00"`) end_time = "null";
 
             const plugin = blend.plugin ? `${blend.plugin}` : "null";
-            console.log(`mcleos push action ${code} setblend '[${collection_name}, ${blend.id.template_id}, "${blend.description}", ${plugin}, null, ${start_time}, ${end_time}]' -p ${code}`);
+            console.log(`cleos -u ${url} push action ${code} setblend '[${collection_name}, ${blend.id.template_id}, "${blend.description}", ${plugin}, null, ${start_time}, ${end_time}]' -p ${code}`);
 
             console.log('\n# recipes:', blend.id.collection_name, blend.id.template_id);
             for ( const recipe_id of blend.recipe_ids ) {
                 const recipe = await get_recipe(collection_name, recipe_id);
                 // console.log(recipe.templates)
                 const templates = recipe.templates.map(row => { return `[${row.collection_name},${row.template_id}]` })
-                console.log(`mcleos push action ${code} addrecipe '[${collection_name}, ${blend.id.template_id}, [${templates}]]' -p ${code}`);
+                console.log(`cleos -u ${url} push action ${code} addrecipe '[${collection_name}, ${blend.id.template_id}, [${templates}]]' -p ${code}`);
             }
         }
     }
