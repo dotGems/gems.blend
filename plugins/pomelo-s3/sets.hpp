@@ -34,7 +34,7 @@ namespace sets {
         const auto schema = atomic::get_schema( id.collection_name, my_template.schema_name );
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
-        check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
+        // check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
     }
 } // namespace sets
 } // namespace s3
