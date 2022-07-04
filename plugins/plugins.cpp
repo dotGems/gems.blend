@@ -9,7 +9,6 @@
 // Pomelo Season 3
 #include "pomelo-s3/main.hpp"
 #include "pomelo-s3/dev.hpp"
-#include "pomelo-s3/potion_large.hpp"
 #include "pomelo-s3/potion.hpp"
 #include "pomelo-s3/sets.hpp"
 
