@@ -34,11 +34,11 @@ namespace main {
     const string PHASE_RARE_1 = "Full Moon";
     const string PHASE_RARE_2 = "Eclipse";
 
-    // moon phases - ultra rare
+    // moon phases - legendary
     const string PHASE_LEGENDARY_0 = "Blood Moon";
     const string PHASE_LEGENDARY_1 = "Super Harvest Moon";
     const string PHASE_LEGENDARY_2 = "Strawberry Supermoon";
-    const string PHASE_LEGENDARY_3 = "Three Wolf Moon";
+    const string PHASE_LEGENDARY_3 = "Wolf Moon";
     const string PHASE_LEGENDARY_4 = "Ring of Fire Eclipse";
 
     const vector<string> PHASE_RARITY_COMMON = {PHASE_COMMON_0, PHASE_COMMON_1, PHASE_COMMON_2, PHASE_COMMON_3, PHASE_COMMON_4, PHASE_COMMON_5};
@@ -66,7 +66,7 @@ namespace main {
 
     string select_phase( const string rarity, const string pure )
     {
-        // ultra rare
+        // legendary
         if ( rarity == RARITY_LEGENDARY ) {
             check( PHASE_RARITY_LEGENDARY.count(pure), "pomelo::select_phase: [pure] invalid value");
             return PHASE_RARITY_LEGENDARY.at(pure);
@@ -155,7 +155,7 @@ namespace main {
             print("get.fuel: ", fuel, "\n");
         }
 
-        // ultra rare requirement (pure = all same color)
+        // legendary requirement (pure = all same color)
         const string pure = is_pure( colors );
 
         // immutable
