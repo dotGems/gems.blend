@@ -81,10 +81,8 @@ namespace main {
 
     string select_rarity( const int fuel_total, const string pure )
     {
-        if ( fuel_total >= 21 ) {
-            if ( pure.size() ) return RARITY_LEGENDARY;
-            else return RARITY_RARE;
-        }
+        if ( pure.size() && fuel_total >= 25 ) return RARITY_LEGENDARY;
+        if ( fuel_total >= 21 ) return RARITY_RARE;
         return RARITY_COMMON;
     }
 
