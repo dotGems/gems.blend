@@ -2,6 +2,8 @@
 #include <gems/atomic.gems.hpp>
 #include <gems/random.gems.hpp>
 
+#include "main.hpp"
+
 namespace pomelo {
 namespace s3 {
 namespace sets {
@@ -13,12 +15,16 @@ namespace sets {
         set<string> rarities;
 
         for ( const auto& asset : in_assets ) {
-            // check( asset.schema_name == "moons"_n, "only accepts `moons` schema");
+            check( asset.schema_name == "moons"_n, "only accepts `moons` schema");
             ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
             const string name = std::get<string>(immutable["name"]);
             const string rarity = std::get<string>(immutable["rarity"]);
-            if ( rarity == "rare" ) rares += 1;
-            if ( rarity == "common" ) commons += 1;
+
+            // sum rarities
+            if ( rarity == pomelo::s3::main::RARITY_RARE ) rares += 1;
+            else if ( rarity == pomelo::s3::main::RARITY_COMMON ) commons += 1;
+            else check( false, "invalid [rarity=" + rarity + "] provided");
+
             check( names.find( name ) == names.end(), "all assets for this blend must be unique");
             check( rarities.find( rarity ) == rarities.end(), "cannot mix commons and rares for this blend");
             names.insert( name );
@@ -34,7 +40,6 @@ namespace sets {
         const auto schema = atomic::get_schema( id.collection_name, my_template.schema_name );
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
-        // check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
     }
 } // namespace sets
 } // namespace s3

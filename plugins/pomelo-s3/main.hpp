@@ -8,7 +8,7 @@ namespace main {
     // rarity
     const string RARITY_COMMON = "Common";
     const string RARITY_RARE = "Rare";
-    const string RARITY_LEGENDARY = "Legendary";
+    const string RARITY_ULTRA = "Ultra Rare";
 
     // colors
     const string COLOR_0 = "Red";
@@ -34,21 +34,21 @@ namespace main {
     const string PHASE_RARE_1 = "Full Moon";
     const string PHASE_RARE_2 = "Eclipse";
 
-    // moon phases - legendary
-    const string PHASE_LEGENDARY_0 = "Blood Moon";
-    const string PHASE_LEGENDARY_1 = "Super Harvest Moon";
-    const string PHASE_LEGENDARY_2 = "Strawberry Supermoon";
-    const string PHASE_LEGENDARY_3 = "Wolf Moon";
-    const string PHASE_LEGENDARY_4 = "Ring of Fire Eclipse";
+    // moon phases - ultra rare
+    const string PHASE_ULTRA_0 = "Blood Moon";
+    const string PHASE_ULTRA_1 = "Super Harvest Moon";
+    const string PHASE_ULTRA_2 = "Strawberry Supermoon";
+    const string PHASE_ULTRA_3 = "Wolf Moon";
+    const string PHASE_ULTRA_4 = "Ring of Fire Eclipse";
 
     const vector<string> PHASE_RARITY_COMMON = {PHASE_COMMON_0, PHASE_COMMON_1, PHASE_COMMON_2, PHASE_COMMON_3, PHASE_COMMON_4, PHASE_COMMON_5};
     const vector<string> PHASE_RARITY_RARE = {PHASE_RARE_0, PHASE_RARE_1, PHASE_RARE_2};
-    const map<string, string> PHASE_RARITY_LEGENDARY = {
-        {COLOR_0, PHASE_LEGENDARY_0},
-        {COLOR_1, PHASE_LEGENDARY_1},
-        {COLOR_2, PHASE_LEGENDARY_2},
-        {COLOR_3, PHASE_LEGENDARY_3},
-        {COLOR_4, PHASE_LEGENDARY_4},
+    const map<string, string> PHASE_RARITY_ULTRA = {
+        {COLOR_0, PHASE_ULTRA_0},
+        {COLOR_1, PHASE_ULTRA_1},
+        {COLOR_2, PHASE_ULTRA_2},
+        {COLOR_3, PHASE_ULTRA_3},
+        {COLOR_4, PHASE_ULTRA_4},
     };
 
     string random_select( const vector<string>& values )
@@ -67,9 +67,9 @@ namespace main {
     string select_phase( const string rarity, const string pure )
     {
         // legendary
-        if ( rarity == RARITY_LEGENDARY ) {
-            check( PHASE_RARITY_LEGENDARY.count(pure), "pomelo::select_phase: [pure] invalid value");
-            return PHASE_RARITY_LEGENDARY.at(pure);
+        if ( rarity == RARITY_ULTRA ) {
+            check( PHASE_RARITY_ULTRA.count(pure), "pomelo::select_phase: [pure] invalid value");
+            return PHASE_RARITY_ULTRA.at(pure);
         }
 
         // rare & common phases
@@ -81,7 +81,7 @@ namespace main {
 
     string select_rarity( const int fuel_total, const string pure )
     {
-        if ( pure.size() && fuel_total >= 25 ) return RARITY_LEGENDARY;
+        if ( pure.size() && fuel_total >= 25 ) return RARITY_ULTRA;
         if ( fuel_total >= 21 ) return RARITY_RARE;
         return RARITY_COMMON;
     }
@@ -89,11 +89,11 @@ namespace main {
     string select_img( const string phase )
     {
         // legendary
-        if ( phase == PHASE_LEGENDARY_0 ) return "<IPFS>";
-        if ( phase == PHASE_LEGENDARY_1 ) return "<IPFS>";
-        if ( phase == PHASE_LEGENDARY_2 ) return "<IPFS>";
-        if ( phase == PHASE_LEGENDARY_3 ) return "<IPFS>";
-        if ( phase == PHASE_LEGENDARY_4 ) return "<IPFS>";
+        if ( phase == PHASE_ULTRA_0 ) return "<IPFS>";
+        if ( phase == PHASE_ULTRA_1 ) return "<IPFS>";
+        if ( phase == PHASE_ULTRA_2 ) return "<IPFS>";
+        if ( phase == PHASE_ULTRA_3 ) return "<IPFS>";
+        if ( phase == PHASE_ULTRA_4 ) return "<IPFS>";
 
         // rare
         if ( phase == PHASE_RARE_0 ) return "<IPFS>";

@@ -12,11 +12,11 @@ namespace dev {
     string select_img( const string phase )
     {
         // legendary
-        if ( phase == pomelo::s3::main::PHASE_LEGENDARY_0 ) return "QmXapCV6Z3pHqxQU1QtTbcaA1vskVKHUXSRBncQK9mvowW";
-        if ( phase == pomelo::s3::main::PHASE_LEGENDARY_1 ) return "Qmcrno4RwGuBPSzFmATJX7sWvqJkXYCfWVk1ppux3qCgNj";
-        if ( phase == pomelo::s3::main::PHASE_LEGENDARY_2 ) return "QmWWPc6jddtZDubHNwptjqqDR7C2i3unfK7KJhxgGduMbc";
-        if ( phase == pomelo::s3::main::PHASE_LEGENDARY_3 ) return "QmVjaSxE1rvFCfLGbLDpbfn977dJyYeXbtKAgD7amGwVKy";
-        if ( phase == pomelo::s3::main::PHASE_LEGENDARY_4 ) return "QmPuok9ytkmCe6G6sNSzbiAHSYqvwoHLwApPNwW75gYTD9";
+        if ( phase == pomelo::s3::main::PHASE_ULTRA_0 ) return "QmXapCV6Z3pHqxQU1QtTbcaA1vskVKHUXSRBncQK9mvowW";
+        if ( phase == pomelo::s3::main::PHASE_ULTRA_1 ) return "Qmcrno4RwGuBPSzFmATJX7sWvqJkXYCfWVk1ppux3qCgNj";
+        if ( phase == pomelo::s3::main::PHASE_ULTRA_2 ) return "QmWWPc6jddtZDubHNwptjqqDR7C2i3unfK7KJhxgGduMbc";
+        if ( phase == pomelo::s3::main::PHASE_ULTRA_3 ) return "QmVjaSxE1rvFCfLGbLDpbfn977dJyYeXbtKAgD7amGwVKy";
+        if ( phase == pomelo::s3::main::PHASE_ULTRA_4 ) return "QmPuok9ytkmCe6G6sNSzbiAHSYqvwoHLwApPNwW75gYTD9";
 
         // rare
         if ( phase == pomelo::s3::main::PHASE_RARE_0 ) return "QmUQzTp2QE59gb35qJYkPpm7NT5cASG6piLCY3SRrWhRkS";
