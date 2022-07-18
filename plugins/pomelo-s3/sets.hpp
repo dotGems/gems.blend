@@ -34,7 +34,7 @@ namespace sets {
         return { {}, {} };
     }
 
-    void validate_attributes( const atomic::nft id )
+    void validate_input_attributes( const atomic::nft id )
     {
         const auto my_template = atomic::get_template( id.collection_name, id.template_id );
         const auto schema = atomic::get_schema( id.collection_name, my_template.schema_name );

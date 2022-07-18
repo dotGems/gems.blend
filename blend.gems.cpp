@@ -405,7 +405,7 @@ void blend::setblend( const name collection_name, const int32_t template_id, con
     check( authorized_accounts.find(get_self()) != authorized_accounts.end(), "blend::setblend: contract must be included in [atomic::authorized_accounts]" );
     if ( plugin ) {
         check_plugin( *plugin );
-        validate_attributes( *plugin, id );
+        validate_input_attributes( *plugin, id );
     }
 
     // recipe content

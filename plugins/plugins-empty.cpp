@@ -4,7 +4,7 @@ namespace gems {
         check( false, "blend::check_plugin: invalid [plugin]");
     }
 
-    void blend::validate_attributes( const name plugin, const atomic::nft id )
+    void blend::validate_input_attributes( const name plugin, const atomic::nft id )
     {
 
     }

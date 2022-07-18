@@ -375,7 +375,7 @@ private:
 
     // plugins
     void check_plugin( const name plugin );
-    void validate_attributes( const name plugin, const atomic::nft id );
+    void validate_input_attributes( const name plugin, const atomic::nft id );
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> mint_attributes( const name plugin, const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids );
 
     // update counters in status singleton
