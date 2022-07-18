@@ -27,7 +27,7 @@ namespace main {
     const string PHASE_COMMON_2 = "First Quarter Moon";
     const string PHASE_COMMON_3 = "Waxing Gibbous Moon";
     const string PHASE_COMMON_4 = "Waning Gibbous Moon";
-    const string PHASE_COMMON_5 = "Last Quarter Moon";
+    const string PHASE_COMMON_5 = "Third Quarter Moon";
 
     // moon phases - rare
     const string PHASE_RARE_0 = "New Moon";
@@ -66,7 +66,7 @@ namespace main {
 
     string select_phase( const string rarity, const string pure )
     {
-        // legendary
+        // ultra rare
         if ( rarity == RARITY_ULTRA ) {
             check( PHASE_RARITY_ULTRA.count(pure), "pomelo::select_phase: [pure] invalid value");
             return PHASE_RARITY_ULTRA.at(pure);
@@ -88,27 +88,54 @@ namespace main {
 
     string select_img( const string phase )
     {
-        // legendary
-        if ( phase == PHASE_ULTRA_0 ) return "<IPFS>";
-        if ( phase == PHASE_ULTRA_1 ) return "<IPFS>";
-        if ( phase == PHASE_ULTRA_2 ) return "<IPFS>";
-        if ( phase == PHASE_ULTRA_3 ) return "<IPFS>";
-        if ( phase == PHASE_ULTRA_4 ) return "<IPFS>";
+        // ultra rare
+        if ( phase == PHASE_ULTRA_0 ) return "QmcPZs9XtSRVK9Sy88q5DNzphfvHvjAQSBpAixzR5mDjqH";
+        if ( phase == PHASE_ULTRA_1 ) return "QmbF4A5KNTDsXDZUHXDLMk4sMUyU2RHrRLj8TZzs1QPo58";
+        if ( phase == PHASE_ULTRA_2 ) return "QmRDjcUjPyndNHPUVZ1w8bypHFfm3Ryn26LLtdNpPKNbt3";
+        if ( phase == PHASE_ULTRA_3 ) return "QmTk61BppLXm8y8RMzUC42F7R9VYDs3VVWeTzruNjEcgE8";
+        if ( phase == PHASE_ULTRA_4 ) return "QmPKRsZLoRFBkwhyoGDfej8RaEGcpaunBZGdWZUwtaV2sY";
 
         // rare
-        if ( phase == PHASE_RARE_0 ) return "<IPFS>";
-        if ( phase == PHASE_RARE_1 ) return "<IPFS>";
-        if ( phase == PHASE_RARE_2 ) return "<IPFS>";
+        if ( phase == PHASE_RARE_0 ) return "QmdwuzJosFVn6mkTUaSePCDxpp3gXS3FMQNUVJLPbkY4Ye";
+        if ( phase == PHASE_RARE_1 ) return "QmWM4qiVfRqxc8wVDduHxDcRjatnrZ8afT1ax13bqbKGiz";
+        if ( phase == PHASE_RARE_2 ) return "QmctL2iZKAzV6xWNbb43yCCLATHFScuHZQqPHthTM8TMom";
 
         // common
-        if ( phase == PHASE_COMMON_0 ) return "<IPFS>";
-        if ( phase == PHASE_COMMON_1 ) return "<IPFS>";
-        if ( phase == PHASE_COMMON_2 ) return "<IPFS>";
-        if ( phase == PHASE_COMMON_3 ) return "<IPFS>";
-        if ( phase == PHASE_COMMON_4 ) return "<IPFS>";
-        if ( phase == PHASE_COMMON_5 ) return "<IPFS>";
+        if ( phase == PHASE_COMMON_0 ) return "QmVwFKSR6HAC3DqySpcLQ7U9XFsajTd7k44f446dXfGnf3";
+        if ( phase == PHASE_COMMON_1 ) return "QmTYDuT8fkRfHo6sokcLqCHdwb1jFmSy2f1RrhwaBWucwG";
+        if ( phase == PHASE_COMMON_2 ) return "QmNp4iKMesMps1SH4xj6tUT6pLHHWVH1JWVNLt23Pw4zDd";
+        if ( phase == PHASE_COMMON_3 ) return "QmVVD1K9szC9o2MiB1pvwsK1wNs8ju5UCio5fuKcrNRfrr";
+        if ( phase == PHASE_COMMON_4 ) return "QmRagZeX7y8qgy1bSirrHgVDukmppnyxXfgwfQyRmyhy1V";
+        if ( phase == PHASE_COMMON_5 ) return "Qmf8dkkVN437Wd8REJ2Ac4oLsa7v1iVGKYWSNbMP14ixmn";
 
         check( false, "pomelo::select_img: invalid values");
+        return "";
+    }
+
+    string select_video( const string phase )
+    {
+        // ultra rare
+        if ( phase == PHASE_ULTRA_0 ) return "QmVg78u4WHpgf9uEK8nAD9Dh3frBtnupPFatUpN61rLykT";
+        if ( phase == PHASE_ULTRA_1 ) return "QmdsjMNWzNjfr58s5VbDoB2jergKQHzPfr8cSYozHydPb1";
+        if ( phase == PHASE_ULTRA_2 ) return "QmZrQYsyyyLeVLKpqDuSdm9UyUw2H3vMT83jHzF8f7WuAL";
+        if ( phase == PHASE_ULTRA_3 ) return "QmUiesVupCAsF73dqSUN9KZS5JezXwo48vCyci7YhSdSjo";
+        if ( phase == PHASE_ULTRA_4 ) return "QmPbMWPV1xUDyW3bfs3NgXwKPynBP7hSSGP4iVYb4F8A3F";
+
+        // rare
+        if ( phase == PHASE_RARE_0 ) return "QmNXZ3M3Q3YqhLLTUfTBjGHtNFFjaaewtZtnrCmmqNtgVt";
+        if ( phase == PHASE_RARE_1 ) return "QmThV9NxPUfQbVBxxnLoATazLdaBPegijNkt4g1KH1dq4D";
+        if ( phase == PHASE_RARE_2 ) return "QmNdiA3yahXaPr7HrHaFFShh3pYZkg9zMzanrjTZo3ZVTT";
+        return "";
+    }
+
+    string select_backimg( const string phase )
+    {
+        // ultra rare
+        if ( phase == PHASE_ULTRA_0 ) return "QmRscH3bV2e2i3navXy2xEhLoGxfnc2hRSmkR2kty6pnZL";
+        if ( phase == PHASE_ULTRA_1 ) return "QmY3eQugTsfZRiEZRB1bNLpnd8w2aJZ9WgcyYJLGdYBHen";
+        if ( phase == PHASE_ULTRA_2 ) return "QmQFECu2xjsSkrZ1BPC1g4waYeJgF7yAqn4tHzwAWa9kPE";
+        if ( phase == PHASE_ULTRA_3 ) return "QmZJ48bDScZ32PNN1kKdVW9FF3gM7zXX1ndPNkiMqpA1C9";
+        if ( phase == PHASE_ULTRA_4 ) return "QmTZ52bFU6tFpEqDVSPDX1imjSVnQNL1hvGS5shvdeSRQ9";
         return "";
     }
 
@@ -153,7 +180,7 @@ namespace main {
             print("get.fuel: ", fuel, "\n");
         }
 
-        // legendary requirement (pure = all same color)
+        // ultra rare requirement (pure = all same color)
         const string pure = is_pure( colors );
 
         // immutable
@@ -162,10 +189,14 @@ namespace main {
         const string phase = select_phase( rarity, pure );
         const string color = select_color( phase, pure );
         const string img = select_img( phase );
+        const string video = select_video( phase );
+        const string backimg = select_backimg( phase );
         immutable_data["rarity"] = rarity;
         immutable_data["color"] = color;
         immutable_data["name"] = phase;
         immutable_data["img"] = img;
+        if ( video.size() ) immutable_data["video"] = video;
+        if ( backimg.size() ) immutable_data["backimg"] = backimg;
 
         print("\n🎉 RESULT 🎉\n");
         print("===========\n");
@@ -175,11 +206,13 @@ namespace main {
         print("color: ", color, "\n");
         print("pure: ", pure, "\n");
         print("img: ", img, "\n");
+        print("video: ", video, "\n");
+        print("backimg: ", backimg, "\n");
 
         return { immutable_data, {} };
     }
 
-    void validate_attributes( const atomic::nft id )
+    void validate_input_attributes( const atomic::nft id )
     {
         const auto my_template = atomic::get_template( id.collection_name, id.template_id );
         const auto schema = atomic::get_schema( id.collection_name, my_template.schema_name );
@@ -187,6 +220,8 @@ namespace main {
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
         check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
+        check( atomic::attribute_exists(schema.format, { "video", "string" }), "blend::validate_attributes: [nft] must have 'video' as String");
+        check( atomic::attribute_exists(schema.format, { "backimg", "string" }), "blend::validate_attributes: [nft] must have 'backimg' as String");
     }
 } // namespace main
 } // namespace s3
