@@ -101,7 +101,7 @@ namespace main {
         if ( phase == PHASE_RARE_2 ) return "QmctL2iZKAzV6xWNbb43yCCLATHFScuHZQqPHthTM8TMom";
 
         // common
-        if ( phase == PHASE_COMMON_0 ) return "QmVwFKSR6HAC3DqySpcLQ7U9XFsajTd7k44f446dXfGnf3";
+        if ( phase == PHASE_COMMON_0 ) return "QmRqYFrRR1Ag9XZftwwRrVanP4uRmjm6RUUfKNaLgPXXx7";
         if ( phase == PHASE_COMMON_1 ) return "QmTYDuT8fkRfHo6sokcLqCHdwb1jFmSy2f1RrhwaBWucwG";
         if ( phase == PHASE_COMMON_2 ) return "QmNp4iKMesMps1SH4xj6tUT6pLHHWVH1JWVNLt23Pw4zDd";
         if ( phase == PHASE_COMMON_3 ) return "QmVVD1K9szC9o2MiB1pvwsK1wNs8ju5UCio5fuKcrNRfrr";
