@@ -12,7 +12,7 @@ namespace sets {
         int rares = 0;
         int commons = 0;
         set<string> names;
-        set<string> rarities;
+        string last_rarity;
 
         for ( const auto& asset : in_assets ) {
             check( asset.schema_name == "moons"_n, "only accepts `moons` schema");
@@ -25,10 +25,13 @@ namespace sets {
             else if ( rarity == pomelo::s3::main::RARITY_COMMON ) commons += 1;
             else check( false, "invalid [rarity=" + rarity + "] provided");
 
+            // all uniques
             check( names.find( name ) == names.end(), "all assets for this blend must be unique");
-            check( rarities.find( rarity ) == rarities.end(), "cannot mix commons and rares for this blend");
             names.insert( name );
-            rarities.insert( rarity );
+
+            // all same rarity types
+            if ( last_rarity.size() ) check( last_rarity == rarity, "cannot mix commons and rares for this blend");
+            last_rarity = rarity;
         }
         check( rares == 3 || commons == 6, "this blend requires either 6x commons or 3x rares");
         return { {}, {} };
