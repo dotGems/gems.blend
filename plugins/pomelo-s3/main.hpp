@@ -10,16 +10,12 @@ namespace main {
     const string RARITY_RARE = "Rare";
     const string RARITY_ULTRA = "Ultra Rare";
 
-    // colors
+    // rocket colors
     const string COLOR_0 = "Red";
     const string COLOR_1 = "Green";
     const string COLOR_2 = "Pink";
     const string COLOR_3 = "Navy";
     const string COLOR_4 = "Golden";
-
-    // colors - common & rare
-    const string COLOR_5 = "White";
-    const string COLOR_6 = "Black";
 
     // moon phases - common
     const string PHASE_COMMON_0 = "Waning Crescent Moon";
@@ -36,7 +32,7 @@ namespace main {
 
     // moon phases - ultra rare
     const string PHASE_ULTRA_0 = "Blood Moon";
-    const string PHASE_ULTRA_1 = "Super Harvest Moon";
+    const string PHASE_ULTRA_1 = "Harvest Supermoon";
     const string PHASE_ULTRA_2 = "Strawberry Supermoon";
     const string PHASE_ULTRA_3 = "Wolf Moon";
     const string PHASE_ULTRA_4 = "Ring of Fire Eclipse";
@@ -55,13 +51,6 @@ namespace main {
     {
         check( values.size(), "pomelo::random_select: [values] must contain at least one item");
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
-    }
-
-    string select_color( const string phase, const eosio::string pure )
-    {
-        if ( pure.size() ) return pure;
-        if ( phase == PHASE_RARE_2 ) return COLOR_6;
-        return COLOR_5;
     }
 
     string select_phase( const string rarity, const string pure )
@@ -159,7 +148,8 @@ namespace main {
 
         print("GET ATTRIBUTES\n");
         print("==============\n");
-        // add shapes & sum clarity quality
+
+        // aggregate attributes from assets
         for ( const auto& asset : in_assets ) {
             print("\nASSET\n");
             print("-----\n");
@@ -187,12 +177,10 @@ namespace main {
         ATTRIBUTE_MAP immutable_data = {};
         const string rarity = select_rarity( fuel_total, pure );
         const string phase = select_phase( rarity, pure );
-        const string color = select_color( phase, pure );
         const string img = select_img( phase );
         const string video = select_video( phase );
         const string backimg = select_backimg( phase );
         immutable_data["rarity"] = rarity;
-        immutable_data["color"] = color;
         immutable_data["name"] = phase;
         immutable_data["img"] = img;
         if ( video.size() ) immutable_data["video"] = video;
@@ -203,7 +191,6 @@ namespace main {
         print("fuel_total: ", fuel_total, "\n");
         print("rarity: ", rarity, "\n");
         print("phase: ", phase, "\n");
-        print("color: ", color, "\n");
         print("pure: ", pure, "\n");
         print("img: ", img, "\n");
         print("video: ", video, "\n");
@@ -219,7 +206,6 @@ namespace main {
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
-        check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
         check( atomic::attribute_exists(schema.format, { "video", "string" }), "blend::validate_attributes: [nft] must have 'video' as String");
         check( atomic::attribute_exists(schema.format, { "backimg", "string" }), "blend::validate_attributes: [nft] must have 'backimg' as String");
     }

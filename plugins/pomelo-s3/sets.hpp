@@ -17,6 +17,9 @@ namespace sets {
         for ( const auto& asset : in_assets ) {
             check( asset.schema_name == "moons"_n, "only accepts `moons` schema");
             ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
+            check( immutable.find("name") != immutable.end(), "missing `name` attribute from " + to_string(asset.asset_id) );
+            check( immutable.find("rarity") != immutable.end(), "missing `rarity` attribute from " + to_string(asset.asset_id) );
+
             const string name = std::get<string>(immutable["name"]);
             const string rarity = std::get<string>(immutable["rarity"]);
 

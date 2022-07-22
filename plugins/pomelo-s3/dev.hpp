@@ -71,10 +71,8 @@ namespace dev {
         ATTRIBUTE_MAP immutable_data = {};
         const string rarity = pomelo::s3::main::select_rarity( fuel_total, pure );
         const string phase = pomelo::s3::main::select_phase( rarity, pure );
-        const string color = pomelo::s3::main::select_color( phase, pure );
         const string img = select_img( phase );
         immutable_data["rarity"] = rarity;
-        immutable_data["color"] = color;
         immutable_data["name"] = phase;
         immutable_data["img"] = img;
 
@@ -83,7 +81,6 @@ namespace dev {
         print("fuel_total: ", fuel_total, "\n");
         print("rarity: ", rarity, "\n");
         print("phase: ", phase, "\n");
-        print("color: ", color, "\n");
         print("img: ", img, "\n");
 
         return { immutable_data, {} };
