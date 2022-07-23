@@ -207,7 +207,7 @@ namespace main {
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
         check( atomic::attribute_exists(schema.format, { "video", "string" }), "blend::validate_attributes: [nft] must have 'video' as String");
-        check( atomic::attribute_exists(schema.format, { "backimg", "string" }), "blend::validate_attributes: [nft] must have 'backimg' as String");
+        check( atomic::attribute_exists(schema.format, { "backimg", "image" }), "blend::validate_attributes: [nft] must have 'backimg' as Image");
     }
 } // namespace main
 } // namespace s3
