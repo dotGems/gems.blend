@@ -120,11 +120,11 @@ namespace main {
     string select_backimg( const string phase )
     {
         // ultra rare
-        if ( phase == PHASE_ULTRA_0 ) return "QmRscH3bV2e2i3navXy2xEhLoGxfnc2hRSmkR2kty6pnZL";
-        if ( phase == PHASE_ULTRA_1 ) return "QmY3eQugTsfZRiEZRB1bNLpnd8w2aJZ9WgcyYJLGdYBHen";
-        if ( phase == PHASE_ULTRA_2 ) return "QmQFECu2xjsSkrZ1BPC1g4waYeJgF7yAqn4tHzwAWa9kPE";
-        if ( phase == PHASE_ULTRA_3 ) return "QmZJ48bDScZ32PNN1kKdVW9FF3gM7zXX1ndPNkiMqpA1C9";
-        if ( phase == PHASE_ULTRA_4 ) return "QmTZ52bFU6tFpEqDVSPDX1imjSVnQNL1hvGS5shvdeSRQ9";
+        if ( phase == PHASE_ULTRA_0 ) return "Qmf4RgRCVfPo444nzx3fi7Tn1A73bqWtJUosLKVRUevXcr"; // "Blood Moon"
+        if ( phase == PHASE_ULTRA_1 ) return "QmTSuAZZ1mjAMmARYatkps9KQ4tXkPe7LhqDrgGnoEyLio"; // "Harvest Supermoon"
+        if ( phase == PHASE_ULTRA_2 ) return "QmUGnup2XcNm8kuZceF9eFbGCez3UyCfENJsd2ueuZdhoW"; // "Strawberry Supermoon"
+        if ( phase == PHASE_ULTRA_3 ) return "QmXu6LCMWPxUs3gjUXE6cbwk71xwoQANFHAxkEG65sambz"; // "Wolf Moon"
+        if ( phase == PHASE_ULTRA_4 ) return "QmWB7qFK5B3mMZGoeGDCkoJdcgnp6qVSETQYdPkxMMNQzo"; // "Ring of Fire Eclipse"
         return "";
     }
 
