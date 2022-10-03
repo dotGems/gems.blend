@@ -157,6 +157,36 @@ public:
     typedef eosio::multi_index< "recipes"_n, recipes_row> recipes_table;
 
     /**
+     * ## TABLE `limits`
+     *
+     * - scope: `{name} collection_name`
+     *
+     * ### params
+     *
+     * - `{int32_t} template_id` - AtomicAsset NFT template ID
+     * - `{int64_t} mint_assets` - current minted assets
+     * - `{int64_t} max_mint_assets` - if exists, limit the maximum NFT's to mint
+     *
+     * ### example
+     *
+     * ```json
+     * {
+     *     "template_id": 21883,
+     *     "mint_assets": 14,
+     *     "max_mint_assets": 100
+     * }
+     * ```
+     */
+    struct [[eosio::table("limits")]] limits_row {
+        int32_t         template_id;
+        int64_t         mint_assets;
+        int64_t         max_mint_assets;
+
+        uint64_t primary_key() const { return template_id; }
+    };
+    typedef eosio::multi_index< "limits"_n, limits_row> limits_table;
+
+    /**
      * ## TABLE `orders`
      *
      * *scope*: `owner` (name)
@@ -318,6 +348,12 @@ public:
      */
     [[eosio::action]]
     void cancel( const name owner, const int32_t template_id );
+
+    [[eosio::action]]
+    void setlimit( const name collection_name, const int32_t template_id, const int64_t max_mint_assets );
+
+    [[eosio::action]]
+    void dellimit( const name collection_name, const int32_t template_id );
 
     [[eosio::action]]
     void setfee( const optional<uint16_t> protocol_fee, const optional<name> fee_account );

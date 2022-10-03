@@ -174,6 +174,7 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
 {
     blend::blends_table _blends( get_self(), collection_name.value );
     blend::recipes_table _recipes( get_self(), collection_name.value );
+    blend::limits_table _limits( get_self(), collection_name.value );
 
     // get blend
     const auto & blend = _blends.get( template_id, "blend::attempt_to_blend: [template_id] in the memo does not exists");
@@ -201,7 +202,15 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
     const uint64_t next_asset_id = atomic::get_next_asset_id();
     const name schema = atomic::get_template( collection_name, template_id ).schema_name;
     atomic::mintasset( get_self(), collection_name, schema, template_id, owner, immutable_attributes, mutable_attributes, {} );
-    // atomic::transfer_nft( get_self(), owner, { next_asset_id }, "blend " + blend.description );
+
+    // detect if limit is reached
+    const auto itr = _limits.find( template_id );
+    if ( itr != _limits.end() ) {
+        check( itr->mint_assets < itr->max_mint_assets, "blend::attempt_to_blend: maximum limit reached");
+        _limits.modify( itr, same_payer, [&]( auto & row ) {
+            row.mint_assets += 1;
+        });
+    }
 
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
@@ -428,6 +437,41 @@ void blend::setblend( const name collection_name, const int32_t template_id, con
     auto collections = _collections.get_or_default();
     collections.collection_names.insert(id.collection_name);
     _collections.set( collections, get_self() );
+}
+
+[[eosio::action]]
+void blend::setlimit( const name collection_name, const int32_t template_id, const int64_t max_mint_assets )
+{
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
+
+    blend::limits_table _limits( get_self(), collection_name.value );
+    blend::blends_table _blends( get_self(), collection_name.value );
+
+    check( _blends.find( template_id ) != _blends.end(), "blend::setlimit: [template_id] does not exists");
+
+    // recipe content
+    auto insert = [&]( auto & row ) {
+        row.template_id = template_id;
+        row.max_mint_assets = max_mint_assets;
+    };
+
+    // create/modify blend
+    const name ram_payer = get_ram_payer( collection_name );
+    auto itr = _limits.find( template_id );
+    if ( itr == _limits.end() ) _limits.emplace( ram_payer, insert );
+    else  _limits.modify( itr, ram_payer, insert );
+}
+
+[[eosio::action]]
+void blend::dellimit( const name collection_name, const int32_t template_id )
+{
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
+
+    blend::limits_table _limits( get_self(), collection_name.value );
+
+    auto itr = _limits.find( template_id );
+    check( itr != _limits.end(), "blend::dellimit: [template_id] does not exists");
+    _limits.erase( itr );
 }
 
 [[eosio::action]]

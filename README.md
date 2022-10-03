@@ -13,7 +13,7 @@ $ cleos push action blend.gems setblend '[["mycollection", 789], "My Blend", nul
 $ cleos push action blend.gems setblend '[["mycollection", 789], "My Advanced Blend", "myplugin", [{"contract":"eosio.token", "quantity": "1.0000 EOS"}], "2021-11-01T00:00:00", "2021-12-01T00:00:00"]' -p myaccount
 
 # setup NFT recipe
-$ cleos push action blend.gems addtrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p myauthor
+$ cleos push action blend.gems addrecipe '[["mycollection", 789], [["mycollection", 123], ["mycollection", 456]]]' -p myauthor
 
 # user send NFT's to contract (memo schema `<collection_name>:<template_id>`)
 $ cleos push action atomicassets transfer '["myaccount", "blend.gems", [1099512167123, 1099512167124], "mycollection:789"]' -p myaccount
@@ -127,6 +127,8 @@ curl -X 'POST' \
 - [TABLE `collections`](#table-collections)
 - [TABLE `blends`](#table-blends)
 - [TABLE `recipes`](#table-recipes)
+- [TABLE `limits`](#table-limits)
+- [TABLE `orders`](#table-orders)
 - [ACTION `setblend`](#action-setblend)
 - [ACTION `addrecipe`](#action-addrecipe)
 - [ACTION `setrecipe`](#action-setrecipe)
@@ -209,6 +211,24 @@ curl -X 'POST' \
 {
     "id": 1,
     "templates": [{"collection_name": "mycollection", "schema_name": "myschema", "template_id": 21883}]
+}
+```
+
+## TABLE `limits`
+
+- scope: `{name} collection_name`
+
+### params
+
+- `{int32_t} template_id` - AtomicAsset NFT template ID
+- `{int64_t} quantity` - if exists, limit the quantity of NFT's to mint
+
+### example
+
+```json
+{
+    "template_id": 21883,
+    "quantity": 100
 }
 ```
 
