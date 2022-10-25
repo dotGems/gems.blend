@@ -12,6 +12,9 @@
 #include "pomelo-s3/potion.hpp"
 #include "pomelo-s3/sets.hpp"
 
+// Pomelo Season 4
+#include "pomelo-s4/potion.hpp"
+
 namespace gems {
     void blend::check_plugin( const name plugin )
     {
@@ -25,14 +28,17 @@ namespace gems {
             "moon"_n,
             "moon.dev"_n,
             "potion.s3"_n,
-            "sets.s3"_n
+            "sets.s3"_n,
+
+            // Pomelo Season 4
+            "potion.s4"_n,
         };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
 
     void blend::validate_input_attributes( const name plugin, const atomic::nft id )
     {
-        if ( plugin == "potion"_n || plugin == "potion.large"_n || plugin == "potion.s3"_n ) potion::validate_input_attributes( id );
+        if ( plugin == "potion"_n || plugin == "potion.large"_n || plugin == "potion.s3"_n || plugin == "potion.s4"_n ) potion::validate_input_attributes( id );
         if ( plugin == "diamond"_n ) pomelo::s2::main::validate_input_attributes( id );
         if ( plugin == "moon"_n || plugin == "moon.dev"_n ) pomelo::s3::main::validate_input_attributes( id );
         if ( plugin == "sets.s3"_n ) pomelo::s3::sets::validate_input_attributes( id );
@@ -59,7 +65,9 @@ namespace gems {
         if ( plugin == "moon.dev"_n ) return pomelo::s3::dev::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion.s3"_n ) return pomelo::s3::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "sets.s3"_n ) return pomelo::s3::sets::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
-        // potion large is the same as Season 2
+
+        // Pomelo Season 4
+        if ( plugin == "potion.s4"_n ) return pomelo::s4::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         check( false, "blend::mint_attributes: invalid [plugin]");
         return { };
