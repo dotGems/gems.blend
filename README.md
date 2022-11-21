@@ -1,5 +1,14 @@
 # 💎`.Gems` Blend technology
 
+> Open-source NFT Blend smart contract, allows NFT collection owners and/or projects owners to setup crafting recipes to mint new NFT assets.
+
+## Integrations (used by):
+
+| Project    | Chains  |
+|------------|---------|
+| **Wombat Dungeon Master** | WAX, EOS |
+| **Pomelo Harvest** | EOS |
+
 ## Quickstart
 
 1. Admin setup NFT recipe & blend
