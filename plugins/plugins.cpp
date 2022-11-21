@@ -14,6 +14,7 @@
 
 // Pomelo Season 4
 #include "pomelo-s4/potion.hpp"
+#include "pomelo-s4/main.hpp"
 
 namespace gems {
     void blend::check_plugin( const name plugin )
@@ -32,6 +33,8 @@ namespace gems {
 
             // Pomelo Season 4
             "potion.s4"_n,
+            "robot"_n,
+            "robot.dev"_n,
         };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }
@@ -41,6 +44,7 @@ namespace gems {
         if ( plugin == "potion"_n || plugin == "potion.large"_n || plugin == "potion.s3"_n || plugin == "potion.s4"_n ) potion::validate_input_attributes( id );
         if ( plugin == "diamond"_n ) pomelo::s2::main::validate_input_attributes( id );
         if ( plugin == "moon"_n || plugin == "moon.dev"_n ) pomelo::s3::main::validate_input_attributes( id );
+        if ( plugin == "robot"_n || plugin == "robot.dev"_n ) pomelo::s4::main::validate_input_attributes( id );
         if ( plugin == "sets.s3"_n ) pomelo::s3::sets::validate_input_attributes( id );
     }
 
@@ -67,6 +71,7 @@ namespace gems {
         if ( plugin == "sets.s3"_n ) return pomelo::s3::sets::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         // Pomelo Season 4
+        if ( plugin == "robot"_n ) return pomelo::s4::main::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion.s4"_n ) return pomelo::s4::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         check( false, "blend::mint_attributes: invalid [plugin]");
