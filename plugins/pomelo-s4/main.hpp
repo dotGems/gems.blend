@@ -11,51 +11,122 @@ namespace main {
     const string RARITY_ULTRA = "Ultra Rare";
 
     // rocket colors
-    const string COLOR_0 = "Red";
-    const string COLOR_1 = "Green";
-    const string COLOR_2 = "Pink";
-    const string COLOR_3 = "Navy";
-    const string COLOR_4 = "Golden";
-    const string COLOR_5 = "All";
+    const string COLOR_1 = "Red";
+    const string COLOR_2 = "Green";
+    const string COLOR_3 = "Pink";
+    const string COLOR_4 = "Navy";
+    const string COLOR_5 = "Golden";
+    const string COLOR_6 = "Mixed";
 
     // moon phases - common
-    const string COMMON_NAME_0 = "Medical Unit";
-    const string COMMON_NAME_1 = "Command Unit";
-    const string COMMON_NAME_2 = "Food Unit";
-    const string COMMON_NAME_3 = "Service Unit";
-    const string COMMON_NAME_4 = "Crew Unit";
-    const string COMMON_NAME_5 = "Communication Tower";
+    const string NAME_COMMON_1 = "Medical Unit";
+    const string NAME_COMMON_2 = "Command Unit";
+    const string NAME_COMMON_3 = "Food Unit";
+    const string NAME_COMMON_4 = "Service Unit";
+    const string NAME_COMMON_5 = "Crew Unit";
+    const string NAME_COMMON_6 = "Communication Tower";
 
     // moon phases - rare
-    const string NAME_RARE_0 = "Glider";
-    const string NAME_RARE_1 = "Trike";
-    const string NAME_RARE_2 = "Rover";
+    const string NAME_RARE_1 = "Glider";
+    const string NAME_RARE_2 = "Trike";
+    const string NAME_RARE_3 = "Rover";
 
     // moon phases - ultra rare
-    const string NAME_ULTRA_0 = "Pomelo Armory";
-    const string NAME_ULTRA_1 = "Pomelo Farm";
-    const string NAME_ULTRA_2 = "Pomelo Disco";
-    const string NAME_ULTRA_3 = "Pomelo Mining";
-    const string NAME_ULTRA_4 = "Pomelo Power";
+    const string NAME_ULTRA_1 = "Pomelo Armory";
+    const string NAME_ULTRA_2 = "Pomelo Farm";
+    const string NAME_ULTRA_3 = "Pomelo Disco";
+    const string NAME_ULTRA_4 = "Pomelo Mining";
+    const string NAME_ULTRA_5 = "Pomelo Power";
 
-    const map<string, string> RARITY_COMMONS = {
-        {COLOR_0, NAME_COMMON_0},
-        {COLOR_1, NAME_COMMON_1},
-        {COLOR_2, NAME_COMMON_2},
-        {COLOR_3, NAME_COMMON_3},
-        {COLOR_4, NAME_COMMON_4},
+    const vector<string> NAME_COMMONS = {
+        NAME_COMMON_1,
+        NAME_COMMON_2,
+        NAME_COMMON_3,
+        NAME_COMMON_4,
+        NAME_COMMON_5,
+        NAME_COMMON_6,
     };
-    const vector<string> RARITY_RARES = {
-        NAME_RARE_0,
+
+    const vector<string> NAME_RARES = {
         NAME_RARE_1,
-        NAME_RARE_2
+        NAME_RARE_2,
+        NAME_RARE_3,
     };
-    const map<string, string> RARITY_ULTRAS = {
-        {COLOR_0, NAME_ULTRA_0},
+
+    const map<string, string> COLORS = {
+        // Common
+        {NAME_COMMON_1, COLOR_1},
+        {NAME_COMMON_2, COLOR_2},
+        {NAME_COMMON_3, COLOR_3},
+        {NAME_COMMON_4, COLOR_4},
+        {NAME_COMMON_5, COLOR_5},
+        {NAME_COMMON_6, COLOR_6},
+
+        // Rare
+        {NAME_RARE_1, COLOR_6},
+        {NAME_RARE_2, COLOR_6},
+        {NAME_RARE_3, COLOR_6},
+
+        // Ultra
+        {NAME_ULTRA_1, COLOR_1},
+        {NAME_ULTRA_2, COLOR_2},
+        {NAME_ULTRA_3, COLOR_3},
+        {NAME_ULTRA_4, COLOR_4},
+        {NAME_ULTRA_5, COLOR_5},
+    };
+
+    const map<string, string> PURE_COLORS_ULTRAS = {
         {COLOR_1, NAME_ULTRA_1},
         {COLOR_2, NAME_ULTRA_2},
         {COLOR_3, NAME_ULTRA_3},
         {COLOR_4, NAME_ULTRA_4},
+        {COLOR_5, NAME_ULTRA_5},
+    };
+
+    // IPFS images
+    const map<string, string> IPFS_IMG = {
+        {NAME_COMMON_1, "QmXFrKbDnieCpmqQgsUByskKmJ97h38CNfGn2X4nzLdrGV"},
+        {NAME_COMMON_2, "QmVje7m6me2sMX41Y8DyQ6yAyjPs5ZjTEPfXD1SnDnqDtH"},
+        {NAME_COMMON_3, "QmeCpBFzCsVKpC5xJE16ihktuLMQgqNL7p1uJdirbC7tHL"},
+        {NAME_COMMON_4, "QmPZHmbCGxXgAgyKKuS4Nh4qUJfZA1xtfJMgrNJWcC7CKk"},
+        {NAME_COMMON_5, "QmZ8prTh3RMM9KFtGsabkbMDT2pV8YZVfo2TG1CstFZuCp"},
+        {NAME_COMMON_6, "QmcDd49nQ9rKqX6P2dJysA1C2cnoFEJerPh91FubjV76iJ"},
+        {NAME_RARE_1, "QmYTwGGV4p6hmziaeeZku43mAN7dPwShDR8LpgzqnsQcWT"},
+        {NAME_RARE_2, "QmZroLCGTVJN46F5Ma92e4YDrcZSVqLBf5DuUYQgGq7w6W"},
+        {NAME_RARE_3, "Qma77Pu3CCJziCRG8VVavwEX3bmNXLHuPMQab2fVJMBgNZ"},
+        {NAME_ULTRA_1, "QmaT77rFmFR75FtPK7t68Gd3pJS7HMzRyLcfA4Q9qCGVpg"},
+        {NAME_ULTRA_2, "QmUHpHVUZtquYT5jRyrfCQR1KbTAZVjvxh9v3AePs1gUBa"},
+        {NAME_ULTRA_3, "QmdkwQrhdwSf2t94abpgwX17Hv2cJut428MKSjytcDH1qe"},
+        {NAME_ULTRA_4, "QmU7TmyVcU7zby8ym7qJ9v1hzyxudhHxsZmQYVVWvBfdHv"},
+        {NAME_ULTRA_5, "Qmf73aqYE3eHFzLdFi4aFT37e3J26BNU7KDFZybRiTh4wf"},
+    };
+
+    const map<string, string> IPFS_BANNER = {
+        {NAME_RARE_1,  "QmSKPccbseRjY1f3aepGM7iSu3j8Xs6fB3aZ13LByxWLfn"},
+        {NAME_RARE_2,  "QmURjDaT6M4FPZKNwoMRqbHLBCC4obW4ucoy2sxXuuGCRX"},
+        {NAME_RARE_3,  "QmWyTa3Cs5LaJ4uW2KMKKv3DC2gfshD2bHFvPHK8QDpDQK"},
+        {NAME_ULTRA_1, "QmX2f4b7nmnbDHByQUTfUETeXQ4T2MF64hyGyfxeLpt3hP"},
+        {NAME_ULTRA_2, "QmXuq9AodZMxG5HLYuT1RqUVonuE2GoRGoDXK9Y3KFMDgh"},
+        {NAME_ULTRA_3, "QmVEE4VTeEVMxCMWeD71JZWCmZxjFY2MvcRXvVumPi9B24"},
+        {NAME_ULTRA_4, "QmRZQJmnt8pYFEM6CvkRBNZ9UQYekQkQ9KmxM6DWuRcjRR"},
+        {NAME_ULTRA_5, "QmWc8xtu4wayXJGcArqiWpmN2GPGVb4nRezaCb1Bov4PE1"},
+    };
+
+    const map<string, string> IPFS_3D = {
+        {NAME_COMMON_1, "QmPrajnMriYPAyKsyYTdgrNcWH79HQ56Q9yYuTHuytKaVa"},
+        {NAME_COMMON_2, "QmbjLA5pf1nZcSKvhPz4MmNT5HEGrv9GtxxPS2nGXUn3tQ"},
+        {NAME_COMMON_3, "QmPhXdj6PWGpcWYK7rtVxqnwYacMGEEAqdQfYsHsYjVtq1"},
+        {NAME_COMMON_4, "QmTJ94pgvy17WqzkjzEcKmpMSBtXsdhYWSVE2tiWMrSDhy"},
+        {NAME_COMMON_5, "QmNsdUHLhoHf7ftSRAPTgq7RnJKtaFG7XE1JKfKufeSCkB"},
+        {NAME_COMMON_6, "QmYyW8Sy4hvpNz6t8kraBivPzSGRLHgDUqwGfac4PRqCxr"},
+        {NAME_RARE_1,   "QmWqTzD15zSgGCRBSDh17VFKUVyr8XFDbSpaHkmDopCGLn"},
+        {NAME_RARE_2,   "QmPF7mRc81nmWxt4urvDQUWSocU7vrqvvGmhLadnZZ9ake"},
+        {NAME_RARE_3,   "QmTs6va345rjmyX52oqA1g5iMMYPdVaLo2cD4bimbKS4zv"},
+        {NAME_ULTRA_1,  "QmXqe3dbbDjr44fFFK8EPjmtUn54s1NU9yt7YvW3gdB2hY"},
+        {NAME_ULTRA_2,  "QmaD2AGReZdhZDkjBFKr4GeeaBCkGLpmMvDqyBa4YN8x19"},
+        {NAME_ULTRA_3,  "QmXMRLdmgcp2HV6d8agZhHfMGmybNxDLvuYaxp8tuiuYip"},
+        {NAME_ULTRA_4,  "QmdBEiwtHR4rYpsFNj5R51kmWgX9E2BAXfG9F5GSyZEc5w"},
+        {NAME_ULTRA_5,  "QmSpyBz2XEwkCBqFLH7mmfbaMPkomxkL2bxzQXZeMDEQYr"},
     };
 
     string random_select( const vector<string>& values )
@@ -64,24 +135,27 @@ namespace main {
         return values.at(gems::random::generate(1, 0, values.size() -1 )[0]);
     }
 
-    string select_name( const string rarity, const string pure, const string color )
+    string select_name( const string rarity, const string pure )
     {
         // ultra rare
         if ( rarity == RARITY_ULTRA ) {
-            check( RARITY_ULTRAS.count(pure), "pomelo::select_name: [pure] invalid value");
-            return RARITY_ULTRAS.at(pure);
+            check( PURE_COLORS_ULTRAS.count(pure), "pomelo::select_name: [pure] invalid value");
+            return PURE_COLORS_ULTRAS.at(pure);
         }
 
         // rare & common phases
-        if ( rarity == RARITY_RARE ) return random_select( RARITY_RARES );
+        if ( rarity == RARITY_RARE ) return random_select( NAME_RARES );
+        if ( rarity == RARITY_COMMON ) return random_select( NAME_COMMONS );
 
-        // common
-        if ( rarity == RARITY_COMMON ) {
-            check( RARITY_COMMONS.count(color), "pomelo::select_name: [color] invalid value");
-            return RARITY_COMMONS.at(color);
-        }
         check( false,  "pomelo::select_name: [rarity] invalid");
         return "";
+    }
+
+    // required
+    string select_color( const string name )
+    {
+        check( COLORS.count(name), "pomelo::select_color: [name] invalid value");
+        return COLORS.at(name);
     }
 
     string select_rarity( const int power_total, const string pure )
@@ -91,57 +165,23 @@ namespace main {
         return RARITY_COMMON;
     }
 
-    string select_img( const string phase )
+    // required
+    string select_img( const string name )
     {
-        // ultra rare
-        if ( phase == NAME_ULTRA_0 ) return "ipfs";
-        if ( phase == NAME_ULTRA_1 ) return "ipfs";
-        if ( phase == NAME_ULTRA_2 ) return "ipfs";
-        if ( phase == NAME_ULTRA_3 ) return "ipfs";
-        if ( phase == NAME_ULTRA_4 ) return "ipfs";
-
-        // rare
-        if ( phase == NAME_RARE_0 ) return "ipfs";
-        if ( phase == NAME_RARE_1 ) return "ipfs";
-        if ( phase == NAME_RARE_2 ) return "ipfs";
-
-        // common
-        if ( phase == COMMON_NAME_0 ) return "ipfs";
-        if ( phase == COMMON_NAME_1 ) return "ipfs";
-        if ( phase == COMMON_NAME_2 ) return "ipfs";
-        if ( phase == COMMON_NAME_3 ) return "ipfs";
-        if ( phase == COMMON_NAME_4 ) return "ipfs";
-        if ( phase == COMMON_NAME_5 ) return "ipfs";
-
-        check( false, "pomelo::select_img: invalid values");
-        return "";
+        check( IPFS_IMG.count(name), "pomelo::select_img: [name] invalid value");
+        return IPFS_IMG.at(name);
     }
 
-    string select_video( const string phase )
+    string select_banner( const string name )
     {
-        // ultra rare
-        if ( phase == NAME_ULTRA_0 ) return "ipfs";
-        if ( phase == NAME_ULTRA_1 ) return "ipfs";
-        if ( phase == NAME_ULTRA_2 ) return "ipfs";
-        if ( phase == NAME_ULTRA_3 ) return "ipfs";
-        if ( phase == NAME_ULTRA_4 ) return "ipfs";
-
-        // rare
-        if ( phase == NAME_RARE_0 ) return "ipfs";
-        if ( phase == NAME_RARE_1 ) return "ipfs";
-        if ( phase == NAME_RARE_2 ) return "ipfs";
-        return "";
+        if ( !IPFS_BANNER.count(name) ) return "";
+        return IPFS_BANNER.at(name);
     }
 
-    string select_backimg( const string phase )
+    string select_3d( const string name )
     {
-        // ultra rare
-        if ( phase == NAME_ULTRA_0 ) return "ipfs";
-        if ( phase == NAME_ULTRA_1 ) return "ipfs";
-        if ( phase == NAME_ULTRA_2 ) return "ipfs";
-        if ( phase == NAME_ULTRA_3 ) return "ipfs";
-        if ( phase == NAME_ULTRA_4 ) return "ipfs";
-        return "";
+        if ( !IPFS_3D.count(name) ) return "";
+        return IPFS_3D.at(name);
     }
 
     // detects if all items match the same
@@ -191,17 +231,23 @@ namespace main {
 
         // immutable
         ATTRIBUTE_MAP immutable_data = {};
+
+        // computed attributes
         const string rarity = select_rarity( power_total, pure );
-        const string color = random_select( colors );
-        const string name = select_name( rarity, pure, color );
-        const string img = select_img( name );
-        const string video = select_video( name );
-        const string backimg = select_backimg( name );
+        const string name = select_name( rarity, pure );
         immutable_data["rarity"] = rarity;
         immutable_data["name"] = name;
+
+        // required
+        const string color = select_color( name );
+        const string img = select_img( name );
         immutable_data["img"] = img;
-        if ( video.size() ) immutable_data["video"] = video;
-        if ( backimg.size() ) immutable_data["backimg"] = backimg;
+
+        // optional
+        const string banner = select_banner( name );
+        const string _3d = select_3d( name );
+        if ( banner.size() ) immutable_data["banner"] = banner;
+        if ( _3d.size() ) immutable_data["3d"] = _3d;
 
         print("\n🎉 RESULT 🎉\n");
         print("===========\n");
@@ -209,9 +255,10 @@ namespace main {
         print("rarity: ", rarity, "\n");
         print("name: ", name, "\n");
         print("pure: ", pure, "\n");
+        print("color: ", color, "\n");
         print("img: ", img, "\n");
-        print("video: ", video, "\n");
-        print("backimg: ", backimg, "\n");
+        print("banner: ", banner, "\n");
+        print("3d: ", _3d, "\n");
 
         return { immutable_data, {} };
     }
@@ -223,8 +270,7 @@ namespace main {
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
-        check( atomic::attribute_exists(schema.format, { "video", "string" }), "blend::validate_attributes: [nft] must have 'video' as String");
-        check( atomic::attribute_exists(schema.format, { "backimg", "image" }), "blend::validate_attributes: [nft] must have 'backimg' as Image");
+        check( atomic::attribute_exists(schema.format, { "banner", "image" }), "blend::validate_attributes: [nft] must have 'banner' as Image");
     }
 } // namespace main
 } // namespace s4
