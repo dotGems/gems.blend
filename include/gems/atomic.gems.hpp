@@ -13,12 +13,12 @@ const name ATOMIC_ASSETS_CONTRACT = "atomicassets"_n;
 struct nft {
     name collection_name;
     int32_t template_id;
-    friend auto operator<=>(const nft& nft1, const nft& nft2) {
-        if (nft1.collection_name < nft2.collection_name) return -1;
-        if (nft1.collection_name > nft2.collection_name) return 1;
-        if (nft1.template_id < nft2.template_id) return -1;
-        if (nft1.template_id > nft2.template_id) return 1;
-        return 0;
+    friend auto operator<(const nft& nft1, const nft& nft2) {
+        if (nft1.collection_name < nft2.collection_name) return true;
+        if (nft1.collection_name > nft2.collection_name) return false;
+        if (nft1.template_id < nft2.template_id) return true;
+        if (nft1.template_id > nft2.template_id) return false;
+        return false;
     };
     friend bool operator==(const nft& nft1, const nft& nft2) {
         return nft1.collection_name == nft2.collection_name && nft1.template_id == nft2.template_id;
@@ -29,14 +29,14 @@ struct nft_extra {
     name collection_name;
     int32_t template_id;
     name schema_name;
-    friend auto operator<=>(const nft_extra& nft1, const nft_extra& nft2) {
-        if (nft1.collection_name < nft2.collection_name) return -1;
-        if (nft1.collection_name > nft2.collection_name) return 1;
-        if (nft1.template_id < nft2.template_id) return -1;
-        if (nft1.template_id > nft2.template_id) return 1;
-        if (nft1.schema_name < nft2.schema_name) return -1;
-        if (nft1.schema_name > nft2.schema_name) return 1;
-        return 0;
+    friend auto operator<(const nft_extra& nft1, const nft_extra& nft2) {
+        if (nft1.collection_name < nft2.collection_name) return true;
+        if (nft1.collection_name > nft2.collection_name) return false;
+        if (nft1.template_id < nft2.template_id) return true;
+        if (nft1.template_id > nft2.template_id) return false;
+        if (nft1.schema_name < nft2.schema_name) return true;
+        if (nft1.schema_name > nft2.schema_name) return false;
+        return false;
     };
     friend bool operator==(const nft_extra& nft1, const nft_extra& nft2) {
         return nft1.collection_name == nft2.collection_name && nft1.template_id == nft2.template_id && nft1.schema_name == nft2.schema_name;
