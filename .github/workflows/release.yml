@@ -1,0 +1,25 @@
+name: Antelope CDT
+
+on: [push]
+
+jobs:
+  tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Antelope CDT
+        run: wget https://github.com/AntelopeIO/cdt/releases/download/v3.1.0-rc1/cdt_3.1.0-rc1_amd64.deb
+        run: sudo apt install ./cdt_3.1.0-rc1_amd64.deb
+
+      - name: Compile WASM
+        run: ./build.sh
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            blend.gems.abi
+            blend.gems.wasm
