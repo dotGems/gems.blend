@@ -3,7 +3,7 @@ name: Antelope CDT
 on: [push]
 
 jobs:
-  tests:
+  release:
 
     runs-on: ubuntu-latest
 
