@@ -10,15 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Antelope CDT
-        run: wget https://github.com/AntelopeIO/cdt/releases/download/v3.1.0-rc1/cdt_3.1.0-rc1_amd64.deb && sudo apt install ./cdt_3.1.0-rc1_amd64.deb
+        run: wget https://github.com/AntelopeIO/cdt/releases/download/v3.1.0/cdt_3.1.0_amd64.deb && sudo apt install ./cdt_3.1.0_amd64.deb
 
       - name: Compile WASM
-        run: ./build.sh
+        run: cdt-cpp blend.gems.cpp -I include
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            blend.gems.abi
-            blend.gems.wasm
+            *.abi
+            *.wasm
