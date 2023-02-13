@@ -211,7 +211,9 @@ namespace main {
             print("-----\n");
             print("asset.asset_id: ", asset.asset_id, "\n");
             print("asset.schema_name: ", asset.schema_name, "\n");
-            if ( asset.schema_name != "rockets"_n ) continue; // skip if not rockets
+
+            // Get immutable attributes
+            if ( asset.schema_name == "potions"_n ) continue; // skip if potions
             ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
             const uint8_t power = std::get<uint8_t>(immutable["power"]);
             const string color = std::get<string>(immutable["color"]);
