@@ -1,6 +1,6 @@
 #pragma once
 
-#define assert(condition) ((void)0)
+// #define assert(condition) ((void)0)
 
 #include <string>
 #include <atomicassets/atomicassets.hpp>

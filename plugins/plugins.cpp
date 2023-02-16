@@ -1,5 +1,6 @@
 // Utils
 #include "potion.hpp"
+#include <gems/atomic.gems.hpp>
 
 // Pomelo Season 2
 #include "pomelo-s2/main.hpp"
@@ -21,6 +22,14 @@
 #include "pomelo-s5/main.hpp"
 
 namespace gems {
+    void blend::extras( const name plugin, const name owner, const name collection_name, int32_t template_id  )
+    {
+        if ( plugin == "astronaut"_n) {
+            check(false, "not yet implemented");
+            atomic::mintasset( get_self(), "pomelo"_n, "astronauts"_n, 6845, owner, {}, {}, {} );
+        }
+    }
+
     void blend::check_plugin( const name plugin )
     {
         const set<name> plugins = {
@@ -44,6 +53,9 @@ namespace gems {
             "potion.s5"_n,
             "crew"_n,
             "crew.dev"_n,
+
+            // Astronanut bonus mint
+            "astronaut"_n,
         };
         check( plugins.find( plugin ) != plugins.end(), "blend::check_plugin: invalid [plugin]");
     }

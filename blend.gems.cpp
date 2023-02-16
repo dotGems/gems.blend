@@ -212,6 +212,9 @@ void blend::attempt_to_blend( const name owner, const name collection_name, cons
         });
     }
 
+    // Extra options
+    gems::blend::extras(*blend.plugin, owner, collection_name, template_id);
+
     // logging
     blend::blendlog_action blendlog( get_self(), { get_self(), "active"_n });
     blendlog.send( owner,
