@@ -16,6 +16,7 @@
 // Pomelo Season 4
 #include "pomelo-s4/potion.hpp"
 #include "pomelo-s4/main.hpp"
+#include "pomelo-s4/sets.hpp"
 
 // Pomelo Season 5
 #include "pomelo-s5/potion.hpp"
@@ -24,8 +25,7 @@
 namespace gems {
     void blend::extras( const name plugin, const name owner, const name collection_name, int32_t template_id  )
     {
-        if ( plugin == "astronaut"_n) {
-            check(false, "not yet implemented");
+        if ( plugin == "sets.s4"_n) {
             atomic::mintasset( get_self(), "pomelo"_n, "astronauts"_n, 6845, owner, {}, {}, {} );
         }
     }
@@ -48,6 +48,7 @@ namespace gems {
             "potion.s4"_n,
             "robot"_n,
             "robot.dev"_n,
+            "sets.s4"_n,
 
             // Pomelo Season 5
             "potion.s5"_n,
@@ -68,6 +69,7 @@ namespace gems {
         if ( plugin == "robot"_n || plugin == "robot.dev"_n ) pomelo::s4::main::validate_input_attributes( id );
         if ( plugin == "crew"_n || plugin == "crew.dev"_n ) pomelo::s5::main::validate_input_attributes( id );
         if ( plugin == "sets.s3"_n ) pomelo::s3::sets::validate_input_attributes( id );
+        if ( plugin == "sets.s4"_n ) pomelo::s4::sets::validate_input_attributes( id );
     }
 
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> blend::mint_attributes( const name plugin, const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
@@ -95,6 +97,7 @@ namespace gems {
         // Pomelo Season 4
         if ( plugin == "robot"_n ) return pomelo::s4::main::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion.s4"_n ) return pomelo::s4::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == "sets.s4"_n ) return pomelo::s4::sets::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         // Pomelo Season 5
         if ( plugin == "crew"_n ) return pomelo::s5::main::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
