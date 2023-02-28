@@ -10,33 +10,33 @@ namespace main {
     const string RARITY_RARE = "Rare";
     const string RARITY_ULTRA = "Ultra Rare";
 
-    // rocket colors
+    // colors
     const string COLOR_1 = "Red";
     const string COLOR_2 = "Green";
     const string COLOR_3 = "Pink";
     const string COLOR_4 = "Navy";
     const string COLOR_5 = "Golden";
-    const string COLOR_6 = "Mixed";
+    const string COLOR_6 = "Multi";
 
-    // moon phases - common
-    const string NAME_COMMON_1 = "common";
-    const string NAME_COMMON_2 = "common";
-    const string NAME_COMMON_3 = "common";
-    const string NAME_COMMON_4 = "common";
-    const string NAME_COMMON_5 = "common";
-    const string NAME_COMMON_6 = "common";
+    // names - common
+    const string NAME_COMMON_1 = "Dual Plasma Guns";
+    const string NAME_COMMON_2 = "Agriculture Lab";
+    const string NAME_COMMON_3 = "DJ Booth";
+    const string NAME_COMMON_4 = "Science Lab";
+    const string NAME_COMMON_5 = "Construction Unit";
+    const string NAME_COMMON_6 = "Cryo Chamber";
 
-    // moon phases - rare
-    const string NAME_RARE_1 = "rare";
-    const string NAME_RARE_2 = "rare";
-    const string NAME_RARE_3 = "rare";
+    // names - rare
+    const string NAME_RARE_1 = "Thrusters";
+    const string NAME_RARE_2 = "Biodome";
+    const string NAME_RARE_3 = "BFG";
 
-    // moon phases - ultra rare
-    const string NAME_ULTRA_1 = "ultra rare";
-    const string NAME_ULTRA_2 = "ultra rare";
-    const string NAME_ULTRA_3 = "ultra rare";
-    const string NAME_ULTRA_4 = "ultra rare";
-    const string NAME_ULTRA_5 = "ultra rare";
+    // names - ultra rare
+    const string NAME_ULTRA_1 = "Militaris - Citrus Maxima";
+    const string NAME_ULTRA_2 = "Natura - Citrus Maxima";
+    const string NAME_ULTRA_3 = "Otium - Citrus Maxima";
+    const string NAME_ULTRA_4 = "Scientia - Citrus Maxima";
+    const string NAME_ULTRA_5 = "Operarius - Citrus Maxima";
 
     const vector<string> NAME_COMMONS = {
         NAME_COMMON_1,
@@ -85,48 +85,48 @@ namespace main {
 
     // IPFS images
     const map<string, string> IPFS_IMG = {
-        {NAME_COMMON_1, "IPFS"},
-        {NAME_COMMON_2, "IPFS"},
-        {NAME_COMMON_3, "IPFS"},
-        {NAME_COMMON_4, "IPFS"},
-        {NAME_COMMON_5, "IPFS"},
-        {NAME_COMMON_6, "IPFS"},
-        {NAME_RARE_1, "IPFS"},
-        {NAME_RARE_2, "IPFS"},
-        {NAME_RARE_3, "IPFS"},
-        {NAME_ULTRA_1, "IPFS"},
-        {NAME_ULTRA_2, "IPFS"},
-        {NAME_ULTRA_3, "IPFS"},
-        {NAME_ULTRA_4, "IPFS"},
-        {NAME_ULTRA_5, "IPFS"},
+        {NAME_COMMON_1, "QmUGb1Yu1iGiRD2UzzDB2n4VL55vcQGJZfu8GyzfgCiqqP"},
+        {NAME_COMMON_2, "QmS2wxvhsTwebwMC9kgZn3DvykXyBagu8q5LHqpnKeB2m2"},
+        {NAME_COMMON_3, "QmWqEK68SFUkasn84UmcueSch7SKovrJE2H4pCGXfDAhA8"},
+        {NAME_COMMON_4, "Qma9tEPUjJFv5dVaCpgdbCjdFv8aSKrBp4oGJqiyX8kK4v"},
+        {NAME_COMMON_5, "QmQrsFUPiVDuk4ARkfzADgr8qSexvF1rwWMXdASJyU2FsD"},
+        {NAME_COMMON_6, "QmdU1v66eTM1EnGtZo7cKAdcL1fCXX4m8pz2FVStT6Agzn"},
+        {NAME_RARE_1, "QmUBy2MGSEoLv77spYeTQDqckEhzywA9fKF5FASBRYEdvp"},
+        {NAME_RARE_2, "QmVFiGhfxU5fNmc79rArYV6JmtxPN7xJYN86EKe485MQ3A"},
+        {NAME_RARE_3, "QmV9Zt3vQAsQACzoDZFmF77cvqBTnEJACAaQK8R12Ep88s"},
+        {NAME_ULTRA_1, "QmW7iVi7rbzKqdVwRYhKs2rbmgDwjuLqaqTAzPpdaZ5gWU"},
+        {NAME_ULTRA_2, "QmTBR4VrFCS3snG1iBVZ6WPUu2fAVKUWXtkQs2wVveaAYW"},
+        {NAME_ULTRA_3, "QmcjG1MavqBtHURk6wejwYZZbRzobWdWktAvNxNheFRhfa"},
+        {NAME_ULTRA_4, "QmcxtfWgyivsXkSAZM8EpKw5zaEKw8r26d4tK4SZr4h3pF"},
+        {NAME_ULTRA_5, "QmTUARksawV4HLgwWwrSMe76RqKYMk1KEapJ4szkmYpR4V"},
     };
 
     const map<string, string> IPFS_BANNER = {
-        {NAME_RARE_1,  "IPFS"},
-        {NAME_RARE_2,  "IPFS"},
-        {NAME_RARE_3,  "IPFS"},
-        {NAME_ULTRA_1, "IPFS"},
-        {NAME_ULTRA_2, "IPFS"},
-        {NAME_ULTRA_3, "IPFS"},
-        {NAME_ULTRA_4, "IPFS"},
-        {NAME_ULTRA_5, "IPFS"},
+        {NAME_RARE_1,  "QmNzqSVXxLGKopL6c8Vu2f1gVyF9NTqtSJ9UmAWr4poYKr"},
+        {NAME_RARE_2,  "QmYPvwaJQEJUiy2H33SKb3mrXhDg2rUmuf3RMApstnoe1c"},
+        {NAME_RARE_3,  "QmadEiyLzSKajabWMoDbdQrVnitmN2C1b8S3TLJ8VFp7yG"},
+        {NAME_ULTRA_1, "QmdebiMJuqSV34q1zUj6oJU1pqzLEQJfYoZNVZPF2UvcBd"},
+        {NAME_ULTRA_2, "QmXB8kZFxgTBiDD9bj5y6mMPSi7beR7TUJ1gFWjzzBLsng"},
+        {NAME_ULTRA_3, "QmU7NKsFoUwmkJJcHg6B8vyceqPAvUUpmnkdZzLYnQbby1"},
+        {NAME_ULTRA_4, "QmSGXnK2yPXXntWFdo1QeXAfxGgUBxCi5YRo7ibT9kc4Y8"},
+        {NAME_ULTRA_5, "QmTTh2UX3A3MYmXJ6L675UuHhSuPR6Ke95mmCLqRMbKe1P"},
     };
 
     const map<string, string> IPFS_3D = {
-        {NAME_COMMON_1, "IPFS"},
-        {NAME_COMMON_2, "IPFS"},
-        {NAME_COMMON_3, "IPFS"},
-        {NAME_COMMON_4, "IPFS"},
-        {NAME_COMMON_5, "IPFS"},
-        {NAME_COMMON_6, "IPFS"},
-        {NAME_RARE_1,   "IPFS"},
-        {NAME_RARE_2,   "IPFS"},
-        {NAME_RARE_3,   "IPFS"},
-        {NAME_ULTRA_1,  "IPFS"},
-        {NAME_ULTRA_2,  "IPFS"},
-        {NAME_ULTRA_3,  "IPFS"},
-        {NAME_ULTRA_4,  "IPFS"},
-        {NAME_ULTRA_5,  "IPFS"},
+        {NAME_COMMON_1, "QmWenoTJGFPHFKg9Dk4E65hAKcwt5855bdHqXtkmARpyLy"},
+        {NAME_COMMON_2, "QmbAVpAwVFv4pbQ4oxZDDE8uo1FENN1LFNqfZwa18Gy62e"},
+        {NAME_COMMON_3, "QmWqEK68SFUkasn84UmcueSch7SKovrJE2H4pCGXfDAhA8"},
+        {NAME_COMMON_4, "QmXSUBd8QTk6tPssLyoDVR2W3eNFzrrDTHx54fcG1JZtr1"},
+        {NAME_COMMON_5, "QmPw8w67Tu9N6Rx7FuLMwzQjay7KkEEktFd2jSsc4gpry2"},
+        {NAME_COMMON_6, "QmQXNh1aJwrVcQVfZyjDTsjpn3pkbYBq2k7xzqxtkD1Kq7"},
+        {NAME_RARE_1,   "QmTdRymJZsMvj46ZTpv5sGXmF36EZKz8g4hiuw2LEfsNDo"},
+        {NAME_RARE_2,   "QmZoS2E4UWnk2BVB9e8kC95dT6KTigavRSzEb3NSSsTJJm"},
+        {NAME_RARE_3,   "QmP6xm773gBxo2bfswVQ1Pb4d8xXZKLFpRK9VJ6HwSzc6u"},
+        {NAME_ULTRA_1,  "Qmd8kQoVjLr16yiPYquHQwagwC9bspGYy1fqmd8zX1wmeZ"},
+        {NAME_ULTRA_2,  "QmUhexqqzSWHgHPjDKnddhu7xAjc9xUMfSULHt6BBk6brt"},
+        {NAME_ULTRA_3,  "QmdcZH6YFP29tY4wmpfu8U2JZxnkeQYXtZwfxJey44RWsU"},
+        {NAME_ULTRA_4,  "Qmeqx7ipRbuFQxeNvsg8sgEG1C4LJb2Arx5Jy2oL9paFJE"},
+        {NAME_ULTRA_5,  "QmQwQwcZCA7JeDCJaPXE7s7GirK25bfgG54RoDsdzCgM1Q"},
     };
 
     string random_select( const vector<string>& values )
@@ -200,8 +200,7 @@ namespace main {
     {
         // containers
         vector<string> colors;
-        uint8_t power_total = 0;
-        check(false, "CHANGE POWER");
+        uint8_t stars_total = 0;
 
         print("GET ATTRIBUTES\n");
         print("==============\n");
@@ -216,17 +215,17 @@ namespace main {
             // Get immutable attributes
             if ( asset.schema_name == "potions"_n ) continue; // skip if potions
             ATTRIBUTE_MAP immutable = atomic::get_asset_immutable( asset );
-            const uint8_t power = std::get<uint8_t>(immutable["power"]);
+            const uint8_t stars = std::get<uint8_t>(immutable["stars"]);
             const string color = std::get<string>(immutable["color"]);
 
             // accumulate all colors (higher chance of selecting the more as input)
             colors.push_back( color );
 
-            // sum power
-            power_total += power;
+            // sum stars
+            stars_total += stars;
 
             print("get.color: ", color, "\n");
-            print("get.power: ", power, "\n");
+            print("get.stars: ", stars, "\n");
         }
 
         // ultra rare requirement (pure = all same color)
@@ -236,7 +235,7 @@ namespace main {
         ATTRIBUTE_MAP immutable_data = {};
 
         // computed attributes
-        const string rarity = select_rarity( power_total, pure );
+        const string rarity = select_rarity( stars_total, pure );
         const string name = select_name( rarity, pure );
         immutable_data["rarity"] = rarity;
         immutable_data["name"] = name;
@@ -254,7 +253,7 @@ namespace main {
 
         print("\n🎉 RESULT 🎉\n");
         print("===========\n");
-        print("power_total: ", power_total, "\n");
+        print("stars_total: ", stars_total, "\n");
         print("rarity: ", rarity, "\n");
         print("name: ", name, "\n");
         print("pure: ", pure, "\n");
