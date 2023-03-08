@@ -273,7 +273,7 @@ namespace main {
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( atomic::attribute_exists(schema.format, { "rarity", "string" }), "blend::validate_attributes: [nft] must have 'rarity' as String");
         check( atomic::attribute_exists(schema.format, { "banner", "image" }), "blend::validate_attributes: [nft] must have 'banner' as Image");
-        check( atomic::attribute_exists(schema.format, { "3d", "string" }), "blend::validate_attributes: [nft] must have '3d' as String");
+        check( atomic::attribute_exists(schema.format, { "3d", "image" }), "blend::validate_attributes: [nft] must have '3d' as Image");
     }
 }
 }
