@@ -122,7 +122,7 @@ namespace main {
         {NAME_RARE_1,   "QmTdRymJZsMvj46ZTpv5sGXmF36EZKz8g4hiuw2LEfsNDo"},
         {NAME_RARE_2,   "QmZoS2E4UWnk2BVB9e8kC95dT6KTigavRSzEb3NSSsTJJm"},
         {NAME_RARE_3,   "QmP6xm773gBxo2bfswVQ1Pb4d8xXZKLFpRK9VJ6HwSzc6u"},
-        {NAME_ULTRA_1,  "Qmd8kQoVjLr16yiPYquHQwagwC9bspGYy1fqmd8zX1wmeZ"}, // TO FIX
+        {NAME_ULTRA_1,  "QmWW17CNfQdLLNTUVyuht65A4aEgjC2gmnHyBsdE6GP9Zt"}, // TO FIX
         {NAME_ULTRA_2,  "QmNbmQjrxthKDRgAoHUNNQEFtHxpYj5N6T8UHpdiqMm9Vj"},
         {NAME_ULTRA_3,  "QmVoo31ceD3btw5N7Re1sFAHpYt54YQCodx7spfqdXXCdN"},
         {NAME_ULTRA_4,  "QmWTJRVYn7B7R3D1dvDihs8whMpcfgpaDtw8CKxUArNvB3"},
