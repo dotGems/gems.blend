@@ -262,8 +262,6 @@ namespace main {
         print("banner: ", banner, "\n");
         print("3d: ", _3d, "\n");
 
-        if ( color == COLOR_1 ) check(false, "Pomelo NFT blends are under maintenance. Please try again later.");
-
         return { immutable_data, {} };
     }
 
