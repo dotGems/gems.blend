@@ -21,6 +21,8 @@
 // Pomelo Season 5
 #include "pomelo-s5/potion.hpp"
 #include "pomelo-s5/main.hpp"
+#include "pomelo-s5/commons.s5.hpp"
+#include "pomelo-s5/rares.s5.hpp"
 
 namespace gems {
     void blend::extras( const name plugin, const name owner, const name collection_name, int32_t template_id  )
@@ -54,6 +56,8 @@ namespace gems {
             "potion.s5"_n,
             "crew"_n,
             "crew.dev"_n,
+            pomelo::s5::commons::plugin,
+            pomelo::s5::rares::plugin,
 
             // Astronanut bonus mint
             "astronaut"_n,
@@ -70,6 +74,8 @@ namespace gems {
         if ( plugin == "crew"_n || plugin == "crew.dev"_n ) pomelo::s5::main::validate_input_attributes( id );
         if ( plugin == "sets.s3"_n ) pomelo::s3::sets::validate_input_attributes( id );
         if ( plugin == "sets.s4"_n ) pomelo::s4::sets::validate_input_attributes( id );
+        if ( plugin == pomelo::s5::commons::plugin ) pomelo::s5::commons::validate_input_attributes( id );
+        if ( plugin == pomelo::s5::rares::plugin ) pomelo::s5::rares::validate_input_attributes( id );
     }
 
     pair<ATTRIBUTE_MAP, ATTRIBUTE_MAP> blend::mint_attributes( const name plugin, const name owner, const name collection_name, const int32_t template_id, const vector<uint64_t>& in_asset_ids )
@@ -102,6 +108,8 @@ namespace gems {
         // Pomelo Season 5
         if ( plugin == "crew"_n ) return pomelo::s5::main::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
         if ( plugin == "potion.s5"_n ) return pomelo::s5::potion::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == pomelo::s5::commons::plugin ) return pomelo::s5::commons::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
+        if ( plugin == pomelo::s5::rares::plugin ) return pomelo::s5::rares::mint_attributes(owner, collection_name, template_id, in_asset_ids, in_assets );
 
         check( false, "blend::mint_attributes: invalid [plugin]");
         return { };

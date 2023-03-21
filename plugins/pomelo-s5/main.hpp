@@ -16,7 +16,7 @@ namespace main {
     const string COLOR_3 = "Pink";
     const string COLOR_4 = "Navy";
     const string COLOR_5 = "Golden";
-    // const string COLOR_6 = "Multi";
+    const string COLOR_6 = "Multi";
 
     // names - common
     const string NAME_COMMON_1 = "Dual Plasma Guns";
@@ -24,7 +24,6 @@ namespace main {
     const string NAME_COMMON_3 = "DJ Booth";
     const string NAME_COMMON_4 = "Science Lab";
     const string NAME_COMMON_5 = "Construction Unit";
-    // const string NAME_COMMON_6 = "Cryo Chamber";
 
     // names - rare
     const string NAME_RARE_1 = "Thrusters";
@@ -44,7 +43,6 @@ namespace main {
         NAME_COMMON_3,
         NAME_COMMON_4,
         NAME_COMMON_5,
-        // NAME_COMMON_6,
     };
 
     const vector<string> NAME_RARES = {
@@ -60,7 +58,6 @@ namespace main {
         {NAME_COMMON_3, COLOR_3},
         {NAME_COMMON_4, COLOR_4},
         {NAME_COMMON_5, COLOR_5},
-        // {NAME_COMMON_6, COLOR_6},
 
         // Rare
         {NAME_RARE_1, COLOR_4},
@@ -90,7 +87,6 @@ namespace main {
         {NAME_COMMON_3, "QmWqEK68SFUkasn84UmcueSch7SKovrJE2H4pCGXfDAhA8"},
         {NAME_COMMON_4, "Qma9tEPUjJFv5dVaCpgdbCjdFv8aSKrBp4oGJqiyX8kK4v"},
         {NAME_COMMON_5, "QmQrsFUPiVDuk4ARkfzADgr8qSexvF1rwWMXdASJyU2FsD"},
-        // {NAME_COMMON_6, "QmdU1v66eTM1EnGtZo7cKAdcL1fCXX4m8pz2FVStT6Agzn"},
         {NAME_RARE_1, "QmUBy2MGSEoLv77spYeTQDqckEhzywA9fKF5FASBRYEdvp"},
         {NAME_RARE_2, "QmVFiGhfxU5fNmc79rArYV6JmtxPN7xJYN86EKe485MQ3A"},
         {NAME_RARE_3, "QmV9Zt3vQAsQACzoDZFmF77cvqBTnEJACAaQK8R12Ep88s"},
@@ -118,11 +114,10 @@ namespace main {
         {NAME_COMMON_3, "QmWqEK68SFUkasn84UmcueSch7SKovrJE2H4pCGXfDAhA8"},
         {NAME_COMMON_4, "QmXSUBd8QTk6tPssLyoDVR2W3eNFzrrDTHx54fcG1JZtr1"},
         {NAME_COMMON_5, "QmPw8w67Tu9N6Rx7FuLMwzQjay7KkEEktFd2jSsc4gpry2"},
-        // {NAME_COMMON_6, "QmQXNh1aJwrVcQVfZyjDTsjpn3pkbYBq2k7xzqxtkD1Kq7"},
         {NAME_RARE_1,   "QmTdRymJZsMvj46ZTpv5sGXmF36EZKz8g4hiuw2LEfsNDo"},
         {NAME_RARE_2,   "QmZoS2E4UWnk2BVB9e8kC95dT6KTigavRSzEb3NSSsTJJm"},
         {NAME_RARE_3,   "QmP6xm773gBxo2bfswVQ1Pb4d8xXZKLFpRK9VJ6HwSzc6u"},
-        {NAME_ULTRA_1,  "QmWW17CNfQdLLNTUVyuht65A4aEgjC2gmnHyBsdE6GP9Zt"}, // TO FIX
+        {NAME_ULTRA_1,  "QmWW17CNfQdLLNTUVyuht65A4aEgjC2gmnHyBsdE6GP9Zt"},
         {NAME_ULTRA_2,  "QmNbmQjrxthKDRgAoHUNNQEFtHxpYj5N6T8UHpdiqMm9Vj"},
         {NAME_ULTRA_3,  "QmVoo31ceD3btw5N7Re1sFAHpYt54YQCodx7spfqdXXCdN"},
         {NAME_ULTRA_4,  "QmWTJRVYn7B7R3D1dvDihs8whMpcfgpaDtw8CKxUArNvB3"},
