@@ -37,11 +37,11 @@ namespace rares {
         }
         check( total == required_total, "this blend requires " + to_string(required_total) + "x unique " + required_rarity + "s");
 
-        // immutable
-        ATTRIBUTE_MAP immutable_data = {};
-        immutable_data["color"] = pomelo::s5::main::COLOR_6;
+        // // immutable
+        // ATTRIBUTE_MAP immutable_data = {};
+        // immutable_data["color"] = pomelo::s5::main::COLOR_6;
 
-        return { immutable_data, {} };
+        return { {}, {} };
     }
 
     void validate_input_attributes( const atomic::nft id )
@@ -51,7 +51,7 @@ namespace rares {
         check( my_template.transferable, "blend::validate_attributes: [nft] must be `transferable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
         check( my_template.burnable, "blend::validate_attributes: [nft] must be `burnable`");
-        check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
+        // check( atomic::attribute_exists(schema.format, { "color", "string" }), "blend::validate_attributes: [nft] must have 'color' as String");
     }
 }
 }
