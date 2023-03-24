@@ -27,7 +27,7 @@
 namespace gems {
     void blend::extras( const name plugin, const name owner, const name collection_name, int32_t template_id  )
     {
-        if ( plugin == "sets.s4"_n) {
+        if ( plugin == "sets.s4"_n || plugin == "rares.s5"_n ) {
             atomic::mintasset( get_self(), "pomelo"_n, "astronauts"_n, 6845, owner, {}, {}, {} );
         }
     }
