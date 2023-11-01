@@ -285,6 +285,9 @@ public:
     [[eosio::action]]
     void setrecipes( const name collection_name, const int32_t template_id, const set<uint64_t> recipe_ids );
 
+    [[eosio::action]]
+    void setrecipe( const name collection_name, const uint64_t recipe_id, vector<atomic::nft> templates );
+
     /**
      * ## ACTION `delblend`
      *

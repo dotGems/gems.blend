@@ -351,6 +351,43 @@ void blend::addrecipe( const name collection_name, const int32_t template_id, ve
     _recipes.emplace( ram_payer, insert );
 }
 
+[[eosio::action]]
+void blend::setrecipe( const name collection_name, const uint64_t recipe_id, vector<atomic::nft> templates )
+{
+    if ( !has_auth( get_self() ) ) require_auth( atomic::get_author( collection_name ) );
+
+    // tables
+    blend::recipes_table _recipes( get_self(), collection_name.value );
+
+    // validate
+    check( templates.size() >= 1, "blend::addrecipe: [templates] cannot be empty");
+    validate_templates( templates, true, true );
+
+    // maximum unique templates (prevent overloading UI)
+    set<int32_t> uniques;
+    vector<atomic::nft_extra> templates_extra;
+    for ( const auto row : templates ) {
+        const name schema_name = atomic::get_template( row.collection_name, row.template_id ).schema_name;
+        uniques.insert( row.template_id );
+        templates_extra.push_back( atomic::nft_extra{ row.collection_name, row.template_id, schema_name });
+    }
+    check( uniques.size() <= 10, "blend::addrecipe: [templates] cannot exceed 10 unique templates");
+
+    // pre-sort ingredients for detect_recipe efficiency
+    sort( templates_extra.begin(), templates_extra.end() );
+
+    // recipe content
+    auto insert = [&]( auto & row ) {
+        row.id = recipe_id;
+        row.templates = templates_extra;
+    };
+
+    // create/modify blend
+    auto itr = _recipes.find( collection_name.value );
+    if ( itr == _recipes.end() ) _recipes.emplace( get_self(), insert );
+    else  _recipes.modify( itr, get_self(), insert );
+}
+
 // returns any remaining orders to owner account
 [[eosio::action]]
 void blend::cancel( const name owner, const int32_t template_id )
@@ -488,10 +525,10 @@ void blend::delblend( const name collection_name, const int32_t template_id )
 
     // delete any recipes connected to blend
     auto & blend = _blends.get( template_id, "blend::delblend: [template_id] does not exist" );
-    for ( const uint64_t recipe_id : blend.recipe_ids ) {
-        auto recipe = _recipes.find( recipe_id );
-        if ( recipe != _recipes.end() ) _recipes.erase( recipe );
-    }
+    // for ( const uint64_t recipe_id : blend.recipe_ids ) {
+    //     auto recipe = _recipes.find( recipe_id );
+    //     if ( recipe != _recipes.end() ) _recipes.erase( recipe );
+    // }
     _blends.erase( blend );
 
     // remove scope if empty
